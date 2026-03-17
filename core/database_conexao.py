@@ -33,11 +33,14 @@ class Conexao:
         finally:
             conexao.close()
 
-    def listar_duelistas(self):
+    def listar_duelistas(self, incluir_inativos=False):
         conexao = self.conectar_bd()
         try:
             cursor = conexao.cursor(dictionary=True)
-            sql = "SELECT * FROM duelistas WHERE ativo = 1"
+            if incluir_inativos:
+                sql = "SELECT * FROM duelistas"
+            else:
+                sql = "SELECT * FROM duelistas WHERE ativo = 1"
             cursor.execute(sql)
             duelistas = cursor.fetchall()
             return duelistas
@@ -77,9 +80,9 @@ class Conexao:
         finally:
             conexao.close()
 
-    def carregar_duelistas(self):
+    def carregar_duelistas(self, incluir_inativos=False):
 
-        dados = self.listar_duelistas()
+        dados = self.listar_duelistas(incluir_inativos=incluir_inativos)
         
         lista_duelistas = []
         for data in dados:
@@ -88,8 +91,9 @@ class Conexao:
                 vitorias=int(data['vitorias']),
                 derrotas=int(data['derrotas']),
                 empates=int(data['empates']),
+                participacao=int(data['participacao']),
+                ativo=int(data.get('ativo', 1)),
             )
-            duelista.participacao = int(data['participacao'])
             lista_duelistas.append(duelista)
         
         return lista_duelistas
@@ -210,6 +214,49 @@ class Conexao:
             cursor = conexao.cursor()
             cursor.execute("UPDATE duelistas SET ativo = 0 WHERE nome = %s", (nome,))
             conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    def reativar_duelista(self, nome):
+        """Reativa um duelista previamente inativado"""
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            cursor.execute("UPDATE duelistas SET ativo = 1 WHERE nome = %s", (nome,))
+            conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    def excluir_duelista_definitivo(self, nome):
+        """Exclui duelista de forma definitiva apenas se não houver histórico em torneios."""
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor(dictionary=True)
+
+            cursor.execute("SELECT id FROM duelistas WHERE nome = %s", (nome,))
+            duelista = cursor.fetchone()
+
+            if not duelista:
+                return False, "nao_encontrado"
+
+            cursor.execute(
+                "SELECT COUNT(*) AS total FROM torneio_participantes WHERE duelista_id = %s",
+                (duelista['id'],)
+            )
+            total_participacoes = cursor.fetchone()['total']
+
+            if total_participacoes > 0:
+                return False, total_participacoes
+
+            cursor.execute("DELETE FROM duelistas WHERE id = %s", (duelista['id'],))
+            conexao.commit()
+            return True, 0
         except Exception as e:
             conexao.rollback()
             raise e

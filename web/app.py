@@ -54,8 +54,18 @@ def cadastrar_torneio():
 @app.route('/buscar_duelista', methods=['GET', 'POST'])
 def buscar_duelista():
     """Página para buscar duelista específico"""
-    duelistas = conexao.carregar_duelistas()
-    duelistas_ordenados = sorted(duelistas, key=lambda d: d.pontos, reverse=True)
+    duelistas = conexao.carregar_duelistas(incluir_inativos=True)
+    status_filtro = 'todos'
+
+    if request.method == 'POST':
+        status_filtro = request.form.get('status_filtro', 'todos')
+
+    if status_filtro == 'ativos':
+        duelistas = [d for d in duelistas if d.ativo == 1]
+    elif status_filtro == 'inativos':
+        duelistas = [d for d in duelistas if d.ativo == 0]
+
+    duelistas_ordenados = sorted(duelistas, key=lambda d: (d.ativo, d.pontos), reverse=True)
     
     duelista_encontrado = None
     posicao_encontrada = None
@@ -75,7 +85,8 @@ def buscar_duelista():
     return render_template('buscar_duelista.html', 
                          duelistas=duelistas_ordenados, 
                          duelista_encontrado=duelista_encontrado,
-                         posicao_encontrada=posicao_encontrada)
+                         posicao_encontrada=posicao_encontrada,
+                         status_filtro=status_filtro)
 
 @app.route('/alterar_duelista/<nome>', methods=['GET', 'POST'])
 def alterar_duelista(nome):
@@ -180,6 +191,40 @@ def desativar_duelista(nome):
     except Exception as e:
         flash(f'Erro ao inativar duelista {nome}: {str(e)}', 'error')
     
+    return redirect(url_for('buscar_duelista'))
+
+
+@app.route('/reativar_duelista/<nome>', methods=['POST'])
+def reativar_duelista(nome):
+    """Reativa um duelista previamente inativado"""
+    try:
+        conexao.reativar_duelista(nome)
+        flash(f'Duelista {nome} foi reativado e voltou a aparecer no ranking!', 'success')
+    except Exception as e:
+        flash(f'Erro ao reativar duelista {nome}: {str(e)}', 'error')
+
+    return redirect(url_for('buscar_duelista'))
+
+
+@app.route('/excluir_duelista_definitivo/<nome>', methods=['POST'])
+def excluir_duelista_definitivo(nome):
+    """Exclui um duelista permanentemente quando não houver histórico em torneios."""
+    try:
+        excluido, detalhe = conexao.excluir_duelista_definitivo(nome)
+
+        if excluido:
+            flash(f'Duelista {nome} foi excluído definitivamente.', 'success')
+        elif detalhe == 'nao_encontrado':
+            flash('Duelista não encontrado.', 'error')
+        else:
+            flash(
+                f'Não foi possível excluir {nome}: existem {detalhe} participações no histórico de torneios. '
+                'Mantenha-o inativo para preservar o histórico.',
+                'error'
+            )
+    except Exception as e:
+        flash(f'Erro ao excluir duelista {nome}: {str(e)}', 'error')
+
     return redirect(url_for('buscar_duelista'))
 
 @app.route('/excluir_torneio/<int:id>', methods=['POST'])

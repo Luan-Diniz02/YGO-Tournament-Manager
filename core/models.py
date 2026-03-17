@@ -1,10 +1,11 @@
 class Duelistas:
-    def __init__(self, nome: str, vitorias: int = 0, derrotas: int = 0, empates: int = 0, participacao: int = 1):
+    def __init__(self, nome: str, vitorias: int = 0, derrotas: int = 0, empates: int = 0, participacao: int = 1, ativo: int = 1):
         self.nome = nome
         self.vitorias = int(vitorias)
         self.derrotas = int(derrotas)
         self.empates = int(empates)
         self.participacao = participacao
+        self.ativo = int(ativo)
 
     @property
     def pontos(self) -> int:
@@ -17,7 +18,7 @@ class Duelistas:
         self.participacao += 1
 
     def __str__(self):
-        return f"Nome: {self.nome}, Vitórias: {self.vitorias}, Derrotas: {self.derrotas}, Empates: {self.empates}, Participação: {self.participacao}, Pontos: {self.pontos}"
+        return f"Nome: {self.nome}, Vitórias: {self.vitorias}, Derrotas: {self.derrotas}, Empates: {self.empates}, Participação: {self.participacao}, Pontos: {self.pontos}, Ativo: {self.ativo}"
 
 class Torneio:
     def __init__(self, nome: str, rodadas: int, quant_duelistas: int, data: str):
