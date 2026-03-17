@@ -310,35 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Print functionality
     window.printRanking = function() {
-        const printWindow = window.open('', '_blank');
-        const rankingTable = document.querySelector('.table');
-        
-        if (rankingTable) {
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Ranking - Liga YGO Marabá</title>
-                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-                    <style>
-                        body { font-family: Arial, sans-serif; }
-                        .header { text-align: center; margin-bottom: 20px; }
-                        @media print { .no-print { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <h2>Liga YGO Marabá - Ranking dos Duelistas</h2>
-                            <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
-                        </div>
-                        ${rankingTable.outerHTML}
-                    </div>
-                    <script>window.print(); window.close();</script>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
+        window.print();
     };
 
     // Add print button if on ranking page
@@ -346,9 +318,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const cardFooter = document.querySelector('.card-footer .btn-group');
         if (cardFooter) {
             const printBtn = document.createElement('button');
+            printBtn.type = 'button';
             printBtn.className = 'btn btn-outline-success';
             printBtn.innerHTML = '<i class="fas fa-print"></i> Imprimir';
-            printBtn.onclick = window.printRanking;
+            printBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.printRanking();
+            });
             cardFooter.appendChild(printBtn);
         }
     }

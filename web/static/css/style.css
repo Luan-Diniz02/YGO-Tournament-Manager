@@ -271,3 +271,52 @@ footer {
     background: linear-gradient(45deg, #cd7f32, #b8860b) !important;
     color: #495057 !important;
 }
+
+@media print {
+    body {
+        background: #fff !important;
+    }
+
+    nav,
+    footer,
+    .btn,
+    .alert,
+    .navbar,
+    .card-footer {
+        display: none !important;
+    }
+
+    .container,
+    .row,
+    .col-12 {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card,
+    .card-header,
+    .card-body {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .card-header {
+        background: #fff !important;
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        padding: 8px 0 !important;
+    }
+
+    .table {
+        font-size: 12px !important;
+    }
+
+    .table th,
+    .table td {
+        color: #000 !important;
+        background: #fff !important;
+    }
+}
