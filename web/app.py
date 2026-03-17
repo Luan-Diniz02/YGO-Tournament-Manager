@@ -150,8 +150,12 @@ def alterar_duelista(nome):
 @app.route('/ranking')
 def ranking():
     """Página com o ranking dos duelistas"""
-    duelistas = conexao.carregar_duelistas()
-    duelistas_ordenados = sorted(duelistas, key=lambda d: d.pontos, reverse=True)
+    try:
+        duelistas = conexao.carregar_duelistas()
+        duelistas_ordenados = sorted(duelistas, key=lambda d: d.pontos, reverse=True)
+    except Exception:
+        duelistas_ordenados = []
+        flash('Não foi possível carregar o ranking agora. Verifique a conexão com o banco e tente novamente.', 'error')
     return render_template('ranking.html', duelistas=duelistas_ordenados)
 
 @app.route('/visualizar_torneios')

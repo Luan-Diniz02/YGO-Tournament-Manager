@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import mysql.connector
+from mysql.connector import errorcode
 from core.models import Duelistas
 
 # Carrega as variáveis de ambiente do arquivo .env
@@ -101,18 +102,27 @@ class Conexao:
             conexao.close()
 
     def listar_duelistas(self, incluir_inativos=False):
-        conexao = self.conectar_bd()
+        def executar_consulta():
+            conexao = self.conectar_bd()
+            try:
+                cursor = conexao.cursor(dictionary=True)
+                if incluir_inativos:
+                    sql = "SELECT * FROM duelistas"
+                else:
+                    sql = "SELECT * FROM duelistas WHERE ativo = 1"
+                cursor.execute(sql)
+                return cursor.fetchall()
+            finally:
+                conexao.close()
+
         try:
-            cursor = conexao.cursor(dictionary=True)
-            if incluir_inativos:
-                sql = "SELECT * FROM duelistas"
-            else:
-                sql = "SELECT * FROM duelistas WHERE ativo = 1"
-            cursor.execute(sql)
-            duelistas = cursor.fetchall()
-            return duelistas
-        finally:
-            conexao.close()
+            return executar_consulta()
+        except mysql.connector.Error as e:
+            # Primeira execução em produção pode chegar sem tabelas criadas.
+            if e.errno == errorcode.ER_NO_SUCH_TABLE:
+                self.garantir_estrutura_bd()
+                return executar_consulta()
+            raise
 
     def adicionar_pontos(self, nome, vitorias, derrotas, empates):
         conexao = self.conectar_bd()
