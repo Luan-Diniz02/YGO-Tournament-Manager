@@ -1,31 +1,37 @@
 # Liga YGO Marabá - Interface Web Flask
 
-Este projeto foi migrado de uma interface desktop Tkinter para uma aplicação web usando Flask.
+Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento de torneios de Yu-Gi-Oh!, incluindo o cadastro de duelistas, pontos, ranking e configuração de torneios.
 
 ## Estrutura do Projeto
 
 ```
-GT_BD_Interface/
-├── app.py                 # Aplicação Flask principal
-├── Conexao.py            # Classe para conexão com banco de dados
-├── Duelistas_Torneio.py  # Classes Duelistas e Torneio
-├── Interface.py          # Interface Tkinter original (mantida para referência)
-├── Main.py               # Arquivo principal da versão Tkinter
-├── requirements.txt      # Dependências do projeto
-├── static/
-│   ├── css/
-│   │   └── style.css    # Estilos customizados
-│   └── js/
-│       └── script.js    # JavaScript para interatividade
-└── templates/
-    ├── base.html         # Template base
-    ├── index.html        # Página inicial
-    ├── cadastrar_torneio.html
-    ├── cadastrar_pontos.html
-    ├── buscar_duelista.html
-    ├── alterar_duelista.html
-    ├── ranking.html
-    └── visualizar_torneios.html
+ygo-tournament-manager/
+├── ACESSO_MOBILE.md      # Instruções para acessar via celular na mesma rede
+├── README.md             # Documentação principal
+├── requirements.txt      # Dependências do projeto (Flask, MySQL, etc)
+├── core/                 # Lógica de negócio e banco de dados
+│   ├── database_conexao.py # Classe e configuração da conexão com MySQL
+│   └── models.py         # Modelos de dados do sistema (Duelistas, Torneios)
+├── scripts/              # Scripts utilitários de execução e configuração
+│   ├── liberar_firewall.bat
+│   ├── run.bat           # Script de atalho para rodar a aplicação em Windows
+│   └── run.ps1           # Script PowerShell para iniciar a aplicação
+└── web/                  # Aplicação web e rotas Flask
+    ├── app.py            # Inicialização e rotas do Flask
+    ├── static/           # Arquivos estáticos (CSS, JS)
+    │   ├── css/
+    │   │   └── style.css
+    │   └── js/
+    │       └── script.js
+    └── templates/        # Arquivos HTML (Páginas Web)
+        ├── alterar_duelista.html
+        ├── base.html
+        ├── buscar_duelista.html
+        ├── cadastrar_torneio.html
+        ├── index.html
+        ├── painel_torneio.html
+        ├── ranking.html
+        └── visualizar_torneios.html
 ```
 
 ## Instalação
@@ -36,118 +42,74 @@ GT_BD_Interface/
    ```
 
 2. **Configurar banco de dados:**
-   - Certifique-se de que o MySQL está executando
-   - As configurações de conexão estão em `Conexao.py`:
-     - Host: 127.0.0.1
-     - User: root
-     - Password: root
-     - Database: torneio
+   - Certifique-se de que o servidor MySQL está em execução.
+   - Verifique ou altere as credenciais de banco de dados em `core/database_conexao.py` conforme o ambiente:
+     - Host: `127.0.0.1` (ou `localhost`)
+     - User: `root`
+     - Password: `root` (ou a senha configurada no seu MySQL)
+     - Database: `torneio`
 
 ## Executando a Aplicação
 
-### Método 1: Executar diretamente
+### Método 1: Usando os Scripts Prontos (Windows)
+A forma mais ágil de dar start no projeto é utilizando os arquivos em `scripts/`.
 ```bash
-python app.py
+# Executando via Batch (CMD)
+scripts\run.bat
+
+# Ou via PowerShell
+.\scripts\run.ps1
 ```
 
-### Método 2: Usando Flask CLI
+### Método 2: Executar via Python diretamente
+Certifique-se de que seu terminal esteja na pasta raiz do projeto e execute:
 ```bash
-set FLASK_APP=app.py
-set FLASK_ENV=development
-flask run
+python -m web.app
 ```
 
-### Método 3: PowerShell (Windows)
-```powershell
-$env:FLASK_APP = "app.py"
-$env:FLASK_ENV = "development"
-flask run
-```
+A aplicação estará disponível em: `http://localhost:5000`
 
-A aplicação estará disponível em: http://localhost:5000
+Se quiser acessar pelo celular (em rede local), consulte o arquivo `ACESSO_MOBILE.md` e, caso necessário, utilize o script `scripts\liberar_firewall.bat`.
 
 ## Funcionalidades
 
 ### ✅ Implementadas
-- **Página Inicial**: Menu principal com navegação intuitiva
-- **Cadastrar Torneio**: Formulário para cadastrar novos torneios
-- **Cadastrar Pontos**: Adicionar pontos para duelistas (novos ou existentes)
-- **Buscar Duelista**: Pesquisar duelistas específicos com filtro
-- **Ranking**: Visualizar ranking completo ordenado por pontos
-- **Alterar Duelista**: Editar dados de duelistas existentes
-- **Atualizar BD**: Sincronizar dados com o banco
+- **Página Inicial**: Menu principal com navegação fácil e intuitiva.
+- **Painel de Torneio e Cadastro**: Cadastro, edição e acompanhamento de torneios ativos.
+- **Cadastro Geral e Pontos**: Registrar duelistas ou computar pontuação de um evento.
+- **Busca Rápida de Duelistas**: Localizar e visualizar informações completas de um duelista.
+- **Ranking**: Visualizar a listagem de todos os jogadores ordenada pelos pontos obtidos.
+- **Alteração de Duelista**: Atualização ou correção dos dados existentes.
 
-### 🚧 Em Desenvolvimento
-- **Visualizar Torneios**: Lista e detalhes dos torneios cadastrados
-
-## Sistema de Pontuação
-
+## Sistema de Pontuação Padrão
+*(Conforme a regra do torneio ou liga)*
 - **Vitória**: 3 pontos
 - **Empate**: 1 ponto
 - **Derrota**: 0 pontos
-- **Participação**: 1 ponto adicional por torneio
+- **Participação**: 1 ponto adicional por torneio jogado
 
-## Recursos da Interface Web
+## Recursos da Interface
+- **Design Web Responsivo**: Criado com Bootstrap, adaptável para telas grandes ou mobile.
+- **Feedback Visual Avançado**: Uso de estilos CSS (animações) e `script.js` para validações rápidas.
+- **Organização Arquitetural**: Separação clara de responsabilidades com a pasta `core/` (Dados/Modelos) e `web/` (Rotas/Telas).
 
-### Design
-- Interface responsiva usando Bootstrap 5
-- Tema customizado com cores da Liga YGO
-- Animações e efeitos visuais modernos
-- Icons Font Awesome para melhor usabilidade
+## Banco de Dados
 
-### Funcionalidades JavaScript
-- Validação de formulários em tempo real
-- Notificações toast automáticas
-- Animações de carregamento
-- Atalhos de teclado (Ctrl+Enter para submeter, Esc para voltar)
-- Confirmações para ações destrutivas
-- Funcionalidade de impressão do ranking
+### Tabela: `duelistas`
+- `id` (int, auto_increment, primary key)
+- `nome` (varchar)
+- `vitorias` (int)
+- `derrotas` (int)
+- `empates` (int)
+- `participacao` (int)
+- `pontos` (int)
 
-### Melhorias de UX
-- Mensagens de feedback claras
-- Auto-ocultação de alertas
-- Navegação intuitiva
-- Responsividade para dispositivos móveis
-- Validação visual de campos
-
-## Estrutura do Banco de Dados
-
-### Tabela: duelistas
-- id (int, auto_increment, primary key)
-- nome (varchar)
-- vitorias (int)
-- derrotas (int)
-- empates (int)
-- participacao (int)
-- pontos (int)
-
-### Tabela: torneios (requer criação)
-- id (int, auto_increment, primary key)
-- nome (varchar)
-- rodadas (int)
-- quant_duelistas (int)
-- data (date)
-
-## Migração da Interface Tkinter
-
-A migração manteve toda a funcionalidade original:
-
-### Equivalências
-| Tkinter | Flask Web |
-|---------|-----------|
-| `menu_torneio()` | `/cadastrar_torneio` |
-| `menu_duelista()` | `/cadastrar_pontos` |
-| `menu_buscar_duelista()` | `/buscar_duelista` |
-| `menu_visualizar()` | `/ranking` |
-| `menu_alterar_duelista()` | `/alterar_duelista/<nome>` |
-
-### Vantagens da Versão Web
-- Acesso remoto via navegador
-- Interface mais moderna e responsiva
-- Melhor experiência do usuário
-- Facilidade de manutenção
-- Possibilidade de múltiplos usuários simultâneos
-- Integração mais fácil com outros sistemas
+### Tabela: `torneios`
+- `id` (int, auto_increment, primary key)
+- `nome` (varchar)
+- `rodadas` (int)
+- `quant_duelistas` (int)
+- `data` (date)
 
 ## Desenvolvimento
 
