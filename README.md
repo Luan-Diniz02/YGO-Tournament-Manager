@@ -2,18 +2,30 @@
 
 Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento de torneios de Yu-Gi-Oh!, incluindo o cadastro de duelistas, pontos, ranking e configuração de torneios.
 
+## Demo
+
+- Produção (Railway): https://web-production-af74b.up.railway.app
+- Healthcheck: https://web-production-af74b.up.railway.app/health
+
+## Destaques de Portfólio
+
+- Deploy em produção com variáveis de ambiente e healthcheck
+- Modo público e modo administrador com autenticação por sessão
+- Controle de edição por permissões e placar público por torneio
+- Organização em camadas (`core/` e `web/`)
+- CI com validação automática de sintaxe Python
+- Licença MIT para uso e distribuição
+
 ## Estrutura do Projeto
 
 ```
 ygo-tournament-manager/
-├── ACESSO_MOBILE.md      # Instruções para acessar via celular na mesma rede
 ├── README.md             # Documentação principal
 ├── requirements.txt      # Dependências do projeto (Flask, MySQL, etc)
 ├── core/                 # Lógica de negócio e banco de dados
 │   ├── database_conexao.py # Classe e configuração da conexão com MySQL
 │   └── models.py         # Modelos de dados do sistema (Duelistas, Torneios)
 ├── scripts/              # Scripts utilitários de execução e configuração
-│   ├── liberar_firewall.bat
 │   ├── run.bat           # Script de atalho para rodar a aplicação em Windows
 │   └── run.ps1           # Script PowerShell para iniciar a aplicação
 └── web/                  # Aplicação web e rotas Flask
@@ -69,7 +81,7 @@ python -m web.app
 
 A aplicação estará disponível em: `http://localhost:5000`
 
-Se quiser acessar pelo celular (em rede local), consulte o arquivo `ACESSO_MOBILE.md` e, caso necessário, utilize o script `scripts\liberar_firewall.bat`.
+Em produção, utilize a URL pública da seção Demo.
 
 ## Deploy em Produção (Render + MySQL)
 
@@ -169,7 +181,6 @@ Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (
 
 ## Controle de Acesso (Admin e Público)
 
-- Usuário público: pode apenas visualizar `Ranking` e `Visualizar Torneios`.
 - Usuário público: pode visualizar `Ranking`, `Visualizar Torneios` e o placar de cada torneio.
 - Admin: possui acesso completo às rotas de gestão (cadastro, edição e exclusão).
 
