@@ -361,7 +361,7 @@ class Conexao:
                 FROM torneio_participantes tp
                 JOIN duelistas d ON tp.duelista_id = d.id
                 WHERE tp.torneio_id = %s
-                ORDER BY tp.pontos_obtidos DESC, tp.vitorias DESC
+                ORDER BY tp.pontos_obtidos DESC, tp.vitorias DESC, tp.derrotas ASC, d.nome ASC
             """
             cursor.execute(sql, (torneio_id,))
             return cursor.fetchall()
