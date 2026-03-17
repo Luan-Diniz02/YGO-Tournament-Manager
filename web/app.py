@@ -33,6 +33,26 @@ def index():
     """Página inicial com menu principal"""
     return render_template('index.html')
 
+
+@app.route('/health')
+def healthcheck():
+    """Healthcheck para monitorar app e conexão com banco."""
+    conexao_bd = None
+    cursor = None
+    try:
+        conexao_bd = conexao.conectar_bd()
+        cursor = conexao_bd.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        return jsonify({"status": "ok", "database": "up"}), 200
+    except Exception as e:
+        return jsonify({"status": "degraded", "database": "down", "error": str(e)}), 503
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao_bd:
+            conexao_bd.close()
+
 @app.route('/cadastrar_torneio', methods=['GET', 'POST'])
 def cadastrar_torneio():
     """Página para cadastrar torneios"""

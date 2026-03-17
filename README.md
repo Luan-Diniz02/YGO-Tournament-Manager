@@ -118,6 +118,33 @@ O Render usará:
 ### Observação importante
 Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (`DB_*`) caso seu banco esteja fora do Render.
 
+## Operação em Produção no Railway
+
+### 1. Variáveis mínimas no serviço web
+- FLASK_SECRET_KEY com valor forte (não usar change-me)
+- AUTO_INIT_DB=1 apenas no primeiro deploy
+- DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME apontando para o serviço MySQL
+
+### 2. Após primeiro deploy com sucesso
+- Alterar AUTO_INIT_DB para 0
+- Fazer redeploy
+
+### 3. Monitoramento
+- Endpoint de saúde disponível em /health
+- Resultado esperado: status ok e database up
+
+### 4. Backup recomendado
+- Fazer dump do banco diariamente (ou no mínimo semanal)
+- Salvar backups fora da conta principal do Railway
+- Testar restauração periodicamente em ambiente separado
+
+### 5. Checklist de publicação
+- Testar criação de torneio
+- Testar adição de participantes
+- Testar alteração de duelista
+- Testar desativação e reativação
+- Testar ranking e busca em dois dispositivos diferentes
+
 ## Funcionalidades
 
 ### ✅ Implementadas
