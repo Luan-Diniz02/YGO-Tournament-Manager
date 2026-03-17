@@ -77,10 +77,14 @@
                 <div class="text-center py-5">
                     <i class="fas fa-users fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Nenhum duelista cadastrado</h5>
+                    {% if is_admin %}
                     <p class="text-muted">Comece cadastrando pontos para os duelistas</p>
                     <a href="{{ url_for('cadastrar_torneio') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Cadastrar Primeiro Torneio
                     </a>
+                    {% else %}
+                    <p class="text-muted">Os duelistas aparecerão aqui assim que forem cadastrados pelo administrador.</p>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

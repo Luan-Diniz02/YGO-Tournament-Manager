@@ -36,6 +36,7 @@
 
 <div class="row">
     <!-- Formulário para adicionar jogador a este torneio -->
+    {% if is_admin %}
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100">
             <div class="card-header bg-success text-white">
@@ -79,9 +80,10 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <!-- Tabela de participantes / Ranking exclusivo deste torneio -->
-    <div class="col-md-8 mb-4">
+    <div class="col-md-{% if is_admin %}8{% else %}12{% endif %} mb-4">
         <div class="card shadow-sm h-100">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-list-ol"></i> Classificação da Etapa</h5>
@@ -99,7 +101,9 @@
                                 <th class="text-center">D</th>
                                 <th class="text-center">E</th>
                                 <th class="text-center text-primary">Pts da Etapa</th>
+                                {% if is_admin %}
                                 <th class="text-center">Ações</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -121,11 +125,13 @@
                                 <td class="text-center align-middle text-danger">{{ p.derrotas }}</td>
                                 <td class="text-center align-middle text-info">{{ p.empates }}</td>
                                 <td class="text-center align-middle fw-bold text-primary fs-5">{{ p.pontos_obtidos }}</td>
+                                {% if is_admin %}
                                 <td class="text-center align-middle">
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editarResultado('{{ p.nome }}', {{ p.vitorias }}, {{ p.derrotas }}, {{ p.empates }})" title="Editar Resultado">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -135,7 +141,11 @@
                 <div class="text-center py-5">
                     <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
                     <h6 class="text-muted">Nenhum duelista registrado nesta etapa ainda.</h6>
+                    {% if is_admin %}
                     <p class="text-muted small">Adicione o resultado final do jogador no formulário ao lado (Suíço + Top Cut).</p>
+                    {% else %}
+                    <p class="text-muted small">Aguardando atualização do placar pelo administrador.</p>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
@@ -143,6 +153,7 @@
     </div>
 </div>
 
+{% if is_admin %}
 <script>
 function editarResultado(nome, vitorias, derrotas, empates) {
     document.getElementById('nome_duelista').value = nome;
@@ -172,4 +183,5 @@ function editarResultado(nome, vitorias, derrotas, empates) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
+{% endif %}
 {% endblock %}

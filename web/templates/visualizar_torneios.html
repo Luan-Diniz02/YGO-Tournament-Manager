@@ -10,9 +10,11 @@
                 <h4 class="mb-0">
                     <i class="fas fa-eye"></i> Visualizar Torneios
                 </h4>
+                {% if is_admin %}
                 <a href="{{ url_for('cadastrar_torneio') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-plus"></i> Novo Torneio
                 </a>
+                {% endif %}
             </div>
             <div class="card-body">
                 {% if torneios %}
@@ -25,7 +27,10 @@
                                 <th>Data</th>
                                 <th>Rodadas</th>
                                 <th>Participantes</th>
+                                <th>Placar</th>
+                                {% if is_admin %}
                                 <th>Ações</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -36,6 +41,12 @@
                                 <td>{{ t.data }}</td>
                                 <td>{{ t.rodadas }}</td>
                                 <td>{{ t.qtd_participantes|default(0) }} / {{ t.quant_duelistas }}</td>
+                                <td>
+                                    <a href="{{ url_for('painel_torneio', id=t.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> Ver placar
+                                    </a>
+                                </td>
+                                {% if is_admin %}
                                 <td class="d-flex gap-2">
     <a href="{{ url_for('painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
     <form method="POST" action="{{ url_for('excluir_torneio', id=t.id) }}" style="display:inline;">
@@ -52,6 +63,7 @@
         </button>
     </form>
 </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -61,7 +73,11 @@
                 <div class="text-center py-5">
                     <i class="fas fa-calendar-times fa-4x text-muted mb-4"></i>
                     <h5 class="text-muted">Nenhum torneio cadastrado ainda</h5>
+                    {% if is_admin %}
                     <p class="text-muted">Cadastre o primeiro torneio clicando no botão acima.</p>
+                    {% else %}
+                    <p class="text-muted">Os torneios aparecerão aqui assim que forem cadastrados pelo administrador.</p>
+                    {% endif %}
                 </div>
                 {% endif %}
                 

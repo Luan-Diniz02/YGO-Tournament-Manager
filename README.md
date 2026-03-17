@@ -167,6 +167,21 @@ Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (
 - **Feedback Visual Avançado**: Uso de estilos CSS (animações) e `script.js` para validações rápidas.
 - **Organização Arquitetural**: Separação clara de responsabilidades com a pasta `core/` (Dados/Modelos) e `web/` (Rotas/Telas).
 
+## Controle de Acesso (Admin e Público)
+
+- Usuário público: pode apenas visualizar `Ranking` e `Visualizar Torneios`.
+- Usuário público: pode visualizar `Ranking`, `Visualizar Torneios` e o placar de cada torneio.
+- Admin: possui acesso completo às rotas de gestão (cadastro, edição e exclusão).
+
+### Variáveis de ambiente para admin
+- `ADMIN_USERNAME` (exemplo: `admin`)
+- `ADMIN_PASSWORD` (defina uma senha forte)
+- `ADMIN_ALLOWED_IPS` (opcional, lista separada por vírgula para permitir login/admin apenas de IPs específicos)
+
+### Rotas de autenticação
+- Login admin: `/admin/login`
+- Logout admin: `/admin/logout`
+
 ## Banco de Dados
 
 ### Tabela: `duelistas`

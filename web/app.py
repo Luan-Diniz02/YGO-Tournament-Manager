@@ -2,8 +2,9 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os
+from functools import wraps
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from core.models import Duelistas, Torneio
 from core.database_conexao import Conexao
 
@@ -16,6 +17,50 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key_if_env_not_fo
 
 # Instancia da conexão
 conexao = Conexao()
+
+
+def admin_esta_logado():
+    return session.get('is_admin', False)
+
+
+def obter_ip_cliente():
+    forwarded_for = request.headers.get('X-Forwarded-For', '').strip()
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return (request.remote_addr or '').strip()
+
+
+def ip_admin_permitido():
+    ips_permitidos = os.getenv('ADMIN_ALLOWED_IPS', '').strip()
+    if not ips_permitidos:
+        return True
+
+    cliente_ip = obter_ip_cliente()
+    allowlist = {ip.strip() for ip in ips_permitidos.split(',') if ip.strip()}
+    return cliente_ip in allowlist
+
+
+def admin_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not ip_admin_permitido():
+            flash('Acesso administrativo bloqueado para este IP.', 'error')
+            return redirect(url_for('index'))
+
+        if admin_esta_logado():
+            return func(*args, **kwargs)
+
+        flash('Acesso restrito ao administrador. Faça login para continuar.', 'error')
+        return redirect(url_for('admin_login', next=request.path))
+
+    return wrapper
+
+
+@app.context_processor
+def inject_auth_context():
+    return {
+        'is_admin': admin_esta_logado(),
+    }
 
 
 def inicializar_estrutura_banco_se_necessario():
@@ -32,6 +77,46 @@ inicializar_estrutura_banco_se_necessario()
 def index():
     """Página inicial com menu principal"""
     return render_template('index.html')
+
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if not ip_admin_permitido():
+        flash('Login administrativo bloqueado para este IP.', 'error')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+
+        admin_username = os.getenv('ADMIN_USERNAME', 'admin')
+        admin_password = os.getenv('ADMIN_PASSWORD', '')
+
+        if not admin_password:
+            flash('ADMIN_PASSWORD não está configurada no ambiente de produção.', 'error')
+            return render_template('admin_login.html')
+
+        if username == admin_username and password == admin_password:
+            session['is_admin'] = True
+            session['admin_username'] = admin_username
+            flash('Login de administrador realizado com sucesso.', 'success')
+
+            next_url = request.args.get('next') or request.form.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect(url_for('index'))
+
+        flash('Usuário ou senha inválidos.', 'error')
+
+    return render_template('admin_login.html')
+
+
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    session.pop('is_admin', None)
+    session.pop('admin_username', None)
+    flash('Logout realizado.', 'success')
+    return redirect(url_for('index'))
 
 
 @app.route('/health')
@@ -54,6 +139,7 @@ def healthcheck():
             conexao_bd.close()
 
 @app.route('/cadastrar_torneio', methods=['GET', 'POST'])
+@admin_required
 def cadastrar_torneio():
     """Página para cadastrar torneios"""
     if request.method == 'POST':
@@ -83,6 +169,7 @@ def cadastrar_torneio():
     return render_template('cadastrar_torneio.html')
 
 @app.route('/buscar_duelista', methods=['GET', 'POST'])
+@admin_required
 def buscar_duelista():
     """Página para buscar duelista específico"""
     duelistas = conexao.carregar_duelistas(incluir_inativos=True)
@@ -120,6 +207,7 @@ def buscar_duelista():
                          status_filtro=status_filtro)
 
 @app.route('/alterar_duelista/<nome>', methods=['GET', 'POST'])
+@admin_required
 def alterar_duelista(nome):
     """Página para alterar dados de um duelista"""
     lista_duelistas = conexao.carregar_duelistas()
@@ -197,6 +285,7 @@ def painel_torneio(id):
     return render_template('painel_torneio.html', torneio=torneio, participantes=participantes, todos_duelistas=todos_duelistas)
 
 @app.route('/torneio/<int:id>/adicionar_jogador', methods=['POST'])
+@admin_required
 def adicionar_jogador_torneio(id):
     """Rota invisível para processar a adição de um jogador ao torneio"""
     nome = request.form['nome_duelista'].strip()
@@ -218,6 +307,7 @@ def adicionar_jogador_torneio(id):
     return redirect(url_for('painel_torneio', id=id))
 
 @app.route('/desativar_duelista/<nome>', methods=['POST'])
+@admin_required
 def desativar_duelista(nome):
     """Manda o duelista para lista de inativos (soft-delete)"""
     try:
@@ -230,6 +320,7 @@ def desativar_duelista(nome):
 
 
 @app.route('/reativar_duelista/<nome>', methods=['POST'])
+@admin_required
 def reativar_duelista(nome):
     """Reativa um duelista previamente inativado"""
     try:
@@ -242,6 +333,7 @@ def reativar_duelista(nome):
 
 
 @app.route('/excluir_duelista_definitivo/<nome>', methods=['POST'])
+@admin_required
 def excluir_duelista_definitivo(nome):
     """Exclui um duelista permanentemente quando não houver histórico em torneios."""
     try:
@@ -263,6 +355,7 @@ def excluir_duelista_definitivo(nome):
     return redirect(url_for('buscar_duelista'))
 
 @app.route('/excluir_torneio/<int:id>', methods=['POST'])
+@admin_required
 def excluir_torneio(id):
     """Exclui um torneio"""
     try:
