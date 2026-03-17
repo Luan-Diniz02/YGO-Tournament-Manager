@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Alterar Duelista - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit"></i> Alterar Dados do Duelista
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">
+                            <i class="fas fa-user"></i> Nome do Duelista
+                        </label>
+                        <input type="text" class="form-control" id="nome" name="nome" 
+                               value="{{ duelista.nome }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="vitorias" class="form-label">
+                                <i class="fas fa-trophy text-warning"></i> Vitórias
+                            </label>
+                            <input type="number" class="form-control" id="vitorias" name="vitorias" 
+                                   min="0" value="{{ duelista.vitorias }}" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="derrotas" class="form-label">
+                                <i class="fas fa-times text-danger"></i> Derrotas
+                            </label>
+                            <input type="number" class="form-control" id="derrotas" name="derrotas" 
+                                   min="0" value="{{ duelista.derrotas }}" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="empates" class="form-label">
+                                <i class="fas fa-handshake text-info"></i> Empates
+                            </label>
+                            <input type="number" class="form-control" id="empates" name="empates" 
+                                   min="0" value="{{ duelista.empates }}" required>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Dados Atuais:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Participações:</strong> {{ duelista.participacao }}</li>
+                            <li><strong>Pontos Totais:</strong> {{ duelista.pontos }}</li>
+                        </ul>
+                        <small class="text-muted">
+                            * Os pontos serão recalculados automaticamente após a alteração
+                        </small>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Atenção:</strong> Esta ação irá alterar permanentemente os dados do duelista no banco de dados.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('buscar_duelista') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <!-- Botão de alterar -->
+                        <button type="submit" class="btn btn-warning me-md-2" onclick="return confirm('Tem certeza que deseja alterar os dados deste duelista?')">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="mt-4 mb-4">
+                
+                <!-- Formulário separado para exclusão com botão vermelho -->
+                <form method="POST" action="{{ url_for('desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('ATENÇÃO: Deseja realmente DESATIVAR o duelista {{ duelista.nome }}? Ele não aparecerá mais no ranking atual, mas seu histórico nos torneios passados será mantido.')">
+                        <i class="fas fa-user-times"></i> Desativar Duelista
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-lightbulb text-warning"></i> Dicas importantes:
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-check-circle text-success"></i> Verifique os dados antes de salvar</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Os pontos são calculados automaticamente</li>
+                    <li><i class="fas fa-check-circle text-success"></i> As participações não podem ser alteradas diretamente</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Use esta função apenas para correções necessárias</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Buscar Duelista - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-search"></i> Buscar Duelista
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="mb-4">
+                    <div class="row align-items-end">
+                        <div class="col-md-8">
+                            <label for="nome_busca" class="form-label">
+                                <i class="fas fa-user"></i> Nome do Duelista
+                            </label>
+                            <input type="text" class="form-control" id="nome_busca" name="nome_busca"
+                                   placeholder="Digite o nome do duelista..." value="{{ request.form['nome_busca'] if request.form['nome_busca'] }}"
+                                   onkeyup="filtrarTabela()">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% if duelista_encontrado %}
+                <div class="alert alert-success" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-check-circle"></i> Duelista Encontrado!
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="mb-0">
+                                <strong>{{ posicao_encontrada }}º lugar - {{ duelista_encontrado.nome }}</strong>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Vitórias:</strong> {{ duelista_encontrado.vitorias }} | 
+                                <strong>Derrotas:</strong> {{ duelista_encontrado.derrotas }} | 
+                                <strong>Empates:</strong> {{ duelista_encontrado.empates }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>Participações:</strong> {{ duelista_encontrado.participacao }} | 
+                                <strong>Pontos:</strong> {{ duelista_encontrado.pontos }}
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{{ url_for('alterar_duelista', nome=duelista_encontrado.nome) }}" 
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Alterar Dados
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i> Todos os Duelistas 
+                            <span class="badge bg-primary">{{ duelistas|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="tabela-duelistas">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Posição</th>
+                                        <th>Nome</th>
+                                        <th>Vitórias</th>
+                                        <th>Derrotas</th>
+                                        <th>Empates</th>
+                                        <th>Participações</th>
+                                        <th>Pontos</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for duelista in duelistas %}
+                                    <tr class="{% if duelista == duelista_encontrado %}table-warning{% endif %}">
+                                        <td>
+                                            <span class="badge bg-secondary">{{ loop.index }}º</span>
+                                        </td>
+                                        <td>
+                                            <strong>{{ duelista.nome }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ duelista.vitorias }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">{{ duelista.derrotas }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ duelista.empates }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ duelista.participacao }}</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-warning">{{ duelista.pontos }}</strong>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('alterar_duelista', nome=duelista.nome) }}" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 d-flex justify-content-between">
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filtrarTabela() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("nome_busca");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("tabela-duelistas");
+    if (!table) return;
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }       
+    }
+}
+</script>
+{% endblock %}

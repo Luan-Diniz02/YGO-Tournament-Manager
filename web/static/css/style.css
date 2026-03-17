@@ -1,0 +1,273 @@
+/* Custom CSS for Liga YGO Marabá */
+
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+
+/* General Styles */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+}
+
+/* Card Enhancements */
+.card {
+    border-radius: 15px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    border: none;
+    font-weight: 600;
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 25px;
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+    color: #212529;
+}
+
+.btn-info {
+    background: linear-gradient(45deg, #17a2b8, #138496);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #6c757d, #545b62);
+}
+
+/* Badge Enhancements */
+.badge {
+    font-size: 0.85em;
+    padding: 0.5em 0.8em;
+    border-radius: 15px;
+}
+
+/* Table Enhancements */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+/* Form Enhancements */
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+}
+
+/* Alert Enhancements */
+.alert {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background: linear-gradient(45deg, rgba(40, 167, 69, 0.1), rgba(30, 126, 52, 0.1));
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background: linear-gradient(45deg, rgba(220, 53, 69, 0.1), rgba(200, 35, 51, 0.1));
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    background: linear-gradient(45deg, rgba(23, 162, 184, 0.1), rgba(19, 132, 150, 0.1));
+    border-left: 4px solid #17a2b8;
+}
+
+.alert-warning {
+    background: linear-gradient(45deg, rgba(255, 193, 7, 0.1), rgba(224, 168, 0, 0.1));
+    border-left: 4px solid #ffc107;
+}
+
+/* Navbar Enhancements */
+.navbar-dark .navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    margin: 0 5px;
+    padding: 10px 15px !important;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #343a40 0%, #212529 100%) !important;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.6s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem !important;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .table-responsive {
+        border-radius: 10px;
+    }
+}
+
+/* Custom Utility Classes */
+.shadow-custom {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.rounded-custom {
+    border-radius: 20px !important;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+/* Icon Enhancements */
+.fas, .far {
+    transition: all 0.3s ease;
+}
+
+.card:hover .fas,
+.card:hover .far {
+    transform: scale(1.1);
+}
+
+/* Table Row Highlight for Search Results */
+.table-warning {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+    border-left: 4px solid #ffc107;
+}
+
+/* Special Ranking Styles */
+.ranking-gold {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #856404 !important;
+}
+
+.ranking-silver {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #6c757d !important;
+}
+
+.ranking-bronze {
+    background: linear-gradient(45deg, #cd7f32, #b8860b) !important;
+    color: #495057 !important;
+}

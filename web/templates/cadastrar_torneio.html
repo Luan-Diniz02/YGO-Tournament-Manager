@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Torneio - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-plus"></i> Cadastrar Torneio
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nome_torneio" class="form-label">
+                                <i class="fas fa-trophy"></i> Nome do Torneio
+                            </label>
+                            <input type="text" class="form-control" id="nome_torneio" name="nome_torneio" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="data" class="form-label">
+                                <i class="fas fa-calendar-alt"></i> Data do Torneio
+                            </label>
+                            <input type="date" class="form-control" id="data" name="data" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="rodadas" class="form-label">
+                                <i class="fas fa-list-ol"></i> Quantidade de Rodadas
+                            </label>
+                            <input type="number" class="form-control" id="rodadas" name="rodadas" min="1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="duelistas" class="form-label">
+                                <i class="fas fa-users"></i> Quantidade de Duelistas
+                            </label>
+                            <input type="number" class="form-control" id="duelistas" name="duelistas" min="2" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Cadastrar Torneio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-info-circle text-info"></i> Dicas para cadastrar torneios:
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-check-circle text-success"></i> Use nomes descritivos para facilitar a identificação</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Defina o número de rodadas baseado no formato do torneio</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Estime a quantidade de participantes com antecedência</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

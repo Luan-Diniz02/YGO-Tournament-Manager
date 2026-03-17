@@ -1,0 +1,114 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Ranking - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-medal"></i> Ranking dos Duelistas
+                    </h4>
+                    <span class="badge bg-dark fs-6">{{ duelistas|length }} Duelistas</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if duelistas %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th width="10%">Posição</th>
+                                <th width="25%">Nome</th>
+                                <th width="12%">Vitórias</th>
+                                <th width="12%">Derrotas</th>
+                                <th width="12%">Empates</th>
+                                <th width="14%">Participações</th>
+                                <th width="15%">Pontos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for duelista in duelistas %}
+                            <tr class="{% if loop.index <= 3 %}table-warning{% endif %}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if loop.index == 1 %}
+                                            <i class="fas fa-trophy text-warning me-2"></i>
+                                        {% elif loop.index == 2 %}
+                                            <i class="fas fa-medal text-secondary me-2"></i>
+                                        {% elif loop.index == 3 %}
+                                            <i class="fas fa-award text-warning me-2"></i>
+                                        {% endif %}
+                                        <span class="badge bg-{% if loop.index == 1 %}warning{% elif loop.index == 2 %}secondary{% elif loop.index == 3 %}info{% else %}primary{% endif %} fs-6">
+                                            {{ loop.index }}º
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong class="{% if loop.index <= 3 %}text-dark{% endif %}">
+                                        {{ duelista.nome }}
+                                    </strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success fs-6">{{ duelista.vitorias }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">{{ duelista.derrotas }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info fs-6">{{ duelista.empates }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">{{ duelista.participacao }}</span>
+                                </td>
+                                <td>
+                                    <strong class="fs-5 {% if loop.index <= 3 %}text-warning{% else %}text-primary{% endif %}">
+                                        {{ duelista.pontos }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum duelista cadastrado</h5>
+                    <p class="text-muted">Comece cadastrando pontos para os duelistas</p>
+                    <a href="{{ url_for('cadastrar_pontos') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Cadastrar Primeiro Duelista
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if duelistas %}
+            <div class="card-footer bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <small class="text-muted">
+                                <strong>Sistema de Pontuação:</strong> Vitória (3pts) + Empate (1pt) + Participação (1pt)
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

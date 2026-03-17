@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Painel do Torneio - {{ torneio.nome }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-trophy"></i> {{ torneio.nome }}
+                </h4>
+                <a href="{{ url_for('visualizar_torneios') }}" class="btn btn-light btn-sm text-primary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-2">
+                        <h6 class="text-muted">Data</h6>
+                        <strong><i class="fas fa-calendar-alt"></i> {{ torneio.data.strftime('%d/%m/%Y') if torneio.data else 'N/A' }}</strong>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <h6 class="text-muted">Rodadas (Suíço)</h6>
+                        <strong><i class="fas fa-layer-group"></i> {{ torneio.rodadas }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Meta Inicial de Jogadores</h6>
+                        <strong><i class="fas fa-users"></i> {{ torneio.quant_duelistas }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Formulário para adicionar jogador a este torneio -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-user-plus"></i> Inserir Resultado</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-4">Adicione o placar final do participante nesta etapa (incluindo as vitórias/derrotas do Top Cut). <b>Isso também computará no Ranking Global</b> da Liga.</p>
+
+                <form method="POST" action="{{ url_for('adicionar_jogador_torneio', id=torneio.id) }}">
+                    <div class="mb-3">
+                        <label for="nome_duelista" class="form-label fw-bold">Nome do Duelista</label>
+                        <input type="text" class="form-control" id="nome_duelista" name="nome_duelista" placeholder="Ex: Yugi Muto" required autocomplete="off" list="lista_duelistas">
+                        <datalist id="lista_duelistas">
+                            {% for d in todos_duelistas %}
+                            <option value="{{ d.nome }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-4 mb-3">
+                            <label for="vitorias" class="form-label text-success fw-bold">Vitórias</label>
+                            <input type="number" class="form-control" id="vitorias" name="vitorias" value="0" min="0" required>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="derrotas" class="form-label text-danger fw-bold">Derrotas</label>
+                            <input type="number" class="form-control" id="derrotas" name="derrotas" value="0" min="0" required>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="empates" class="form-label text-info fw-bold">Empates</label>
+                            <input type="number" class="form-control" id="empates" name="empates" value="0" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Computar Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de participantes / Ranking exclusivo deste torneio -->
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list-ol"></i> Classificação da Etapa</h5>
+                <span class="badge bg-light text-dark"><i class="fas fa-user-check"></i> {{ participantes|length }} Registrados</span>
+            </div>
+            <div class="card-body p-0">
+                {% if participantes %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 50px;">Pos</th>
+                                <th>Duelista</th>
+                                <th class="text-center">V</th>
+                                <th class="text-center">D</th>
+                                <th class="text-center">E</th>
+                                <th class="text-center text-primary">Pts da Etapa</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in participantes %}
+                            <tr>
+                                <td class="text-center align-middle">
+                                    {% if loop.index == 1 %}
+                                        <i class="fas fa-medal text-warning fs-5"></i>
+                                    {% elif loop.index == 2 %}
+                                        <i class="fas fa-medal text-secondary fs-5"></i>
+                                    {% elif loop.index == 3 %}
+                                        <i class="fas fa-medal" style="color: #cd7f32;"></i>
+                                    {% else %}
+                                        <span class="text-muted fw-bold">{{ loop.index }}º</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle fw-bold">{{ p.nome }}</td>
+                                <td class="text-center align-middle text-success">{{ p.vitorias }}</td>
+                                <td class="text-center align-middle text-danger">{{ p.derrotas }}</td>
+                                <td class="text-center align-middle text-info">{{ p.empates }}</td>
+                                <td class="text-center align-middle fw-bold text-primary fs-5">{{ p.pontos_obtidos }}</td>
+                                <td class="text-center align-middle">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editarResultado('{{ p.nome }}', {{ p.vitorias }}, {{ p.derrotas }}, {{ p.empates }})" title="Editar Resultado">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">Nenhum duelista registrado nesta etapa ainda.</h6>
+                    <p class="text-muted small">Adicione o resultado final do jogador no formulário ao lado (Suíço + Top Cut).</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarResultado(nome, vitorias, derrotas, empates) {
+    document.getElementById('nome_duelista').value = nome;
+    document.getElementById('vitorias').value = vitorias;
+    document.getElementById('derrotas').value = derrotas;
+    document.getElementById('empates').value = empates;
+    
+    // Altera o visual do form para indicar Edição
+    let btnSubmit = document.querySelector('form[action*="adicionar_jogador"] button[type="submit"]');
+    if (btnSubmit) {
+        btnSubmit.innerHTML = '<i class="fas fa-save"></i> Atualizar Resultado do Duelista';
+        btnSubmit.classList.remove('btn-success');
+        btnSubmit.classList.add('btn-warning');
+        btnSubmit.classList.add('text-dark');
+    }
+    
+    let headerAdd = document.querySelector('.card-header h5');
+    if (headerAdd && !headerAdd.innerHTML.includes('Editando')) {
+        headerAdd.innerHTML = '<i class="fas fa-edit"></i> Editando Resultado';
+        headerAdd.parentElement.classList.remove('bg-success');
+        headerAdd.parentElement.classList.add('bg-warning');
+        headerAdd.parentElement.classList.add('text-dark');
+        headerAdd.parentElement.classList.remove('text-white');
+    }
+
+    // Scrolla para o topo, onde fica o form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+{% endblock %}
