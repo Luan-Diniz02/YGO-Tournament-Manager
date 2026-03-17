@@ -55,11 +55,14 @@ ygo-tournament-manager/
 
 2. **Configurar banco de dados:**
    - Certifique-se de que o servidor MySQL está em execução.
-   - Verifique ou altere as credenciais de banco de dados em `core/database_conexao.py` conforme o ambiente:
-     - Host: `127.0.0.1` (ou `localhost`)
-     - User: `root`
-     - Password: `root` (ou a senha configurada no seu MySQL)
-     - Database: `torneio`
+    - Configure as variáveis de ambiente do banco conforme seu ambiente.
+    - Exemplo local (desenvolvimento):
+       - Host: `127.0.0.1`
+       - Port: `3306`
+       - User: `seu_usuario_local`
+       - Password: `sua_senha_local`
+       - Database: `torneio`
+    - Em produção, use sempre as variáveis `DB_*` do provedor e credenciais fortes.
 
 ## Executando a Aplicação
 
