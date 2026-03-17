@@ -73,6 +73,11 @@ def inicializar_estrutura_banco_se_necessario():
 
 inicializar_estrutura_banco_se_necessario()
 
+
+def ordenar_duelistas_para_rank(duelistas):
+    # Ranking: mais pontos primeiro; em empate, menos derrotas.
+    return sorted(duelistas, key=lambda d: (-d.pontos, d.derrotas, d.nome.casefold()))
+
 @app.route('/')
 def index():
     """Página inicial com menu principal"""
@@ -183,7 +188,8 @@ def buscar_duelista():
     elif status_filtro == 'inativos':
         duelistas = [d for d in duelistas if d.ativo == 0]
 
-    duelistas_ordenados = sorted(duelistas, key=lambda d: (d.ativo, d.pontos), reverse=True)
+    duelistas_ordenados = ordenar_duelistas_para_rank(duelistas)
+    duelistas_ordenados = sorted(duelistas_ordenados, key=lambda d: d.ativo, reverse=True)
     
     duelista_encontrado = None
     posicao_encontrada = None
@@ -260,7 +266,7 @@ def ranking():
     """Página com o ranking dos duelistas"""
     try:
         duelistas = conexao.carregar_duelistas()
-        duelistas_ordenados = sorted(duelistas, key=lambda d: d.pontos, reverse=True)
+        duelistas_ordenados = ordenar_duelistas_para_rank(duelistas)
     except Exception:
         duelistas_ordenados = []
         flash('Não foi possível carregar o ranking agora. Verifique a conexão com o banco e tente novamente.', 'error')
