@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ygo-tournament-manager
+    runtime: python
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: AUTO_INIT_DB
+        value: "1"
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false

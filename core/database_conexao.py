@@ -10,6 +10,7 @@ class Conexao:
     def __init__(self):
         # Utiliza as variáveis de ambiente, com valores padrão caso não encontre
         self.host = os.getenv("DB_HOST", "127.0.0.1")
+        self.port = int(os.getenv("DB_PORT", "3306"))
         self.user = os.getenv("DB_USER", "root")
         self.password = os.getenv("DB_PASSWORD", "root")
         self.database = os.getenv("DB_NAME", "torneio")
@@ -17,10 +18,76 @@ class Conexao:
     def conectar_bd(self):
         return mysql.connector.connect(
             host=self.host,
+            port=self.port,
             user=self.user,
             password=self.password,
             database=self.database
         )
+
+    def garantir_estrutura_bd(self):
+        """Cria as tabelas necessárias caso ainda não existam (idempotente)."""
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS duelistas (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    nome VARCHAR(120) NOT NULL UNIQUE,
+                    vitorias INT NOT NULL DEFAULT 0,
+                    derrotas INT NOT NULL DEFAULT 0,
+                    empates INT NOT NULL DEFAULT 0,
+                    participacao INT NOT NULL DEFAULT 0,
+                    pontos INT NOT NULL DEFAULT 0,
+                    ativo TINYINT(1) NOT NULL DEFAULT 1,
+                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    INDEX idx_duelistas_ativo (ativo),
+                    INDEX idx_duelistas_pontos (pontos)
+                )
+            """)
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS torneios (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    nome VARCHAR(120) NOT NULL,
+                    rodadas INT NOT NULL,
+                    quant_duelistas INT NOT NULL,
+                    data DATE NOT NULL,
+                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    INDEX idx_torneios_data (data)
+                )
+            """)
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS torneio_participantes (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    torneio_id INT NOT NULL,
+                    duelista_id INT NOT NULL,
+                    vitorias INT NOT NULL DEFAULT 0,
+                    derrotas INT NOT NULL DEFAULT 0,
+                    empates INT NOT NULL DEFAULT 0,
+                    pontos_obtidos INT NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    CONSTRAINT fk_tp_torneio FOREIGN KEY (torneio_id)
+                        REFERENCES torneios(id)
+                        ON DELETE CASCADE,
+                    CONSTRAINT fk_tp_duelista FOREIGN KEY (duelista_id)
+                        REFERENCES duelistas(id)
+                        ON DELETE RESTRICT,
+                    UNIQUE KEY uk_tp_torneio_duelista (torneio_id, duelista_id),
+                    INDEX idx_tp_torneio (torneio_id),
+                    INDEX idx_tp_duelista (duelista_id)
+                )
+            """)
+
+            conexao.commit()
+        except Exception:
+            conexao.rollback()
+            raise
+        finally:
+            conexao.close()
 
     def encontrar_duelista(self, nome):
         conexao = self.conectar_bd()

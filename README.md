@@ -71,6 +71,53 @@ A aplicação estará disponível em: `http://localhost:5000`
 
 Se quiser acessar pelo celular (em rede local), consulte o arquivo `ACESSO_MOBILE.md` e, caso necessário, utilize o script `scripts\liberar_firewall.bat`.
 
+## Deploy em Produção (Render + MySQL)
+
+### 1. Pré-requisitos
+- Conta no Render
+- Banco MySQL gerenciado (Railway, PlanetScale, Aiven, RDS ou similar)
+
+### 2. Arquivos de produção já incluídos no projeto
+- `Procfile`
+- `render.yaml`
+- `schema.sql`
+- `.env.example`
+
+### 3. Deploy automatizado com Blueprint (render.yaml)
+1. No Render, clique em **New +** > **Blueprint**.
+2. Selecione o repositório.
+3. O Render detectará automaticamente o arquivo `render.yaml`.
+4. Revise o plano e confirme a criação do serviço.
+
+Com isso, `buildCommand`, `startCommand`, `healthCheckPath` e `autoDeploy` já serão aplicados automaticamente.
+
+### 4. Criar banco e tabelas
+Você tem duas opções:
+- Executar `schema.sql` manualmente no MySQL de produção.
+- Usar `AUTO_INIT_DB=1` no Render para a aplicação criar as tabelas automaticamente no startup.
+
+### 5. Variáveis de ambiente no Render
+Configure no serviço web:
+- `FLASK_SECRET_KEY`
+- `AUTO_INIT_DB`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+
+### 6. Build e start
+O Render usará:
+- Build: `pip install -r requirements.txt`
+- Start: `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
+
+### 7. Pós-deploy
+- Acesse a URL pública gerada pelo Render
+- Teste os fluxos: busca, ranking, torneios, desativar/reativar duelista
+
+### Observação importante
+Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (`DB_*`) caso seu banco esteja fora do Render.
+
 ## Funcionalidades
 
 ### ✅ Implementadas

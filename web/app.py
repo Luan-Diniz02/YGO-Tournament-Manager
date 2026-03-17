@@ -17,6 +17,17 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key_if_env_not_fo
 # Instancia da conexão
 conexao = Conexao()
 
+
+def inicializar_estrutura_banco_se_necessario():
+    auto_init_db = os.getenv('AUTO_INIT_DB', '0') == '1'
+    if not auto_init_db:
+        return
+
+    conexao.garantir_estrutura_bd()
+
+
+inicializar_estrutura_banco_se_necessario()
+
 @app.route('/')
 def index():
     """Página inicial com menu principal"""
