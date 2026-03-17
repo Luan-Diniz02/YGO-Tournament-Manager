@@ -67,7 +67,15 @@
                             <i class="fas fa-arrow-left"></i> Cancelar
                         </a>
                         <!-- Botão de alterar -->
-                        <button type="submit" class="btn btn-warning me-md-2" onclick="return confirm('Tem certeza que deseja alterar os dados deste duelista?')">
+                        <button
+                            type="submit"
+                            class="btn btn-warning me-md-2"
+                            data-confirm="Tem certeza que deseja alterar os dados deste duelista?"
+                            data-confirm-title="Confirmar alteração"
+                            data-confirm-icon="question"
+                            data-confirm-confirm-text="Sim, salvar"
+                            data-confirm-cancel-text="Cancelar"
+                        >
                             <i class="fas fa-save"></i> Salvar Alterações
                         </button>
                     </div>
@@ -77,7 +85,15 @@
                 
                 <!-- Formulário separado para exclusão com botão vermelho -->
                 <form method="POST" action="{{ url_for('desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('ATENÇÃO: Deseja realmente DESATIVAR o duelista {{ duelista.nome }}? Ele não aparecerá mais no ranking atual, mas seu histórico nos torneios passados será mantido.')">
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        data-confirm="Deseja realmente DESATIVAR o duelista {{ duelista.nome }}? Ele não aparecerá mais no ranking atual, mas seu histórico nos torneios passados será mantido."
+                        data-confirm-title="Atenção"
+                        data-confirm-icon="warning"
+                        data-confirm-confirm-text="Sim, desativar"
+                        data-confirm-cancel-text="Cancelar"
+                    >
                         <i class="fas fa-user-times"></i> Desativar Duelista
                     </button>
                 </form>

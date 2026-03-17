@@ -39,7 +39,15 @@
                                 <td class="d-flex gap-2">
     <a href="{{ url_for('painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
     <form method="POST" action="{{ url_for('excluir_torneio', id=t.id) }}" style="display:inline;">
-        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja excluir permanentemente este torneio e todo o placar/histórico atrelado a ele? Isso não pode ser desfeito.')">
+        <button
+            type="submit"
+            class="btn btn-sm btn-danger"
+            data-confirm="Deseja excluir permanentemente este torneio e todo o placar/histórico atrelado a ele? Isso não pode ser desfeito."
+            data-confirm-title="Excluir torneio"
+            data-confirm-icon="warning"
+            data-confirm-confirm-text="Sim, excluir"
+            data-confirm-cancel-text="Cancelar"
+        >
             <i class="fas fa-trash-alt"></i> Excluir
         </button>
     </form>

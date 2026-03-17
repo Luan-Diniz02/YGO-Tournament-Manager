@@ -80,13 +80,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Confirmation dialogs for destructive actions
+    // Confirmation dialogs for sensitive actions (SweetAlert2)
     const dangerousButtons = document.querySelectorAll('[data-confirm]');
     dangerousButtons.forEach(button => {
         button.addEventListener('click', function(e) {
+            const form = this.form;
+            const alreadyConfirmed = this.dataset.confirmed === 'true';
+
+            if (alreadyConfirmed) {
+                this.dataset.confirmed = 'false';
+                return;
+            }
+
+            e.preventDefault();
+
             const message = this.getAttribute('data-confirm') || 'Tem certeza que deseja continuar?';
-            if (!confirm(message)) {
-                e.preventDefault();
+            const title = this.getAttribute('data-confirm-title') || 'Confirmação';
+            const icon = this.getAttribute('data-confirm-icon') || 'warning';
+            const confirmText = this.getAttribute('data-confirm-confirm-text') || 'Confirmar';
+            const cancelText = this.getAttribute('data-confirm-cancel-text') || 'Cancelar';
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: title,
+                    text: message,
+                    icon: icon,
+                    showCancelButton: true,
+                    confirmButtonText: confirmText,
+                    cancelButtonText: cancelText,
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then(result => {
+                    if (result.isConfirmed && form) {
+                        this.dataset.confirmed = 'true';
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                        } else {
+                            form.submit();
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Fallback if SweetAlert2 is unavailable
+            if (confirm(message) && form) {
+                this.dataset.confirmed = 'true';
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
             }
         });
     });

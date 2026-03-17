@@ -94,6 +94,25 @@ class Conexao:
         
         return lista_duelistas
     
+    def atualizar_registro_duelista(self, nome_antigo, novo_nome, vitorias, derrotas, empates, pontos):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            sql = """
+                UPDATE duelistas 
+                SET nome = %s, vitorias = %s, derrotas = %s, empates = %s, pontos = %s
+                WHERE nome = %s
+            """
+            cursor.execute(sql, (novo_nome, vitorias, derrotas, empates, pontos, nome_antigo))
+            conexao.commit()
+        except Exception as e:
+            print(f"Erro ao atualizar duelista: {e}")
+        finally:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'conexao' in locals() and conexao.is_connected():
+                conexao.close()
+
     def atualizar_bd(self, lista_duelistas):
         if not lista_duelistas:
             return

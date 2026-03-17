@@ -108,14 +108,14 @@ def alterar_duelista(nome):
                 return render_template('alterar_duelista.html', duelista=duelista)
 
             # Atualiza os dados do duelista
+            nome_antigo = duelista.nome
             duelista.nome = novo_nome
             duelista.vitorias = vitorias
             duelista.derrotas = derrotas
             duelista.empates = empates
-            
+
             # Atualiza o banco de dados
-            conexao.atualizar_bd(lista_duelistas)
-            
+            conexao.atualizar_registro_duelista(nome_antigo, novo_nome, vitorias, derrotas, empates, duelista.pontos)
             flash('Dados do duelista atualizados com sucesso!', 'success')
             return redirect(url_for('buscar_duelista'))
 
