@@ -4,7 +4,7 @@ Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento
 
 ## Demo
 
-- Produção (Railway): https://web-production-af74b.up.railway.app
+- Produção (Render): https://ygo-tournament-manager.onrender.com
 - Healthcheck: https://web-production-af74b.up.railway.app/health
 
 ## Destaques de Portfólio
@@ -20,8 +20,14 @@ Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento
 
 ```
 ygo-tournament-manager/
+├── .github/             # CI com GitHub Actions
+├── .env.example         # Exemplo de variáveis de ambiente
+├── LICENSE              # Licença MIT
 ├── README.md             # Documentação principal
 ├── requirements.txt      # Dependências do projeto (Flask, MySQL, etc)
+├── render.yaml           # Blueprint de deploy no Render
+├── Procfile              # Comando de start para plataformas PaaS
+├── schema.sql            # Estrutura do banco
 ├── core/                 # Lógica de negócio e banco de dados
 │   ├── database_conexao.py # Classe e configuração da conexão com MySQL
 │   └── models.py         # Modelos de dados do sistema (Duelistas, Torneios)
@@ -86,37 +92,35 @@ A aplicação estará disponível em: `http://localhost:5000`
 
 Em produção, utilize a URL pública da seção Demo.
 
-## Deploy em Produção (Render + MySQL)
+## Deploy em Produção (Render + TiDB)
 
 ### 1. Pré-requisitos
 - Conta no Render
-- Banco MySQL gerenciado (Railway, PlanetScale, Aiven, RDS ou similar)
+- Conta no TiDB Cloud Serverless (MySQL compatível)
 
-### Deploy rápido (Render Free + banco gratuito)
-
-Você pode rodar este projeto no plano free da Render para uso leve. O recomendado é manter o app na Render e usar um banco MySQL compatível externo (exemplo: TiDB Cloud Serverless).
+### 2. Deploy rápido (Render Free + TiDB)
 
 Passo a passo (15-20 minutos):
-1. Crie um banco MySQL compatível (exemplo: TiDB Cloud Serverless).
+1. Crie um cluster no TiDB Cloud Serverless.
 2. Copie as credenciais de conexão: host, porta, usuário, senha e nome do database.
 3. No Render, crie o serviço via Blueprint usando `render.yaml`.
 4. Configure as variáveis de ambiente `DB_*` no serviço web.
 5. No primeiro deploy, mantenha `AUTO_INIT_DB=1` para criar as tabelas automaticamente.
 6. Após validar o sistema em produção, altere para `AUTO_INIT_DB=0` e faça novo deploy.
-7. Teste `GET /health` e os fluxos principais (ranking, cadastro, torneios).
+7. Teste `GET /health` e os fluxos principais (ranking, torneios e permissões admin).
 
 Observações do plano free da Render:
 - Pode ocorrer cold start após inatividade.
 - Recursos de CPU/RAM são limitados.
 - Ideal para MVP, homologação e tráfego baixo.
 
-### 2. Arquivos de produção já incluídos no projeto
+### 3. Arquivos de produção já incluídos no projeto
 - `Procfile`
 - `render.yaml`
 - `schema.sql`
 - `.env.example`
 
-### 3. Deploy automatizado com Blueprint (render.yaml)
+### 4. Deploy automatizado com Blueprint (render.yaml)
 1. No Render, clique em **New +** > **Blueprint**.
 2. Selecione o repositório.
 3. O Render detectará automaticamente o arquivo `render.yaml`.
@@ -124,12 +128,12 @@ Observações do plano free da Render:
 
 Com isso, `buildCommand`, `startCommand`, `healthCheckPath` e `autoDeploy` já serão aplicados automaticamente.
 
-### 4. Criar banco e tabelas
+### 5. Criar banco e tabelas
 Você tem duas opções:
 - Executar `schema.sql` manualmente no MySQL de produção.
 - Usar `AUTO_INIT_DB=1` no Render para a aplicação criar as tabelas automaticamente no startup.
 
-### 5. Variáveis de ambiente no Render
+### 6. Variáveis de ambiente no Render
 Configure no serviço web:
 - `FLASK_SECRET_KEY`
 - `AUTO_INIT_DB`
@@ -151,44 +155,17 @@ Exemplo comum para banco gerenciado com TLS:
 - `DB_SSL_VERIFY_CERT=0`
 - `DB_SSL_VERIFY_IDENTITY=0`
 
-### 6. Build e start
+### 7. Build e start
 O Render usará:
 - Build: `pip install -r requirements.txt`
 - Start: `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
 
-### 7. Pós-deploy
+### 8. Pós-deploy
 - Acesse a URL pública gerada pelo Render
 - Teste os fluxos: busca, ranking, torneios, desativar/reativar duelista
 
 ### Observação importante
 Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (`DB_*`) caso seu banco esteja fora do Render.
-
-## Operação em Produção no Railway
-
-### 1. Variáveis mínimas no serviço web
-- FLASK_SECRET_KEY com valor forte (não usar change-me)
-- AUTO_INIT_DB=1 apenas no primeiro deploy
-- DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME apontando para o serviço MySQL
-
-### 2. Após primeiro deploy com sucesso
-- Alterar AUTO_INIT_DB para 0
-- Fazer redeploy
-
-### 3. Monitoramento
-- Endpoint de saúde disponível em /health
-- Resultado esperado: status ok e database up
-
-### 4. Backup recomendado
-- Fazer dump do banco diariamente (ou no mínimo semanal)
-- Salvar backups fora da conta principal do Railway
-- Testar restauração periodicamente em ambiente separado
-
-### 5. Checklist de publicação
-- Testar criação de torneio
-- Testar adição de participantes
-- Testar alteração de duelista
-- Testar desativação e reativação
-- Testar ranking e busca em dois dispositivos diferentes
 
 ## Funcionalidades
 
