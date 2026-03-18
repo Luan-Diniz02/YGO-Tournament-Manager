@@ -92,6 +92,24 @@ Em produção, utilize a URL pública da seção Demo.
 - Conta no Render
 - Banco MySQL gerenciado (Railway, PlanetScale, Aiven, RDS ou similar)
 
+### Deploy rápido (Render Free + banco gratuito)
+
+Você pode rodar este projeto no plano free da Render para uso leve. O recomendado é manter o app na Render e usar um banco MySQL compatível externo (exemplo: TiDB Cloud Serverless).
+
+Passo a passo (15-20 minutos):
+1. Crie um banco MySQL compatível (exemplo: TiDB Cloud Serverless).
+2. Copie as credenciais de conexão: host, porta, usuário, senha e nome do database.
+3. No Render, crie o serviço via Blueprint usando `render.yaml`.
+4. Configure as variáveis de ambiente `DB_*` no serviço web.
+5. No primeiro deploy, mantenha `AUTO_INIT_DB=1` para criar as tabelas automaticamente.
+6. Após validar o sistema em produção, altere para `AUTO_INIT_DB=0` e faça novo deploy.
+7. Teste `GET /health` e os fluxos principais (ranking, cadastro, torneios).
+
+Observações do plano free da Render:
+- Pode ocorrer cold start após inatividade.
+- Recursos de CPU/RAM são limitados.
+- Ideal para MVP, homologação e tráfego baixo.
+
 ### 2. Arquivos de produção já incluídos no projeto
 - `Procfile`
 - `render.yaml`
@@ -120,6 +138,18 @@ Configure no serviço web:
 - `DB_USER`
 - `DB_PASSWORD`
 - `DB_NAME`
+- `DB_SSL_DISABLED` (opcional, default `0`)
+- `DB_SSL_CA` (opcional, caminho de certificado CA)
+- `DB_SSL_VERIFY_CERT` (opcional, `0`/`1`)
+- `DB_SSL_VERIFY_IDENTITY` (opcional, `0`/`1`)
+
+Exemplo para ambiente local sem TLS:
+- `DB_SSL_DISABLED=1`
+
+Exemplo comum para banco gerenciado com TLS:
+- `DB_SSL_DISABLED=0`
+- `DB_SSL_VERIFY_CERT=0`
+- `DB_SSL_VERIFY_IDENTITY=0`
 
 ### 6. Build e start
 O Render usará:

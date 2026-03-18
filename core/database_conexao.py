@@ -8,6 +8,12 @@ from core.models import Duelistas
 load_dotenv()
 
 class Conexao:
+    @staticmethod
+    def _parse_bool(value, default=False):
+        if value is None:
+            return default
+        return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
     def __init__(self):
         # Utiliza as variáveis de ambiente, com valores padrão caso não encontre
         self.host = os.getenv("DB_HOST", "127.0.0.1")
@@ -15,15 +21,32 @@ class Conexao:
         self.user = os.getenv("DB_USER", "root")
         self.password = os.getenv("DB_PASSWORD", "root")
         self.database = os.getenv("DB_NAME", "torneio")
+        self.ssl_disabled = self._parse_bool(os.getenv("DB_SSL_DISABLED"), default=False)
+        self.ssl_ca = os.getenv("DB_SSL_CA", "").strip()
+        self.ssl_verify_cert = self._parse_bool(os.getenv("DB_SSL_VERIFY_CERT"), default=False)
+        self.ssl_verify_identity = self._parse_bool(os.getenv("DB_SSL_VERIFY_IDENTITY"), default=False)
 
     def conectar_bd(self):
-        return mysql.connector.connect(
+        conn_kwargs = dict(
             host=self.host,
             port=self.port,
             user=self.user,
             password=self.password,
             database=self.database
         )
+
+        # Permite conexão com provedores MySQL gerenciados que exigem TLS.
+        if self.ssl_disabled:
+            conn_kwargs["ssl_disabled"] = True
+        else:
+            if self.ssl_ca:
+                conn_kwargs["ssl_ca"] = self.ssl_ca
+            if "DB_SSL_VERIFY_CERT" in os.environ:
+                conn_kwargs["ssl_verify_cert"] = self.ssl_verify_cert
+            if "DB_SSL_VERIFY_IDENTITY" in os.environ:
+                conn_kwargs["ssl_verify_identity"] = self.ssl_verify_identity
+
+        return mysql.connector.connect(**conn_kwargs)
 
     def garantir_estrutura_bd(self):
         """Cria as tabelas necessárias caso ainda não existam (idempotente)."""
