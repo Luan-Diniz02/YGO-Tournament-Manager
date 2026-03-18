@@ -11,7 +11,7 @@ services:
       - key: FLASK_SECRET_KEY
         generateValue: true
       - key: AUTO_INIT_DB
-        value: "1"
+        value: "0"
       - key: DB_HOST
         sync: false
       - key: DB_PORT
