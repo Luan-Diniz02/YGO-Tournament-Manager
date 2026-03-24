@@ -26,6 +26,18 @@ class Conexao:
         self.ssl_verify_cert = self._parse_bool(os.getenv("DB_SSL_VERIFY_CERT"), default=False)
         self.ssl_verify_identity = self._parse_bool(os.getenv("DB_SSL_VERIFY_IDENTITY"), default=False)
 
+    def _coluna_existe(self, cursor, tabela, coluna):
+        cursor.execute(
+            """
+            SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s
+            LIMIT 1
+            """,
+            (self.database, tabela, coluna),
+        )
+        return cursor.fetchone() is not None
+
     def conectar_bd(self):
         conn_kwargs = dict(
             host=self.host,
@@ -93,6 +105,8 @@ class Conexao:
                     derrotas INT NOT NULL DEFAULT 0,
                     empates INT NOT NULL DEFAULT 0,
                     pontos_obtidos INT NOT NULL DEFAULT 0,
+                    topou_torneio TINYINT(1) NOT NULL DEFAULT 0,
+                    colocacao_top INT NULL,
                     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     CONSTRAINT fk_tp_torneio FOREIGN KEY (torneio_id)
                         REFERENCES torneios(id)
@@ -105,6 +119,16 @@ class Conexao:
                     INDEX idx_tp_duelista (duelista_id)
                 )
             """)
+
+            # Migração leve para bases antigas que não possuem os novos campos.
+            if not self._coluna_existe(cursor, 'torneio_participantes', 'topou_torneio'):
+                cursor.execute(
+                    "ALTER TABLE torneio_participantes ADD COLUMN topou_torneio TINYINT(1) NOT NULL DEFAULT 0"
+                )
+            if not self._coluna_existe(cursor, 'torneio_participantes', 'colocacao_top'):
+                cursor.execute(
+                    "ALTER TABLE torneio_participantes ADD COLUMN colocacao_top INT NULL"
+                )
 
             conexao.commit()
         except Exception:
@@ -376,96 +400,129 @@ class Conexao:
             conexao.close()
 
     def listar_participantes_torneio(self, torneio_id):
-        conexao = self.conectar_bd()
+        def executar_consulta():
+            conexao = self.conectar_bd()
+            try:
+                cursor = conexao.cursor(dictionary=True)
+                sql = """
+                    SELECT tp.id as tp_id, d.nome, d.ativo, tp.vitorias, tp.derrotas, tp.empates, tp.pontos_obtidos,
+                           tp.topou_torneio, tp.colocacao_top
+                    FROM torneio_participantes tp
+                    JOIN duelistas d ON tp.duelista_id = d.id
+                    WHERE tp.torneio_id = %s
+                    ORDER BY
+                        CASE WHEN tp.topou_torneio = 1 AND tp.colocacao_top IS NOT NULL THEN 0 ELSE 1 END,
+                        CASE WHEN tp.topou_torneio = 1 AND tp.colocacao_top IS NOT NULL THEN tp.colocacao_top ELSE 9999 END,
+                        tp.pontos_obtidos DESC,
+                        tp.vitorias DESC,
+                        tp.derrotas ASC,
+                        d.nome ASC
+                """
+                cursor.execute(sql, (torneio_id,))
+                return cursor.fetchall()
+            finally:
+                conexao.close()
+
         try:
-            cursor = conexao.cursor(dictionary=True)
-            sql = """
-                SELECT tp.id as tp_id, d.nome, d.ativo, tp.vitorias, tp.derrotas, tp.empates, tp.pontos_obtidos
-                FROM torneio_participantes tp
-                JOIN duelistas d ON tp.duelista_id = d.id
-                WHERE tp.torneio_id = %s
-                ORDER BY tp.pontos_obtidos DESC, tp.vitorias DESC, tp.derrotas ASC, d.nome ASC
-            """
-            cursor.execute(sql, (torneio_id,))
-            return cursor.fetchall()
-        finally:
-            conexao.close()
+            return executar_consulta()
+        except mysql.connector.Error as e:
+            if e.errno in (errorcode.ER_NO_SUCH_TABLE, errorcode.ER_BAD_FIELD_ERROR):
+                self.garantir_estrutura_bd()
+                return executar_consulta()
+            raise
             
-    def adicionar_participante_torneio(self, torneio_id, nome, vitorias, derrotas, empates):
-        conexao = self.conectar_bd()
-        try:
-            cursor = conexao.cursor(dictionary=True)
-            
-            # Garante que o duelista existe na base global
-            cursor.execute("SELECT * FROM duelistas WHERE nome = %s", (nome,))
-            duelista = cursor.fetchone()
-            
-            if not duelista:
-                # Insere caso não exista, com 0 em tudo, para que o bloco abaixo some os valores corretos
-                cursor.execute(
-                    "INSERT INTO duelistas (nome, vitorias, derrotas, empates, participacao, pontos, ativo) VALUES (%s, 0, 0, 0, 0, 0, 1)",
-                    (nome,)
-                )
-                conexao.commit()
+    def adicionar_participante_torneio(self, torneio_id, nome, vitorias, derrotas, empates, topou_torneio=False, colocacao_top=None):
+        def executar_operacao():
+            conexao = self.conectar_bd()
+            try:
+                cursor = conexao.cursor(dictionary=True)
+
+                # Garante que o duelista existe na base global
                 cursor.execute("SELECT * FROM duelistas WHERE nome = %s", (nome,))
                 duelista = cursor.fetchone()
-                
-                # Nao tem histórico nesse torneio pq acabou de ser criado
-                hist_torneio = None 
-            else:
-                # Verifica se o jogador já estava nesse torneio
-                cursor.execute("SELECT * FROM torneio_participantes WHERE torneio_id = %s AND duelista_id = %s", (torneio_id, duelista['id']))
-                hist_torneio = cursor.fetchone()
-                
-            pontos_torneio_novos = (vitorias * 3) + empates + 1
-            
-            if hist_torneio:
-                # O cara já estava nesse torneio, então queremos SUBSTITUIR/EDITAR o placar dele.
-                # Para não inflar os pontos globais, calculamos a diferença:
-                diff_v = vitorias - hist_torneio['vitorias']
-                diff_d = derrotas - hist_torneio['derrotas']
-                diff_e = empates - hist_torneio['empates']
-                diff_p = (diff_v * 3) + diff_e # A participacao nao muda
-                # Participação global não muda, porque ele já participava desse torneio.
-                
-                # 1. Update no torneio (substituindo pontos e placar)
-                cursor.execute("""
-                    UPDATE torneio_participantes 
-                    SET vitorias = %s, derrotas = %s, empates = %s, pontos_obtidos = %s
-                    WHERE id = %s
-                """, (vitorias, derrotas, empates, pontos_torneio_novos, hist_torneio['id']))
-                
-                # 2. Update global do duelista com as diferenças (recálculo dos pontos totais)
-                # reativando o duelista caso estivesse inativo
-                cursor.execute("""
-                    UPDATE duelistas 
-                    SET vitorias = vitorias + %s, 
-                        derrotas = derrotas + %s, 
-                        empates = empates + %s,
-                        pontos = pontos + %s,
-                        ativo = 1
-                    WHERE id = %s
-                """, (diff_v, diff_d, diff_e, diff_p, duelista['id']))
-            else:
-                # O cara já existia no BD (ou acabou de ser criado vazio) mas é NOVO nesse torneio
-                # 1. Insert no torneio
-                cursor.execute("""
-                    INSERT INTO torneio_participantes (torneio_id, duelista_id, vitorias, derrotas, empates, pontos_obtidos)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (torneio_id, duelista['id'], vitorias, derrotas, empates, pontos_torneio_novos))
-                
-                # 2. Update global do duelista adicionando os novos stats e +1 participacao
-                cursor.execute("""
-                    UPDATE duelistas 
-                    SET vitorias = vitorias + %s, 
-                        derrotas = derrotas + %s, 
-                        empates = empates + %s,
-                        participacao = participacao + 1,
-                        pontos = pontos + %s,
-                        ativo = 1
-                    WHERE id = %s
-                """, (vitorias, derrotas, empates, pontos_torneio_novos, duelista['id']))
-            
-            conexao.commit()
-        finally:
-            conexao.close()
+
+                if not duelista:
+                    # Insere caso não exista, com 0 em tudo, para que o bloco abaixo some os valores corretos
+                    cursor.execute(
+                        "INSERT INTO duelistas (nome, vitorias, derrotas, empates, participacao, pontos, ativo) VALUES (%s, 0, 0, 0, 0, 0, 1)",
+                        (nome,)
+                    )
+                    conexao.commit()
+                    cursor.execute("SELECT * FROM duelistas WHERE nome = %s", (nome,))
+                    duelista = cursor.fetchone()
+
+                    # Nao tem histórico nesse torneio pq acabou de ser criado
+                    hist_torneio = None
+                else:
+                    # Verifica se o jogador já estava nesse torneio
+                    cursor.execute("SELECT * FROM torneio_participantes WHERE torneio_id = %s AND duelista_id = %s", (torneio_id, duelista['id']))
+                    hist_torneio = cursor.fetchone()
+
+                pontos_torneio_novos = (vitorias * 3) + empates + 1
+
+                if hist_torneio:
+                    # O cara já estava nesse torneio, então queremos SUBSTITUIR/EDITAR o placar dele.
+                    # Para não inflar os pontos globais, calculamos a diferença:
+                    diff_v = vitorias - hist_torneio['vitorias']
+                    diff_d = derrotas - hist_torneio['derrotas']
+                    diff_e = empates - hist_torneio['empates']
+                    diff_p = (diff_v * 3) + diff_e # A participacao nao muda
+                    # Participação global não muda, porque ele já participava desse torneio.
+
+                    # 1. Update no torneio (substituindo pontos e placar)
+                    cursor.execute("""
+                        UPDATE torneio_participantes
+                        SET vitorias = %s,
+                            derrotas = %s,
+                            empates = %s,
+                            pontos_obtidos = %s,
+                            topou_torneio = %s,
+                            colocacao_top = %s
+                        WHERE id = %s
+                    """, (vitorias, derrotas, empates, pontos_torneio_novos, int(bool(topou_torneio)), colocacao_top, hist_torneio['id']))
+
+                    # 2. Update global do duelista com as diferenças (recálculo dos pontos totais)
+                    # reativando o duelista caso estivesse inativo
+                    cursor.execute("""
+                        UPDATE duelistas
+                        SET vitorias = vitorias + %s,
+                            derrotas = derrotas + %s,
+                            empates = empates + %s,
+                            pontos = pontos + %s,
+                            ativo = 1
+                        WHERE id = %s
+                    """, (diff_v, diff_d, diff_e, diff_p, duelista['id']))
+                else:
+                    # O cara já existia no BD (ou acabou de ser criado vazio) mas é NOVO nesse torneio
+                    # 1. Insert no torneio
+                    cursor.execute("""
+                        INSERT INTO torneio_participantes (
+                            torneio_id, duelista_id, vitorias, derrotas, empates, pontos_obtidos, topou_torneio, colocacao_top
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (torneio_id, duelista['id'], vitorias, derrotas, empates, pontos_torneio_novos, int(bool(topou_torneio)), colocacao_top))
+
+                    # 2. Update global do duelista adicionando os novos stats e +1 participacao
+                    cursor.execute("""
+                        UPDATE duelistas
+                        SET vitorias = vitorias + %s,
+                            derrotas = derrotas + %s,
+                            empates = empates + %s,
+                            participacao = participacao + 1,
+                            pontos = pontos + %s,
+                            ativo = 1
+                        WHERE id = %s
+                    """, (vitorias, derrotas, empates, pontos_torneio_novos, duelista['id']))
+
+                conexao.commit()
+            finally:
+                conexao.close()
+
+        try:
+            executar_operacao()
+        except mysql.connector.Error as e:
+            if e.errno in (errorcode.ER_NO_SUCH_TABLE, errorcode.ER_BAD_FIELD_ERROR):
+                self.garantir_estrutura_bd()
+                executar_operacao()
+                return
+            raise

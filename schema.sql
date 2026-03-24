@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS torneio_participantes (
     derrotas INT NOT NULL DEFAULT 0,
     empates INT NOT NULL DEFAULT 0,
     pontos_obtidos INT NOT NULL DEFAULT 0,
+    topou_torneio TINYINT(1) NOT NULL DEFAULT 0,
+    colocacao_top INT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_tp_torneio FOREIGN KEY (torneio_id)
         REFERENCES torneios(id)

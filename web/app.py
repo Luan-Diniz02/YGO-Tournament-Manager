@@ -298,14 +298,37 @@ def adicionar_jogador_torneio(id):
     vitorias = int(request.form['vitorias'])
     derrotas = int(request.form['derrotas'])
     empates = int(request.form['empates'])
+    topou_torneio = request.form.get('topou_torneio') == 'on'
+
+    colocacao_top = None
+    if topou_torneio:
+        colocacao_top_raw = request.form.get('colocacao_top', '').strip()
+        if not colocacao_top_raw:
+            flash('Informe a colocação final no Top Cut.', 'error')
+            return redirect(url_for('painel_torneio', id=id))
+        try:
+            colocacao_top = int(colocacao_top_raw)
+        except ValueError:
+            flash('A colocação do Top Cut deve ser um número inteiro.', 'error')
+            return redirect(url_for('painel_torneio', id=id))
     
     if not nome:
         flash('O nome do duelista não pode estar vazio.', 'error')
     elif vitorias < 0 or derrotas < 0 or empates < 0:
         flash('Os valores devem ser não negativos.', 'error')
+    elif topou_torneio and colocacao_top is not None and colocacao_top <= 0:
+        flash('A colocação do Top Cut deve ser maior que zero.', 'error')
     else:
         try:
-            conexao.adicionar_participante_torneio(id, nome, vitorias, derrotas, empates)
+            conexao.adicionar_participante_torneio(
+                id,
+                nome,
+                vitorias,
+                derrotas,
+                empates,
+                topou_torneio=topou_torneio,
+                colocacao_top=colocacao_top,
+            )
             flash(f'Participação de {nome} registrada com sucesso!', 'success')
         except Exception as e:
             flash(f'Erro ao registrar participante: {str(e)}', 'error')

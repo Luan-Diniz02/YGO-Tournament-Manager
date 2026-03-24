@@ -70,6 +70,18 @@
                             <input type="number" class="form-control" id="empates" name="empates" value="0" min="0" required>
                         </div>
                     </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="topou_torneio" name="topou_torneio">
+                        <label class="form-check-label fw-bold" for="topou_torneio">
+                            Topou o torneio?
+                        </label>
+                    </div>
+
+                    <div class="mb-3 d-none" id="campo_colocacao_top_wrapper">
+                        <label for="colocacao_top" class="form-label fw-bold">Posição Final no Top Cut</label>
+                        <input type="number" class="form-control" id="colocacao_top" name="colocacao_top" min="1" placeholder="Ex: 1, 2, 3...">
+                    </div>
                     
                     <div class="d-grid mt-2">
                         <button type="submit" class="btn btn-success">
@@ -127,7 +139,17 @@
                                 <td class="text-center align-middle fw-bold text-primary fs-5">{{ p.pontos_obtidos }}</td>
                                 {% if is_admin %}
                                 <td class="text-center align-middle">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editarResultado('{{ p.nome }}', {{ p.vitorias }}, {{ p.derrotas }}, {{ p.empates }})" title="Editar Resultado">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-secondary js-editar-resultado"
+                                        data-nome="{{ p.nome }}"
+                                        data-vitorias="{{ p.vitorias }}"
+                                        data-derrotas="{{ p.derrotas }}"
+                                        data-empates="{{ p.empates }}"
+                                        data-topou="{{ 1 if p.topou_torneio else 0 }}"
+                                        data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
+                                        title="Editar Resultado"
+                                    >
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
@@ -155,11 +177,32 @@
 
 {% if is_admin %}
 <script>
-function editarResultado(nome, vitorias, derrotas, empates) {
+function toggleCampoColocacaoTop() {
+    const marcouTop = document.getElementById('topou_torneio').checked;
+    const wrapper = document.getElementById('campo_colocacao_top_wrapper');
+    const inputPosicao = document.getElementById('colocacao_top');
+
+    if (marcouTop) {
+        wrapper.classList.remove('d-none');
+        inputPosicao.required = true;
+    } else {
+        wrapper.classList.add('d-none');
+        inputPosicao.required = false;
+        inputPosicao.value = '';
+    }
+}
+
+function editarResultado(nome, vitorias, derrotas, empates, topouTorneio, colocacaoTop) {
     document.getElementById('nome_duelista').value = nome;
     document.getElementById('vitorias').value = vitorias;
     document.getElementById('derrotas').value = derrotas;
     document.getElementById('empates').value = empates;
+    document.getElementById('topou_torneio').checked = Boolean(topouTorneio);
+    toggleCampoColocacaoTop();
+
+    if (Boolean(topouTorneio) && colocacaoTop !== null) {
+        document.getElementById('colocacao_top').value = colocacaoTop;
+    }
     
     // Altera o visual do form para indicar Edição
     let btnSubmit = document.querySelector('form[action*="adicionar_jogador"] button[type="submit"]');
@@ -182,6 +225,24 @@ function editarResultado(nome, vitorias, derrotas, empates) {
     // Scrolla para o topo, onde fica o form
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+document.getElementById('topou_torneio').addEventListener('change', toggleCampoColocacaoTop);
+
+document.querySelectorAll('.js-editar-resultado').forEach((botao) => {
+    botao.addEventListener('click', () => {
+        const nome = botao.dataset.nome || '';
+        const vitorias = Number(botao.dataset.vitorias || 0);
+        const derrotas = Number(botao.dataset.derrotas || 0);
+        const empates = Number(botao.dataset.empates || 0);
+        const topouTorneio = Number(botao.dataset.topou || 0) === 1;
+        const colocacaoRaw = botao.dataset.colocacao;
+        const colocacaoTop = colocacaoRaw ? Number(colocacaoRaw) : null;
+
+        editarResultado(nome, vitorias, derrotas, empates, topouTorneio, colocacaoTop);
+    });
+});
+
+toggleCampoColocacaoTop();
 </script>
 {% endif %}
 {% endblock %}
