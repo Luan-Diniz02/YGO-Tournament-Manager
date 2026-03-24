@@ -23,9 +23,22 @@
                         <span class="badge {% if dados.duelista.ativo == 1 %}bg-success{% else %}bg-danger{% endif %}">
                             {% if dados.duelista.ativo == 1 %}Ativo{% else %}Inativo{% endif %}
                         </span>
+                        {% if dados.resumo.posicao_ranking %}
+                        <span class="badge bg-primary">{{ dados.resumo.posicao_ranking }}º no ranking</span>
+                        {% endif %}
                         <span class="badge bg-dark">{{ dados.resumo.qtd_torneios_historico }} etapas</span>
                     </div>
                 </div>
+
+                {% if dados.conquistas %}
+                <div class="dashboard-achievements d-flex flex-wrap gap-2 mb-3">
+                    {% for conquista in dados.conquistas %}
+                    <span class="badge {{ conquista.classe }} px-3 py-2">
+                        <i class="fas {{ conquista.icone }} me-1"></i>{{ conquista.rotulo }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
                 <div class="dashboard-top-toolbar d-flex flex-wrap gap-2">
                     <a href="{{ url_for('dashboard_estatisticas') }}" class="btn btn-outline-secondary btn-sm">

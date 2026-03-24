@@ -533,6 +533,8 @@ class Conexao:
                 return 0.0
             return round((numerador / denominador) * 100, 2)
 
+        min_participacoes_win_rate = 2
+
         def executar_consulta():
             conexao = self.conectar_bd()
             try:
@@ -612,10 +614,14 @@ class Conexao:
                     'total_campeonatos': total_campeonatos,
                     'win_rate_geral': percentual(total_vitorias, total_partidas),
                     'taxa_conversao_top_titulo_geral': percentual(total_campeonatos, total_tops),
+                    'min_participacoes_win_rate': min_participacoes_win_rate,
                 }
 
                 lider_maior_win_rate = None
-                duelistas_com_partidas = [d for d in duelistas if d['partidas'] > 0]
+                duelistas_com_partidas = [
+                    d for d in duelistas
+                    if d['partidas'] > 0 and int(d.get('participacao', 0)) >= min_participacoes_win_rate
+                ]
                 if duelistas_com_partidas:
                     lider_maior_win_rate = max(
                         duelistas_com_partidas,
@@ -733,10 +739,81 @@ class Conexao:
                     'qtd_torneios_historico': len(historico),
                 }
 
+                # Conquistas do duelista no contexto da liga (somente ativos)
+                min_participacoes_win_rate = 2
+                cursor.execute(
+                    """
+                    SELECT
+                        d.nome,
+                        d.pontos,
+                        d.derrotas,
+                        d.participacao,
+                        d.vitorias,
+                        d.empates,
+                        COALESCE(tp.tops, 0) AS tops,
+                        COALESCE(tp.campeonatos, 0) AS campeonatos
+                    FROM duelistas d
+                    LEFT JOIN (
+                        SELECT
+                            duelista_id,
+                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                        FROM torneio_participantes
+                        GROUP BY duelista_id
+                    ) tp ON tp.duelista_id = d.id
+                    WHERE d.ativo = 1
+                    """
+                )
+                liga_duelistas = cursor.fetchall()
+
+                for item in liga_duelistas:
+                    partidas_item = int(item['vitorias']) + int(item['derrotas']) + int(item['empates'])
+                    item['partidas'] = partidas_item
+                    item['win_rate'] = percentual(int(item['vitorias']), partidas_item)
+
+                ranking_ordenado = sorted(
+                    liga_duelistas,
+                    key=lambda d: (-int(d['pontos']), int(d['derrotas']), str(d['nome']).casefold())
+                )
+                posicao_ranking = None
+                for idx, item in enumerate(ranking_ordenado, start=1):
+                    if str(item['nome']).casefold() == str(duelista['nome']).casefold():
+                        posicao_ranking = idx
+                        break
+
+                resumo['posicao_ranking'] = posicao_ranking
+
+                conquistas = []
+                max_tops = max((int(d['tops']) for d in liga_duelistas), default=0)
+                max_campeonatos = max((int(d['campeonatos']) for d in liga_duelistas), default=0)
+
+                elegiveis_wr = [
+                    d for d in liga_duelistas
+                    if int(d.get('participacao', 0)) >= min_participacoes_win_rate and int(d.get('partidas', 0)) > 0
+                ]
+                max_win_rate = max((float(d['win_rate']) for d in elegiveis_wr), default=None)
+
+                if posicao_ranking == 1:
+                    conquistas.append({'rotulo': 'Líder do Ranking', 'icone': 'fa-crown', 'classe': 'bg-warning text-dark'})
+
+                if int(duelista['tops']) > 0 and int(duelista['tops']) == max_tops:
+                    conquistas.append({'rotulo': 'Rei do Top Cut', 'icone': 'fa-layer-group', 'classe': 'bg-info text-dark'})
+
+                if int(duelista['campeonatos']) > 0 and int(duelista['campeonatos']) == max_campeonatos:
+                    conquistas.append({'rotulo': 'Maior Campeão', 'icone': 'fa-trophy', 'classe': 'bg-primary'})
+
+                if max_win_rate is not None and resumo['win_rate_geral'] == max_win_rate:
+                    conquistas.append({
+                        'rotulo': f'Elite Win Rate ({min_participacoes_win_rate}+ participações)',
+                        'icone': 'fa-bolt',
+                        'classe': 'bg-success'
+                    })
+
                 return {
                     'duelista': duelista,
                     'resumo': resumo,
                     'historico': historico,
+                    'conquistas': conquistas,
                 }
             finally:
                 conexao.close()

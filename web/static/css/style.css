@@ -367,6 +367,18 @@ footer {
     border-top: 1px dashed rgba(108, 117, 125, 0.3);
 }
 
+.dashboard-leader-mini {
+    border-radius: 12px;
+}
+
+.dashboard-leader-mini .card-body {
+    padding: 0.75rem 0.9rem;
+}
+
+.dashboard-leader-mini small {
+    line-height: 1.2;
+}
+
 .dashboard-top-toolbar .input-group-text {
     background-color: #f8fbff;
     border-color: #bfd2e8;
@@ -436,6 +448,22 @@ footer {
     background: #f3f8ff;
     color: #123a61;
     border-color: #afc4dc;
+}
+
+.dashboard-achievements .badge {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    letter-spacing: 0.2px;
+}
+
+.record-badge {
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.35);
+    font-weight: 700;
+}
+
+.record-cell {
+    font-weight: 700;
+    color: #0f5132 !important;
 }
 
 .btn.btn-dark {
