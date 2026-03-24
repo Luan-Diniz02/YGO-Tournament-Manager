@@ -9,59 +9,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    {% set endpoint = request.endpoint or '' %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <i class="fas fa-trophy"></i> Liga YGO Marabá
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menu de navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
+                        <a class="nav-link {% if endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}" {% if endpoint == 'index' %}aria-current="page"{% endif %}>
                             <i class="fas fa-home"></i> Início
                         </a>
                     </li>
                     {% if is_admin %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('cadastrar_torneio') }}">
+                        <a class="nav-link {% if endpoint == 'cadastrar_torneio' %}active{% endif %}" href="{{ url_for('cadastrar_torneio') }}" {% if endpoint == 'cadastrar_torneio' %}aria-current="page"{% endif %}>
                             <i class="fas fa-calendar-plus"></i> Cadastrar Torneio
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('buscar_duelista') }}">
+                        <a class="nav-link {% if endpoint == 'buscar_duelista' %}active{% endif %}" href="{{ url_for('buscar_duelista') }}" {% if endpoint == 'buscar_duelista' %}aria-current="page"{% endif %}>
                             <i class="fas fa-search"></i> Buscar Duelista
                         </a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('ranking') }}">
+                        <a class="nav-link {% if endpoint == 'ranking' %}active{% endif %}" href="{{ url_for('ranking') }}" {% if endpoint == 'ranking' %}aria-current="page"{% endif %}>
                             <i class="fas fa-medal"></i> Ranking
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard_estatisticas') }}">
+                        <a class="nav-link {% if endpoint in ['dashboard_estatisticas', 'dashboard_duelista'] %}active{% endif %}" href="{{ url_for('dashboard_estatisticas') }}" {% if endpoint in ['dashboard_estatisticas', 'dashboard_duelista'] %}aria-current="page"{% endif %}>
                             <i class="fas fa-chart-pie"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('visualizar_torneios') }}">
+                        <a class="nav-link {% if endpoint in ['visualizar_torneios', 'painel_torneio'] %}active{% endif %}" href="{{ url_for('visualizar_torneios') }}" {% if endpoint in ['visualizar_torneios', 'painel_torneio'] %}aria-current="page"{% endif %}>
                             <i class="fas fa-eye"></i> Visualizar Torneios
                         </a>
                     </li>
                     {% if is_admin %}
                     <li class="nav-item">
                         <form method="POST" action="{{ url_for('admin_logout') }}" class="d-inline">
-                            <button type="submit" class="nav-link btn btn-link text-decoration-none">
+                            <button type="submit" class="nav-link btn btn-link text-decoration-none" aria-label="Sair da área administrativa">
                                 <i class="fas fa-right-from-bracket"></i> Sair (Admin)
                             </button>
                         </form>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_login') }}">
+                        <a class="nav-link {% if endpoint == 'admin_login' %}active{% endif %}" href="{{ url_for('admin_login') }}" {% if endpoint == 'admin_login' %}aria-current="page"{% endif %}>
                             <i class="fas fa-user-shield"></i> Entrar (Admin)
                         </a>
                     </li>
@@ -79,7 +80,7 @@
                         {% for category, message in messages %}
                             <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
                                 {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar mensagem"></button>
                             </div>
                         {% endfor %}
                     </div>

@@ -150,12 +150,14 @@
                                         <td>
                                             <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" 
                                                class="btn btn-outline-primary btn-sm"
-                                               title="Dashboard do duelista">
+                                                              title="Dashboard do duelista"
+                                                              aria-label="Abrir dashboard de {{ duelista.nome }}">
                                                 <i class="fas fa-chart-line"></i>
                                             </a>
                                             {% if duelista.ativo == 1 %}
                                             <a href="{{ url_for('alterar_duelista', nome=duelista.nome) }}" 
-                                               class="btn btn-outline-warning btn-sm">
+                                                              class="btn btn-outline-warning btn-sm"
+                                                              aria-label="Alterar dados de {{ duelista.nome }}">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             {% else %}
@@ -170,6 +172,7 @@
                                                         data-confirm-confirm-text="Sim, reativar"
                                                         data-confirm-cancel-text="Cancelar"
                                                         title="Reativar"
+                                                        aria-label="Reativar {{ duelista.nome }}"
                                                     >
                                                         <i class="fas fa-user-check"></i>
                                                     </button>
@@ -184,6 +187,7 @@
                                                         data-confirm-confirm-text="Sim, excluir"
                                                         data-confirm-cancel-text="Cancelar"
                                                         title="Excluir definitivamente"
+                                                        aria-label="Excluir definitivamente {{ duelista.nome }}"
                                                     >
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>

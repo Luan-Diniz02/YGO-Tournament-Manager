@@ -19,16 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
             const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
+            if (submitBtn && !form.dataset.submitting) {
+                form.dataset.submitting = 'true';
                 const originalText = submitBtn.innerHTML;
+                form.dataset.originalSubmitText = originalText;
                 submitBtn.innerHTML = '<span class="loading"></span> Processando...';
                 submitBtn.disabled = true;
-                
-                // Re-enable button after 3 seconds in case of error
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }, 3000);
             }
         });
     });
@@ -288,22 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add keyboard shortcuts
     document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + Enter to submit forms
+        // Ctrl/Cmd + Enter submits only the currently focused form
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            const activeForm = document.querySelector('form');
+            const activeElement = document.activeElement;
+            const activeForm = activeElement ? activeElement.closest('form') : null;
             if (activeForm) {
                 const submitBtn = activeForm.querySelector('button[type="submit"]');
                 if (submitBtn) {
                     submitBtn.click();
                 }
-            }
-        }
-        
-        // Escape to go back
-        if (e.key === 'Escape') {
-            const backBtn = document.querySelector('a[href*="index"], .btn-secondary');
-            if (backBtn) {
-                backBtn.click();
             }
         }
     });

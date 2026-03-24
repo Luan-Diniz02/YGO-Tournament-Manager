@@ -21,18 +21,20 @@
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <span class="badge bg-dark">{{ dashboard.duelistas|length }} duelistas</span>
-                        <span class="badge bg-secondary">Destaques: Win Rate, Top Cut e Titulos de Torneio</span>
+                        <span class="badge bg-secondary">Destaques: Win Rate, Top Cut e Títulos de Torneio</span>
                     </div>
                 </div>
 
                 <div class="dashboard-top-toolbar d-flex flex-wrap gap-2">
+                    <label for="filtro-nome-dashboard" class="visually-hidden">Filtrar duelista por nome</label>
                     <div class="input-group input-group-sm dashboard-filter-group" style="max-width: 280px;">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="filtro-nome-dashboard" placeholder="Filtrar duelista...">
+                        <input type="text" class="form-control" id="filtro-nome-dashboard" placeholder="Filtrar duelista..." aria-label="Filtrar duelista por nome">
                     </div>
+                    <label for="filtro-min-partidas" class="visually-hidden">Filtrar por mínimo de partidas</label>
                     <div class="input-group input-group-sm dashboard-filter-group" style="max-width: 170px;">
                         <span class="input-group-text">Min. partidas</span>
-                        <input type="number" class="form-control" id="filtro-min-partidas" min="0" value="0">
+                        <input type="number" class="form-control" id="filtro-min-partidas" min="0" value="0" aria-label="Mínimo de partidas">
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-secondary dashboard-clear-btn" onclick="limparFiltrosDashboard()">
                         <i class="fas fa-eraser"></i> Limpar
@@ -53,7 +55,7 @@
                 {% if dashboard.lideres.maior_win_rate %}
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <h5 class="mb-1">{{ dashboard.lideres.maior_win_rate.nome }}</h5>
-                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.maior_win_rate.nome }}">
                         <i class="fas fa-chart-line"></i>
                     </a>
                 </div>
@@ -73,7 +75,7 @@
                 {% if dashboard.lideres.mais_tops %}
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <h5 class="mb-1">{{ dashboard.lideres.mais_tops.nome }}</h5>
-                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_tops.nome }}">
                         <i class="fas fa-chart-line"></i>
                     </a>
                 </div>
@@ -93,7 +95,7 @@
                 {% if dashboard.lideres.mais_campeonatos %}
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <h5 class="mb-1">{{ dashboard.lideres.mais_campeonatos.nome }}</h5>
-                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_campeonatos.nome }}">
                         <i class="fas fa-chart-line"></i>
                     </a>
                 </div>
@@ -126,7 +128,7 @@
                                 <th class="text-center">Empates</th>
                                 <th class="text-center">Win Rate</th>
                                 <th class="text-center">Top Cut</th>
-                                <th class="text-center">Titulos</th>
+                                <th class="text-center">Títulos</th>
                                 <th class="text-center">Conversão Top Cut -> Título</th>
                                 <th class="text-center">Dashboard</th>
                             </tr>
@@ -144,7 +146,7 @@
                                 <td class="text-center"><span class="badge bg-primary">{{ duelista.campeonatos }}</span></td>
                                 <td class="text-center"><span class="badge bg-dark">{{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%</span></td>
                                 <td class="text-center">
-                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista">
+                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
                                         <i class="fas fa-chart-line"></i>
                                     </a>
                                 </td>
@@ -197,7 +199,7 @@ function aplicarFiltrosDashboard() {
         if (mostrar) visiveis += 1;
     });
 
-    contador.textContent = `${visiveis} visiveis`;
+    contador.textContent = `${visiveis} visíveis`;
 }
 
 function limparFiltrosDashboard() {

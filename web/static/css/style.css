@@ -13,6 +13,7 @@
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1f2d3d;
 }
 
 /* Hero Section */
@@ -30,8 +31,8 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .card-header {
@@ -47,6 +48,12 @@ body {
     padding: 10px 20px;
     transition: all 0.3s ease;
     border: none;
+    min-height: 44px;
+}
+
+.btn.btn-sm {
+    min-height: 40px;
+    min-width: 40px;
 }
 
 .btn:hover {
@@ -79,6 +86,29 @@ body {
     background: linear-gradient(45deg, #6c757d, #545b62);
 }
 
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning {
+    border-width: 2px;
+}
+
+.btn-outline-primary {
+    color: #0a58ca;
+    border-color: #0a58ca;
+}
+
+.btn-outline-secondary {
+    color: #495f76;
+    border-color: #6b8298;
+}
+
+.btn-outline-warning {
+    color: #7a4d00;
+    border-color: #ad7a00;
+}
+
 /* Badge Enhancements */
 .badge {
     font-size: 0.85em;
@@ -89,7 +119,7 @@ body {
 /* Table Enhancements */
 .table-hover tbody tr:hover {
     background-color: rgba(0, 123, 255, 0.05);
-    transform: scale(1.01);
+    transform: none;
     transition: all 0.2s ease;
 }
 
@@ -107,6 +137,11 @@ body {
     transition: all 0.3s ease;
 }
 
+.form-control::placeholder {
+    color: #5d6f82;
+    opacity: 1;
+}
+
 .form-control:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -117,6 +152,10 @@ body {
     font-weight: 600;
     color: #495057;
     margin-bottom: 0.75rem;
+}
+
+.text-muted {
+    color: #5a6c7e !important;
 }
 
 /* Alert Enhancements */
@@ -163,6 +202,21 @@ body {
 .navbar-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link[aria-current="page"] {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.nav-link:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.btn-close:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
 }
 
 /* Footer */
@@ -247,7 +301,7 @@ footer {
 
 .card:hover .fas,
 .card:hover .far {
-    transform: scale(1.1);
+    transform: scale(1.04);
 }
 
 /* Table Row Highlight for Search Results */
@@ -366,8 +420,8 @@ footer {
 }
 
 .dashboard-mini-action {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
@@ -386,6 +440,26 @@ footer {
 
 .btn.btn-dark {
     background: linear-gradient(45deg, #1f2630, #12171d);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .card:hover,
+    .btn:hover,
+    .navbar-nav .nav-link:hover,
+    .card:hover .fas,
+    .card:hover .far {
+        transform: none !important;
+        box-shadow: none !important;
+    }
 }
 
 #tabela-dashboard-duelistas tbody tr td:first-child a,
