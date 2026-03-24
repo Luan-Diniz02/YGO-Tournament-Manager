@@ -1,6 +1,6 @@
 # Liga YGO Marabá - Interface Web Flask
 
-Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento de torneios de Yu-Gi-Oh!, incluindo o cadastro de duelistas, pontos, ranking e configuração de torneios.
+Este projeto é uma aplicação web feita em Python (Flask) para o gerenciamento de torneios de Yu-Gi-Oh!, incluindo cadastro de torneios, ranking global, painel de resultados por etapa, controle de Top Cut e dashboards estatísticos (geral e individual por duelista).
 
 ## Demo
 
@@ -42,10 +42,13 @@ ygo-tournament-manager/
     │   └── js/
     │       └── script.js
     └── templates/        # Arquivos HTML (Páginas Web)
+      ├── admin_login.html
         ├── alterar_duelista.html
         ├── base.html
         ├── buscar_duelista.html
         ├── cadastrar_torneio.html
+      ├── dashboard_duelista.html
+      ├── dashboard_estatisticas.html
         ├── index.html
         ├── painel_torneio.html
         ├── ranking.html
@@ -172,10 +175,13 @@ Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (
 ### ✅ Implementadas
 - **Página Inicial**: Menu principal com navegação fácil e intuitiva.
 - **Painel de Torneio e Cadastro**: Cadastro, edição e acompanhamento de torneios ativos.
-- **Cadastro Geral e Pontos**: Registrar duelistas ou computar pontuação de um evento.
+- **Registro de Resultado por Etapa**: Lançamento de vitórias/derrotas/empates por duelista no torneio.
+- **Top Cut por Participante**: Marcação de Top Cut e posição final na etapa.
 - **Busca Rápida de Duelistas**: Localizar e visualizar informações completas de um duelista.
 - **Ranking**: Visualizar a listagem de todos os jogadores ordenada pelos pontos obtidos.
 - **Alteração de Duelista**: Atualização ou correção dos dados existentes.
+- **Dashboard Geral**: Comparativo por duelista com filtros, líderes (win rate, Top Cut e títulos) e acesso ao dashboard individual.
+- **Dashboard Individual**: Estatísticas detalhadas por jogador com histórico por torneio e posição na etapa.
 
 ## Sistema de Pontuação Padrão
 *(Conforme a regra do torneio ou liga)*
@@ -221,6 +227,17 @@ Mesmo com `render.yaml`, ainda é necessário informar as credenciais do MySQL (
 - `quant_duelistas` (int)
 - `data` (date)
 
+### Tabela: `torneio_participantes`
+- `id` (int, auto_increment, primary key)
+- `torneio_id` (int, fk)
+- `duelista_id` (int, fk)
+- `vitorias` (int)
+- `derrotas` (int)
+- `empates` (int)
+- `pontos_obtidos` (int)
+- `topou_torneio` (tinyint)
+- `colocacao_top` (int, nullable)
+
 ## Desenvolvimento
 
 Para contribuir com o projeto:
@@ -236,7 +253,7 @@ Para contribuir com o projeto:
 
 ### Erro de Conexão com Banco
 - Verifique se o MySQL está executando
-- Confirme as credenciais em `Conexao.py`
+- Confirme as variáveis `DB_*` e a configuração em `core/database_conexao.py`
 - Certifique-se de que o banco 'torneio' existe
 
 ### Erro de Módulo não Encontrado
@@ -252,11 +269,10 @@ app.run(debug=True, host='0.0.0.0', port=8080)
 
 ## Próximas Funcionalidades
 
-- Implementar visualização completa de torneios
-- Sistema de relatórios em PDF
+- Filtros por período (mensal, trimestral, temporada) no dashboard
+- Exportação de relatórios (CSV/PDF)
 - API REST para integração externa
 - Sistema de backup automático
-- Dashboard com estatísticas avançadas
 - Sistema de notificações
 
 ## Contato

@@ -272,6 +272,132 @@ footer {
     color: #495057 !important;
 }
 
+/* Dashboard enhancements */
+.dashboard-hero-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgba(0, 123, 255, 0.28);
+    background:
+        radial-gradient(circle at 8% 12%, rgba(23, 162, 184, 0.26) 0%, transparent 40%),
+        radial-gradient(circle at 92% 20%, rgba(0, 123, 255, 0.23) 0%, transparent 44%),
+        linear-gradient(100deg, #eef8ff 0%, #e8f2ff 52%, #edf4ff 100%);
+    box-shadow: 0 14px 32px rgba(0, 123, 255, 0.14);
+}
+
+.dashboard-hero-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #17a2b8 0%, #007bff 50%, #0056b3 100%);
+}
+
+.dashboard-hero-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #17a2b8, #007bff);
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 16px rgba(0, 123, 255, 0.25);
+}
+
+.dashboard-top-toolbar {
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(108, 117, 125, 0.3);
+}
+
+.dashboard-top-toolbar .input-group-text {
+    background-color: #f8fbff;
+    border-color: #bfd2e8;
+    color: #4b5f75;
+}
+
+.dashboard-top-toolbar .form-control {
+    border-color: #bfd2e8;
+    background-color: #ffffff;
+}
+
+.dashboard-top-toolbar .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.dashboard-filter-group {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(12, 39, 67, 0.08);
+}
+
+.dashboard-filter-group .input-group-text,
+.dashboard-filter-group .form-control {
+    border-width: 1px;
+    min-height: 42px;
+}
+
+.dashboard-filter-group .input-group-text {
+    border-right: none;
+    font-weight: 600;
+}
+
+.dashboard-filter-group .form-control {
+    border-left: none;
+}
+
+.dashboard-clear-btn {
+    border-radius: 12px;
+    border-color: #9fb4ca;
+    color: #4d6074;
+    min-height: 42px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.dashboard-clear-btn:hover {
+    background-color: #eff5fb;
+    border-color: #7f9ab6;
+    color: #2b3f54;
+}
+
+.dashboard-mini-action {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d7e2ef;
+    background: #ffffff;
+    color: #28445f;
+    box-shadow: 0 3px 10px rgba(15, 44, 74, 0.12);
+}
+
+.dashboard-mini-action:hover {
+    background: #f3f8ff;
+    color: #123a61;
+    border-color: #afc4dc;
+}
+
+.btn.btn-dark {
+    background: linear-gradient(45deg, #1f2630, #12171d);
+}
+
+#tabela-dashboard-duelistas tbody tr td:first-child a,
+.table tbody tr td strong a {
+    font-weight: 700;
+}
+
+#tabela-dashboard-duelistas tbody tr td:first-child a:hover,
+.table tbody tr td strong a:hover {
+    text-decoration: underline !important;
+}
+
 @media print {
     body {
         background: #fff !important;

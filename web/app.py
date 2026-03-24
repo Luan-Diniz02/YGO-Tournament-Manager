@@ -272,6 +272,53 @@ def ranking():
         flash('Não foi possível carregar o ranking agora. Verifique a conexão com o banco e tente novamente.', 'error')
     return render_template('ranking.html', duelistas=duelistas_ordenados)
 
+
+@app.route('/dashboard')
+def dashboard_estatisticas():
+    """Página com métricas avançadas dos duelistas."""
+    dados_dashboard = {
+        'resumo': {
+            'total_duelistas': 0,
+            'total_partidas': 0,
+            'total_vitorias': 0,
+            'total_derrotas': 0,
+            'total_empates': 0,
+            'total_tops': 0,
+            'total_campeonatos': 0,
+            'win_rate_geral': 0.0,
+            'taxa_conversao_top_titulo_geral': 0.0,
+        },
+        'lideres': {
+            'maior_win_rate': None,
+            'mais_tops': None,
+            'mais_campeonatos': None,
+        },
+        'duelistas': [],
+    }
+
+    try:
+        dados_dashboard = conexao.obter_estatisticas_dashboard()
+    except Exception:
+        flash('Não foi possível carregar o dashboard agora. Verifique a conexão com o banco e tente novamente.', 'error')
+
+    return render_template('dashboard_estatisticas.html', dashboard=dados_dashboard)
+
+
+@app.route('/dashboard/duelista/<path:nome>')
+def dashboard_duelista(nome):
+    """Dashboard específico com estatísticas detalhadas de um duelista."""
+    try:
+        dados_duelista = conexao.obter_estatisticas_duelista(nome)
+    except Exception:
+        dados_duelista = None
+        flash('Não foi possível carregar as estatísticas deste duelista agora.', 'error')
+
+    if not dados_duelista:
+        flash('Duelista não encontrado para visualização de estatísticas.', 'error')
+        return redirect(url_for('dashboard_estatisticas'))
+
+    return render_template('dashboard_duelista.html', dados=dados_duelista)
+
 @app.route('/visualizar_torneios')
 def visualizar_torneios():
     """Página para visualizar torneios (buscando do BD)"""

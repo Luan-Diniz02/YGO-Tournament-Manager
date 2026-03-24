@@ -68,6 +68,9 @@
                             </p>
                         </div>
                         <div class="col-md-4 text-end">
+                            <a href="{{ url_for('dashboard_duelista', nome=duelista_encontrado.nome) }}" class="btn btn-outline-primary btn-sm me-1">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
                             {% if duelista_encontrado.ativo == 1 %}
                             <a href="{{ url_for('alterar_duelista', nome=duelista_encontrado.nome) }}" 
                                class="btn btn-warning btn-sm">
@@ -145,6 +148,11 @@
                                             <strong class="text-warning">{{ duelista.pontos }}</strong>
                                         </td>
                                         <td>
+                                            <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" 
+                                               class="btn btn-outline-primary btn-sm"
+                                               title="Dashboard do duelista">
+                                                <i class="fas fa-chart-line"></i>
+                                            </a>
                                             {% if duelista.ativo == 1 %}
                                             <a href="{{ url_for('alterar_duelista', nome=duelista.nome) }}" 
                                                class="btn btn-outline-warning btn-sm">

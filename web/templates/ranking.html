@@ -27,6 +27,7 @@
                                 <th width="12%">Empates</th>
                                 <th width="14%">Participações</th>
                                 <th width="15%">Pontos</th>
+                                <th width="10%" class="text-center">Dashboard</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,6 +68,11 @@
                                     <strong class="fs-5 {% if loop.index <= 3 %}text-warning{% else %}text-primary{% endif %}">
                                         {{ duelista.pontos }}
                                     </strong>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista">
+                                        <i class="fas fa-chart-line"></i>
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

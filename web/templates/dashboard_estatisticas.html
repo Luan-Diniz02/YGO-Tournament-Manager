@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard de Estatísticas - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm dashboard-hero-card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="dashboard-hero-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </span>
+                        <div>
+                            <h4 class="mb-1">Dashboard de Estatísticas</h4>
+                            <p class="mb-0 text-muted">
+                                Visão comparativa por duelista com foco em win rate, Top Cut e títulos.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-dark">{{ dashboard.duelistas|length }} duelistas</span>
+                        <span class="badge bg-secondary">Destaques: Win Rate, Top Cut e Titulos de Torneio</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-top-toolbar d-flex flex-wrap gap-2">
+                    <div class="input-group input-group-sm dashboard-filter-group" style="max-width: 280px;">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="filtro-nome-dashboard" placeholder="Filtrar duelista...">
+                    </div>
+                    <div class="input-group input-group-sm dashboard-filter-group" style="max-width: 170px;">
+                        <span class="input-group-text">Min. partidas</span>
+                        <input type="number" class="form-control" id="filtro-min-partidas" min="0" value="0">
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dashboard-clear-btn" onclick="limparFiltrosDashboard()">
+                        <i class="fas fa-eraser"></i> Limpar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-bolt"></i> Maior Win Rate</h6>
+            </div>
+            <div class="card-body">
+                {% if dashboard.lideres.maior_win_rate %}
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <h5 class="mb-1">{{ dashboard.lideres.maior_win_rate.nome }}</h5>
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                        <i class="fas fa-chart-line"></i>
+                    </a>
+                </div>
+                <p class="mb-0 text-muted">{{ '%.2f'|format(dashboard.lideres.maior_win_rate.win_rate) }}% ({{ dashboard.lideres.maior_win_rate.vitorias }}V/{{ dashboard.lideres.maior_win_rate.partidas }}P)</p>
+                {% else %}
+                <p class="mb-0 text-muted">Sem partidas registradas ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-layer-group"></i> Mais Top Cut</h6>
+            </div>
+            <div class="card-body">
+                {% if dashboard.lideres.mais_tops %}
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <h5 class="mb-1">{{ dashboard.lideres.mais_tops.nome }}</h5>
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                        <i class="fas fa-chart-line"></i>
+                    </a>
+                </div>
+                <p class="mb-0 text-muted">{{ dashboard.lideres.mais_tops.tops }} Top Cuts e {{ dashboard.lideres.mais_tops.campeonatos }} títulos</p>
+                {% else %}
+                <p class="mb-0 text-muted">Nenhum Top Cut registrado ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-primary">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="fas fa-crown"></i> Mais Titulos</h6>
+            </div>
+            <div class="card-body">
+                {% if dashboard.lideres.mais_campeonatos %}
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <h5 class="mb-1">{{ dashboard.lideres.mais_campeonatos.nome }}</h5>
+                    <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista">
+                        <i class="fas fa-chart-line"></i>
+                    </a>
+                </div>
+                <p class="mb-0 text-muted">{{ dashboard.lideres.mais_campeonatos.campeonatos }} títulos em {{ dashboard.lideres.mais_campeonatos.tops }} Top Cuts</p>
+                {% else %}
+                <p class="mb-0 text-muted">Nenhum campeão registrado ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-table"></i> Estatísticas por Duelista</h5>
+                <span class="badge bg-light text-dark" id="contador-visivel-dashboard">0 visíveis</span>
+            </div>
+            <div class="card-body p-0">
+                {% if dashboard.duelistas %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="tabela-dashboard-duelistas">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Duelista</th>
+                                <th class="text-center">Partidas</th>
+                                <th class="text-center">Vitórias</th>
+                                <th class="text-center">Derrotas</th>
+                                <th class="text-center">Empates</th>
+                                <th class="text-center">Win Rate</th>
+                                <th class="text-center">Top Cut</th>
+                                <th class="text-center">Titulos</th>
+                                <th class="text-center">Conversão Top Cut -> Título</th>
+                                <th class="text-center">Dashboard</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for duelista in dashboard.duelistas %}
+                            <tr data-nome="{{ duelista.nome|lower }}" data-partidas="{{ duelista.partidas }}">
+                                <td class="fw-bold">{{ duelista.nome }}</td>
+                                <td class="text-center">{{ duelista.partidas }}</td>
+                                <td class="text-center text-success">{{ duelista.vitorias }}</td>
+                                <td class="text-center text-danger">{{ duelista.derrotas }}</td>
+                                <td class="text-center text-info">{{ duelista.empates }}</td>
+                                <td class="text-center"><span class="badge bg-success">{{ '%.2f'|format(duelista.win_rate) }}%</span></td>
+                                <td class="text-center"><span class="badge bg-warning text-dark">{{ duelista.tops }}</span></td>
+                                <td class="text-center"><span class="badge bg-primary">{{ duelista.campeonatos }}</span></td>
+                                <td class="text-center"><span class="badge bg-dark">{{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%</span></td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista">
+                                        <i class="fas fa-chart-line"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">Ainda não há dados suficientes para montar o dashboard.</h6>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <small class="text-muted">
+            Fórmulas: Win Rate = vitórias / (vitórias + derrotas + empates). Conversão Top Cut -> Título = títulos / Top Cuts.
+        </small>
+    </div>
+</div>
+
+<script>
+function aplicarFiltrosDashboard() {
+    const inputNome = document.getElementById('filtro-nome-dashboard');
+    const inputMinPartidas = document.getElementById('filtro-min-partidas');
+    const tabela = document.getElementById('tabela-dashboard-duelistas');
+    const contador = document.getElementById('contador-visivel-dashboard');
+
+    if (!tabela || !inputNome || !inputMinPartidas || !contador) return;
+
+    const termo = (inputNome.value || '').trim().toLowerCase();
+    const minPartidas = Number(inputMinPartidas.value || 0);
+    let visiveis = 0;
+
+    tabela.querySelectorAll('tbody tr').forEach((linha) => {
+        const nome = (linha.dataset.nome || '');
+        const partidas = Number(linha.dataset.partidas || 0);
+
+        const atendeNome = !termo || nome.includes(termo);
+        const atendePartidas = partidas >= minPartidas;
+        const mostrar = atendeNome && atendePartidas;
+
+        linha.style.display = mostrar ? '' : 'none';
+        if (mostrar) visiveis += 1;
+    });
+
+    contador.textContent = `${visiveis} visiveis`;
+}
+
+function limparFiltrosDashboard() {
+    const inputNome = document.getElementById('filtro-nome-dashboard');
+    const inputMinPartidas = document.getElementById('filtro-min-partidas');
+    if (inputNome) inputNome.value = '';
+    if (inputMinPartidas) inputMinPartidas.value = 0;
+    aplicarFiltrosDashboard();
+}
+
+document.getElementById('filtro-nome-dashboard')?.addEventListener('input', aplicarFiltrosDashboard);
+document.getElementById('filtro-min-partidas')?.addEventListener('input', aplicarFiltrosDashboard);
+aplicarFiltrosDashboard();
+</script>
+{% endblock %}

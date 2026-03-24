@@ -526,3 +526,225 @@ class Conexao:
                 executar_operacao()
                 return
             raise
+
+    def obter_estatisticas_dashboard(self, incluir_inativos=False):
+        def percentual(numerador, denominador):
+            if not denominador:
+                return 0.0
+            return round((numerador / denominador) * 100, 2)
+
+        def executar_consulta():
+            conexao = self.conectar_bd()
+            try:
+                cursor = conexao.cursor(dictionary=True)
+
+                filtro_status = "" if incluir_inativos else "WHERE d.ativo = 1"
+
+                resumo_sql = f"""
+                    SELECT
+                        COUNT(*) AS total_duelistas,
+                        COALESCE(SUM(d.vitorias), 0) AS total_vitorias,
+                        COALESCE(SUM(d.derrotas), 0) AS total_derrotas,
+                        COALESCE(SUM(d.empates), 0) AS total_empates,
+                        COALESCE(SUM(tp.tops), 0) AS total_tops,
+                        COALESCE(SUM(tp.campeonatos), 0) AS total_campeonatos
+                    FROM duelistas d
+                    LEFT JOIN (
+                        SELECT
+                            duelista_id,
+                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                        FROM torneio_participantes
+                        GROUP BY duelista_id
+                    ) tp ON tp.duelista_id = d.id
+                    {filtro_status}
+                """
+                cursor.execute(resumo_sql)
+                resumo = cursor.fetchone() or {}
+
+                duelistas_sql = f"""
+                    SELECT
+                        d.id,
+                        d.nome,
+                        d.vitorias,
+                        d.derrotas,
+                        d.empates,
+                        d.participacao,
+                        d.pontos,
+                        d.ativo,
+                        COALESCE(tp.tops, 0) AS tops,
+                        COALESCE(tp.campeonatos, 0) AS campeonatos
+                    FROM duelistas d
+                    LEFT JOIN (
+                        SELECT
+                            duelista_id,
+                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                        FROM torneio_participantes
+                        GROUP BY duelista_id
+                    ) tp ON tp.duelista_id = d.id
+                    {filtro_status}
+                    ORDER BY campeonatos DESC, tops DESC, d.pontos DESC, d.vitorias DESC, d.nome ASC
+                """
+                cursor.execute(duelistas_sql)
+                duelistas = cursor.fetchall()
+
+                for duelista in duelistas:
+                    partidas = int(duelista['vitorias']) + int(duelista['derrotas']) + int(duelista['empates'])
+                    duelista['partidas'] = partidas
+                    duelista['win_rate'] = percentual(int(duelista['vitorias']), partidas)
+                    duelista['taxa_conversao_top_titulo'] = percentual(int(duelista['campeonatos']), int(duelista['tops']))
+
+                total_vitorias = int(resumo.get('total_vitorias', 0) or 0)
+                total_derrotas = int(resumo.get('total_derrotas', 0) or 0)
+                total_empates = int(resumo.get('total_empates', 0) or 0)
+                total_tops = int(resumo.get('total_tops', 0) or 0)
+                total_campeonatos = int(resumo.get('total_campeonatos', 0) or 0)
+                total_partidas = total_vitorias + total_derrotas + total_empates
+
+                resumo_formatado = {
+                    'total_duelistas': int(resumo.get('total_duelistas', 0) or 0),
+                    'total_partidas': total_partidas,
+                    'total_vitorias': total_vitorias,
+                    'total_derrotas': total_derrotas,
+                    'total_empates': total_empates,
+                    'total_tops': total_tops,
+                    'total_campeonatos': total_campeonatos,
+                    'win_rate_geral': percentual(total_vitorias, total_partidas),
+                    'taxa_conversao_top_titulo_geral': percentual(total_campeonatos, total_tops),
+                }
+
+                lider_maior_win_rate = None
+                duelistas_com_partidas = [d for d in duelistas if d['partidas'] > 0]
+                if duelistas_com_partidas:
+                    lider_maior_win_rate = max(
+                        duelistas_com_partidas,
+                        key=lambda d: (d['win_rate'], d['partidas'], d['vitorias'])
+                    )
+
+                lider_mais_tops = max(duelistas, key=lambda d: (d['tops'], d['campeonatos'], d['pontos']), default=None)
+                lider_mais_campeonatos = max(duelistas, key=lambda d: (d['campeonatos'], d['tops'], d['pontos']), default=None)
+
+                return {
+                    'resumo': resumo_formatado,
+                    'lideres': {
+                        'maior_win_rate': lider_maior_win_rate,
+                        'mais_tops': lider_mais_tops,
+                        'mais_campeonatos': lider_mais_campeonatos,
+                    },
+                    'duelistas': duelistas,
+                }
+            finally:
+                conexao.close()
+
+        try:
+            return executar_consulta()
+        except mysql.connector.Error as e:
+            if e.errno in (errorcode.ER_NO_SUCH_TABLE, errorcode.ER_BAD_FIELD_ERROR):
+                self.garantir_estrutura_bd()
+                return executar_consulta()
+            raise
+
+    def obter_estatisticas_duelista(self, nome_duelista):
+        def percentual(numerador, denominador):
+            if not denominador:
+                return 0.0
+            return round((numerador / denominador) * 100, 2)
+
+        def executar_consulta():
+            conexao = self.conectar_bd()
+            try:
+                cursor = conexao.cursor(dictionary=True)
+
+                cursor.execute(
+                    """
+                    SELECT
+                        d.id,
+                        d.nome,
+                        d.vitorias,
+                        d.derrotas,
+                        d.empates,
+                        d.participacao,
+                        d.pontos,
+                        d.ativo,
+                        COALESCE(tp.tops, 0) AS tops,
+                        COALESCE(tp.campeonatos, 0) AS campeonatos
+                    FROM duelistas d
+                    LEFT JOIN (
+                        SELECT
+                            duelista_id,
+                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                        FROM torneio_participantes
+                        GROUP BY duelista_id
+                    ) tp ON tp.duelista_id = d.id
+                    WHERE LOWER(d.nome) = LOWER(%s)
+                    LIMIT 1
+                    """,
+                    (nome_duelista,),
+                )
+                duelista = cursor.fetchone()
+                if not duelista:
+                    return None
+
+                cursor.execute(
+                    """
+                    SELECT
+                        t.id AS torneio_id,
+                        t.nome AS torneio_nome,
+                        t.data AS torneio_data,
+                        tp.vitorias,
+                        tp.derrotas,
+                        tp.empates,
+                        tp.pontos_obtidos,
+                        tp.topou_torneio,
+                        tp.colocacao_top
+                    FROM torneio_participantes tp
+                    JOIN torneios t ON t.id = tp.torneio_id
+                    WHERE tp.duelista_id = %s
+                    ORDER BY t.data DESC, t.id DESC
+                    """,
+                    (duelista['id'],),
+                )
+                historico = cursor.fetchall()
+
+                for evento in historico:
+                    partidas_evento = int(evento['vitorias']) + int(evento['derrotas']) + int(evento['empates'])
+                    evento['partidas'] = partidas_evento
+                    evento['win_rate_evento'] = percentual(int(evento['vitorias']), partidas_evento)
+
+                    # Calcula a posição final do duelista na etapa, mesmo sem Top Cut.
+                    posicao_geral = None
+                    participantes_torneio = self.listar_participantes_torneio(evento['torneio_id'])
+                    for idx, participante in enumerate(participantes_torneio, start=1):
+                        if participante['nome'].casefold() == duelista['nome'].casefold():
+                            posicao_geral = idx
+                            break
+                    evento['posicao_geral'] = posicao_geral
+
+                partidas_total = int(duelista['vitorias']) + int(duelista['derrotas']) + int(duelista['empates'])
+
+                resumo = {
+                    'partidas_total': partidas_total,
+                    'win_rate_geral': percentual(int(duelista['vitorias']), partidas_total),
+                    'tops': int(duelista['tops']),
+                    'campeonatos': int(duelista['campeonatos']),
+                    'taxa_conversao_top_titulo': percentual(int(duelista['campeonatos']), int(duelista['tops'])),
+                    'qtd_torneios_historico': len(historico),
+                }
+
+                return {
+                    'duelista': duelista,
+                    'resumo': resumo,
+                    'historico': historico,
+                }
+            finally:
+                conexao.close()
+
+        try:
+            return executar_consulta()
+        except mysql.connector.Error as e:
+            if e.errno in (errorcode.ER_NO_SUCH_TABLE, errorcode.ER_BAD_FIELD_ERROR):
+                self.garantir_estrutura_bd()
+                return executar_consulta()
+            raise
