@@ -35,21 +35,30 @@
                             {% if loop.index == 1 %}
                             <tr class="ranking-separador ranking-separador-obelisco">
                                 <td colspan="8">
-                                    <span class="badge bg-primary me-2">Obelisco, o Atormentador</span>
+                                    <span class="badge bg-primary me-2 ranking-tier-badge" title="Obelisco, o Atormentador" aria-label="Obelisco, o Atormentador">
+                                        <span class="ranking-tier-label-long">Obelisco, o Atormentador</span>
+                                        <span class="ranking-tier-label-short">Obelisco</span>
+                                    </span>
                                     <small class="text-muted">Top 3 do ranking</small>
                                 </td>
                             </tr>
                             {% elif loop.index == 4 %}
                             <tr class="ranking-separador ranking-separador-ra">
                                 <td colspan="8">
-                                    <span class="badge bg-warning text-dark me-2">O Dragão Alado de Rá</span>
+                                    <span class="badge bg-warning text-dark me-2 ranking-tier-badge" title="O Dragão Alado de Rá" aria-label="O Dragão Alado de Rá">
+                                        <span class="ranking-tier-label-long">O Dragão Alado de Rá</span>
+                                        <span class="ranking-tier-label-short">Rá</span>
+                                    </span>
                                     <small class="text-muted">4º ao 7º colocados</small>
                                 </td>
                             </tr>
                             {% elif loop.index == 8 %}
                             <tr class="ranking-separador ranking-separador-slifer">
                                 <td colspan="8">
-                                    <span class="badge bg-danger me-2">Slifer, o Dragão Celeste</span>
+                                    <span class="badge bg-danger me-2 ranking-tier-badge" title="Slifer, o Dragão Celeste" aria-label="Slifer, o Dragão Celeste">
+                                        <span class="ranking-tier-label-long">Slifer, o Dragão Celeste</span>
+                                        <span class="ranking-tier-label-short">Slifer</span>
+                                    </span>
                                     <small class="text-muted">8º em diante</small>
                                 </td>
                             </tr>

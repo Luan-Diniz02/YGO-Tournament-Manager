@@ -141,16 +141,16 @@
                         <tbody>
                             {% for duelista in dashboard.duelistas %}
                             <tr data-nome="{{ duelista.nome|lower }}" data-partidas="{{ duelista.partidas }}">
-                                <td class="fw-bold">{{ duelista.nome }}</td>
-                                <td class="text-center">{{ duelista.partidas }}</td>
-                                <td class="text-center text-success {% if max_vitorias > 0 and duelista.vitorias == max_vitorias %}record-cell{% endif %}">{{ duelista.vitorias }}</td>
-                                <td class="text-center text-danger">{{ duelista.derrotas }}</td>
-                                <td class="text-center text-info">{{ duelista.empates }}</td>
-                                <td class="text-center"><span class="badge bg-success {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}record-badge{% endif %}">{{ '%.2f'|format(duelista.win_rate) }}%</span></td>
-                                <td class="text-center"><span class="badge bg-warning text-dark {% if max_tops > 0 and duelista.tops == max_tops %}record-badge{% endif %}">{{ duelista.tops }}</span></td>
-                                <td class="text-center"><span class="badge bg-primary {% if max_titulos > 0 and duelista.campeonatos == max_titulos %}record-badge{% endif %}">{{ duelista.campeonatos }}</span></td>
-                                <td class="text-center"><span class="badge bg-dark {% if max_conversao > 0 and duelista.taxa_conversao_top_titulo == max_conversao %}record-badge{% endif %}">{{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%</span></td>
-                                <td class="text-center">
+                                <td class="fw-bold" data-label="Duelista">{{ duelista.nome }}</td>
+                                <td class="text-center" data-label="Partidas">{{ duelista.partidas }}</td>
+                                <td class="text-center text-success {% if max_vitorias > 0 and duelista.vitorias == max_vitorias %}record-cell{% endif %}" data-label="Vitórias">{{ duelista.vitorias }}</td>
+                                <td class="text-center text-danger" data-label="Derrotas">{{ duelista.derrotas }}</td>
+                                <td class="text-center text-info" data-label="Empates">{{ duelista.empates }}</td>
+                                <td class="text-center" data-label="Win Rate"><span class="badge bg-success {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}record-badge{% endif %}">{{ '%.2f'|format(duelista.win_rate) }}%</span></td>
+                                <td class="text-center" data-label="Top Cut"><span class="badge bg-warning text-dark {% if max_tops > 0 and duelista.tops == max_tops %}record-badge{% endif %}">{{ duelista.tops }}</span></td>
+                                <td class="text-center" data-label="Títulos"><span class="badge bg-primary {% if max_titulos > 0 and duelista.campeonatos == max_titulos %}record-badge{% endif %}">{{ duelista.campeonatos }}</span></td>
+                                <td class="text-center" data-label="Conv. Top Cut -> Título"><span class="badge bg-dark {% if max_conversao > 0 and duelista.taxa_conversao_top_titulo == max_conversao %}record-badge{% endif %}">{{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%</span></td>
+                                <td class="text-center dashboard-action-cell" data-label="Dashboard">
                                     <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
                                         <i class="fas fa-chart-line"></i>
                                     </a>

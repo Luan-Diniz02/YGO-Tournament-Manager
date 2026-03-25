@@ -6,11 +6,11 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card shadow-sm border-primary">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center mobile-card-header-stack">
                 <h4 class="mb-0">
                     <i class="fas fa-trophy"></i> {{ torneio.nome }}
                 </h4>
-                <a href="{{ url_for('visualizar_torneios') }}" class="btn btn-light btn-sm text-primary">
+                <a href="{{ url_for('visualizar_torneios') }}" class="btn btn-light btn-sm text-primary mobile-header-action">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -97,14 +97,14 @@
     <!-- Tabela de participantes / Ranking exclusivo deste torneio -->
     <div class="col-md-{% if is_admin %}8{% else %}12{% endif %} mb-4">
         <div class="card shadow-sm h-100">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center mobile-card-header-stack">
                 <h5 class="mb-0"><i class="fas fa-list-ol"></i> Classificação da Etapa</h5>
                 <span class="badge bg-light text-dark"><i class="fas fa-user-check"></i> {{ participantes|length }} Registrados</span>
             </div>
             <div class="card-body p-0">
                 {% if participantes %}
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0">
+                    <table class="table table-hover table-striped mb-0 painel-torneio-table">
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" style="width: 50px;">Pos</th>
