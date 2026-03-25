@@ -62,6 +62,11 @@ ygo-tournament-manager/
    pip install -r requirements.txt
    ```
 
+   Para desenvolvimento e testes automatizados:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
 2. **Configurar banco de dados:**
    - Certifique-se de que o servidor MySQL está em execução.
     - Configure as variáveis de ambiente do banco conforme seu ambiente.
@@ -260,6 +265,16 @@ Para contribuir com o projeto:
 ```bash
 pip install -r requirements.txt
 ```
+
+## Testes
+
+Executar a suíte de testes:
+
+```bash
+pytest -q
+```
+
+Observação: a aplicação agora exige `FLASK_SECRET_KEY` configurada para inicializar com segurança.
 
 ### Porta 5000 em Uso
 Altere a porta no final do arquivo `app.py`:
