@@ -263,6 +263,11 @@ footer {
     .hero-section {
         padding: 2rem !important;
     }
+
+    .hero-section .display-4 {
+        font-size: 1.95rem;
+        line-height: 1.2;
+    }
     
     .card-body {
         padding: 1rem;
@@ -275,6 +280,77 @@ footer {
     
     .table-responsive {
         border-radius: 10px;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+        font-size: 0.84rem;
+        padding: 0.45rem 0.5rem;
+    }
+
+    .table .badge {
+        font-size: 0.76rem;
+        padding: 0.38em 0.58em;
+    }
+
+    .ranking-separador td {
+        white-space: normal;
+        font-size: 0.8rem;
+    }
+
+    .ranking-header-wrap {
+        align-items: flex-start !important;
+    }
+
+    .ranking-count-badge {
+        align-self: flex-start;
+    }
+
+    .ranking-table th,
+    .ranking-table td {
+        min-width: 86px;
+    }
+
+    .ranking-table th:nth-child(2),
+    .ranking-table td:nth-child(2) {
+        min-width: 170px;
+    }
+
+    .dashboard-hero-top {
+        align-items: flex-start !important;
+    }
+
+    .dashboard-hero-badges,
+    .dashboard-hero-status {
+        width: 100%;
+    }
+
+    .dashboard-hero-badges .badge,
+    .dashboard-hero-status .badge {
+        font-size: 0.75rem;
+    }
+
+    .dashboard-top-toolbar {
+        gap: 0.55rem !important;
+    }
+
+    .dashboard-filter-group {
+        width: 100%;
+        max-width: 100% !important;
+    }
+
+    .dashboard-clear-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-footer .btn-group {
+        width: 100%;
+    }
+
+    .card-footer .btn-group .btn {
+        flex: 1 1 auto;
     }
 }
 
@@ -308,6 +384,39 @@ footer {
 .table-warning {
     background-color: rgba(255, 193, 7, 0.2) !important;
     border-left: 4px solid #ffc107;
+}
+
+.ranking-separador td {
+    font-weight: 600;
+    border-top: 2px solid #e9ecef;
+    border-bottom: none;
+    background: transparent !important;
+    padding-top: 0.4rem;
+    padding-bottom: 0.35rem;
+}
+
+.ranking-separador-obelisco td {
+    border-top-color: rgba(13, 110, 253, 0.55);
+}
+
+.ranking-separador-ra td {
+    border-top-color: rgba(255, 193, 7, 0.85);
+}
+
+.ranking-separador-slifer td {
+    border-top-color: rgba(220, 53, 69, 0.6);
+}
+
+.ranking-row-obelisco td:first-child {
+    border-left: 4px solid rgba(13, 110, 253, 0.75);
+}
+
+.ranking-row-ra td:first-child {
+    border-left: 4px solid rgba(255, 193, 7, 0.95);
+}
+
+.ranking-row-slifer td:first-child {
+    border-left: 4px solid rgba(220, 53, 69, 0.8);
 }
 
 /* Special Ranking Styles */

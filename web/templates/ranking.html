@@ -7,17 +7,17 @@
     <div class="col-12">
         <div class="card shadow">
             <div class="card-header bg-warning text-dark">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center ranking-header-wrap gap-2">
                     <h4 class="mb-0">
                         <i class="fas fa-medal"></i> Ranking dos Duelistas
                     </h4>
-                    <span class="badge bg-dark fs-6">{{ duelistas|length }} Duelistas</span>
+                    <span class="badge bg-dark fs-6 ranking-count-badge">{{ duelistas|length }} Duelistas</span>
                 </div>
             </div>
             <div class="card-body p-0">
                 {% if duelistas %}
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0 ranking-table" aria-label="Tabela de ranking dos duelistas">
                         <thead class="table-dark">
                             <tr>
                                 <th width="10%">Posição</th>
@@ -32,7 +32,29 @@
                         </thead>
                         <tbody>
                             {% for duelista in duelistas %}
-                            <tr class="{% if loop.index <= 3 %}table-warning{% endif %}">
+                            {% if loop.index == 1 %}
+                            <tr class="ranking-separador ranking-separador-obelisco">
+                                <td colspan="8">
+                                    <span class="badge bg-primary me-2">Obelisco, o Atormentador</span>
+                                    <small class="text-muted">Top 3 do ranking</small>
+                                </td>
+                            </tr>
+                            {% elif loop.index == 4 %}
+                            <tr class="ranking-separador ranking-separador-ra">
+                                <td colspan="8">
+                                    <span class="badge bg-warning text-dark me-2">O Dragão Alado de Rá</span>
+                                    <small class="text-muted">4º ao 7º colocados</small>
+                                </td>
+                            </tr>
+                            {% elif loop.index == 8 %}
+                            <tr class="ranking-separador ranking-separador-slifer">
+                                <td colspan="8">
+                                    <span class="badge bg-danger me-2">Slifer, o Dragão Celeste</span>
+                                    <small class="text-muted">8º em diante</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            <tr class="{% if loop.index <= 3 %}table-warning ranking-row-obelisco{% elif loop.index <= 7 %}ranking-row-ra{% else %}ranking-row-slifer{% endif %}">
                                 <td>
                                     <div class="d-flex align-items-center">
                                         {% if loop.index == 1 %}
@@ -98,7 +120,7 @@
             {% if duelistas %}
             <div class="card-footer bg-light">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-7 mb-2 mb-md-0">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle text-info me-2"></i>
                             <small class="text-muted">
@@ -106,7 +128,7 @@
                             </small>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-5 text-md-end">
                         <div class="btn-group" role="group">
                             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Voltar
