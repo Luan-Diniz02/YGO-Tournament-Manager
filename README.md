@@ -274,6 +274,12 @@ Executar a suíte de testes:
 pytest -q
 ```
 
+Executar a suíte com relatório de cobertura:
+
+```bash
+pytest --cov=web --cov-report=term-missing -q
+```
+
 A suíte atual cobre:
 - Testes unitários de serviços (`AdminService` e `PublicService`)
 - Testes de integração HTTP com Flask test client (login admin, CSRF, redirect seguro e proteção de rota admin)
