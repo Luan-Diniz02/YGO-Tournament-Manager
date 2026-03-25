@@ -1,4 +1,10 @@
 import os
+import sys
+
+if __package__ is None or __package__ == '':
+    # Suporta execucao direta: python web/app.py
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from dotenv import load_dotenv
 from flask import Flask
 from core.database_conexao import Conexao

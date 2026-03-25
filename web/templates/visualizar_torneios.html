@@ -1,19 +1,15 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Visualizar Torneios - Liga YGO Marab�{% endblock %}
+{% block title %}Visualizar Torneios - Liga YGO Maraba{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
         <div class="card shadow">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
-                    <i class="fas fa-eye"></i> Visualizar Torneios
-                </h4>
+                <h4 class="mb-0"><i class="fas fa-eye"></i> Visualizar Torneios</h4>
                 {% if is_admin %}
-                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-plus"></i> Novo Torneio
-                </a>
+                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-light btn-sm"><i class="fas fa-plus"></i> Novo Torneio</a>
                 {% endif %}
             </div>
             <div class="card-body">
@@ -28,9 +24,7 @@
                                 <th>Rodadas</th>
                                 <th>Participantes</th>
                                 <th>Placar</th>
-                                {% if is_admin %}
-                                <th>A��es</th>
-                                {% endif %}
+                                {% if is_admin %}<th>Acoes</th>{% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -41,29 +35,15 @@
                                 <td>{{ t.data }}</td>
                                 <td>{{ t.rodadas }}</td>
                                 <td>{{ t.qtd_participantes|default(0) }} / {{ t.quant_duelistas }}</td>
-                                <td>
-                                    <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i> Ver placar
-                                    </a>
-                                </td>
+                                <td><a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i> Ver placar</a></td>
                                 {% if is_admin %}
                                 <td class="d-flex gap-2">
-    <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
-    <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" style="display:inline;">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-        <button
-            type="submit"
-            class="btn btn-sm btn-danger"
-            data-confirm="Deseja excluir permanentemente este torneio e todo o placar/hist�rico atrelado a ele? Isso n�o pode ser desfeito."
-            data-confirm-title="Excluir torneio"
-            data-confirm-icon="warning"
-            data-confirm-confirm-text="Sim, excluir"
-            data-confirm-cancel-text="Cancelar"
-        >
-            <i class="fas fa-trash-alt"></i> Excluir
-        </button>
-    </form>
-</td>
+                                    <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
+                                    <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" style="display:inline;">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Excluir</button>
+                                    </form>
+                                </td>
                                 {% endif %}
                             </tr>
                             {% endfor %}
@@ -74,24 +54,14 @@
                 <div class="text-center py-5">
                     <i class="fas fa-calendar-times fa-4x text-muted mb-4"></i>
                     <h5 class="text-muted">Nenhum torneio cadastrado ainda</h5>
-                    {% if is_admin %}
-                    <p class="text-muted">Cadastre o primeiro torneio clicando no bot�o acima.</p>
-                    {% else %}
-                    <p class="text-muted">Os torneios aparecer�o aqui assim que forem cadastrados pelo administrador.</p>
-                    {% endif %}
                 </div>
                 {% endif %}
-                
+
                 <div class="mt-3">
-                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary"> 
-                        <i class="fas fa-arrow-left"></i> Voltar ao In�cio     
-                    </a>
+                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar ao Inicio</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
-
-

@@ -1,217 +1,87 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Buscar Duelista - Liga YGO Marab�{% endblock %}
+{% block title %}Buscar Duelista - Liga YGO Maraba{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
         <div class="card shadow">
             <div class="card-header bg-info text-white">
-                <h4 class="mb-0">
-                    <i class="fas fa-search"></i> Buscar Duelista
-                </h4>
+                <h4 class="mb-0"><i class="fas fa-search"></i> Buscar Duelista</h4>
             </div>
             <div class="card-body">
                 <form method="POST" class="mb-4">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="row align-items-end">
                         <div class="col-md-6">
-                            <label for="nome_busca" class="form-label">
-                                <i class="fas fa-user"></i> Nome do Duelista
-                            </label>
-                            <input type="text" class="form-control" id="nome_busca" name="nome_busca"
-                                   placeholder="Digite o nome do duelista..." value="{{ request.form['nome_busca'] if request.form['nome_busca'] }}"
-                                   onkeyup="filtrarTabela()">
+                            <label for="nome_busca" class="form-label"><i class="fas fa-user"></i> Nome do Duelista</label>
+                            <input type="text" class="form-control" id="nome_busca" name="nome_busca" placeholder="Digite o nome do duelista..." value="{{ request.form['nome_busca'] if request.form['nome_busca'] else '' }}" onkeyup="filtrarTabela()">
                         </div>
                         <div class="col-md-3">
-                            <label for="status_filtro" class="form-label">
-                                <i class="fas fa-filter"></i> Exibir
-                            </label>
+                            <label for="status_filtro" class="form-label"><i class="fas fa-filter"></i> Exibir</label>
                             <select class="form-select" id="status_filtro" name="status_filtro">
                                 <option value="todos" {% if status_filtro == 'todos' %}selected{% endif %}>Todos</option>
                                 <option value="ativos" {% if status_filtro == 'ativos' %}selected{% endif %}>Apenas ativos</option>
                                 <option value="inativos" {% if status_filtro == 'inativos' %}selected{% endif %}>Apenas inativos</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-info">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
-                            </div>
-                        </div>
+                        <div class="col-md-3"><button type="submit" class="btn btn-info w-100"><i class="fas fa-search"></i> Buscar</button></div>
                     </div>
                 </form>
 
                 {% if duelista_encontrado %}
-                <div class="alert {% if duelista_encontrado.ativo == 1 %}alert-success{% else %}alert-danger{% endif %}" role="alert">
-                    <h5 class="alert-heading">
-                        <i class="fas fa-check-circle"></i> Duelista Encontrado!
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <p class="mb-0">
-                                <strong>
-                                    {{ posicao_encontrada }}� lugar - {{ duelista_encontrado.nome }}
-                                    {% if duelista_encontrado.ativo == 0 %}
-                                    <span class="badge bg-danger ms-2">INATIVO</span>
-                                    {% endif %}
-                                </strong>
-                            </p>
-                            <p class="mb-0">
-                                <strong>Vit�rias:</strong> {{ duelista_encontrado.vitorias }} | 
-                                <strong>Derrotas:</strong> {{ duelista_encontrado.derrotas }} | 
-                                <strong>Empates:</strong> {{ duelista_encontrado.empates }}
-                            </p>
-                            <p class="mb-0">
-                                <strong>Participa��es:</strong> {{ duelista_encontrado.participacao }} | 
-                                <strong>Pontos:</strong> {{ duelista_encontrado.pontos }}
-                            </p>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <a href="{{ url_for('public.dashboard_duelista', nome=duelista_encontrado.nome) }}" class="btn btn-outline-primary btn-sm me-1">
-                                <i class="fas fa-chart-line"></i> Dashboard
-                            </a>
-                            {% if duelista_encontrado.ativo == 1 %}
-                            <a href="{{ url_for('admin.alterar_duelista', nome=duelista_encontrado.nome) }}" 
-                               class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Alterar Dados
-                            </a>
-                            {% else %}
-                            <form method="POST" action="{{ url_for('admin.reativar_duelista', nome=duelista_encontrado.nome) }}" class="d-inline">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                <button
-                                    type="submit"
-                                    class="btn btn-success btn-sm"
-                                    data-confirm="Deseja reativar o duelista {{ duelista_encontrado.nome }}?"
-                                    data-confirm-title="Reativar duelista"
-                                    data-confirm-icon="question"
-                                    data-confirm-confirm-text="Sim, reativar"
-                                    data-confirm-cancel-text="Cancelar"
-                                >
-                                    <i class="fas fa-user-check"></i> Reativar
-                                </button>
-                            </form>
-                            {% endif %}
-                        </div>
-                    </div>
+                <div class="alert {% if duelista_encontrado.ativo == 1 %}alert-success{% else %}alert-danger{% endif %}">
+                    <strong>{{ posicao_encontrada }}o lugar - {{ duelista_encontrado.nome }}</strong>
                 </div>
                 {% endif %}
 
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list"></i> Todos os Duelistas 
-                            <span class="badge bg-primary">{{ duelistas|length }}</span>
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="tabela-duelistas">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Posi��o</th>
-                                        <th>Nome</th>
-                                        <th>Vit�rias</th>
-                                        <th>Derrotas</th>
-                                        <th>Empates</th>
-                                        <th>Participa��es</th>
-                                        <th>Pontos</th>
-                                        <th>A��es</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for duelista in duelistas %}
-                                    <tr class="{% if duelista == duelista_encontrado %}table-warning{% endif %} {% if duelista.ativo == 0 %}table-danger{% endif %}">
-                                        <td>
-                                            <span class="badge bg-secondary">{{ loop.index }}�</span>
-                                        </td>
-                                        <td>
-                                            <strong class="{% if duelista.ativo == 0 %}text-danger{% endif %}">
-                                                {{ duelista.nome }}
-                                            </strong>
-                                            {% if duelista.ativo == 0 %}
-                                            <span class="badge bg-danger ms-1">Inativo</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-success">{{ duelista.vitorias }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-danger">{{ duelista.derrotas }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ duelista.empates }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-primary">{{ duelista.participacao }}</span>
-                                        </td>
-                                        <td>
-                                            <strong class="text-warning">{{ duelista.pontos }}</strong>
-                                        </td>
-                                        <td>
-                                            <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" 
-                                               class="btn btn-outline-primary btn-sm"
-                                                              title="Dashboard do duelista"
-                                                              aria-label="Abrir dashboard de {{ duelista.nome }}">
-                                                <i class="fas fa-chart-line"></i>
-                                            </a>
-                                            {% if duelista.ativo == 1 %}
-                                            <a href="{{ url_for('admin.alterar_duelista', nome=duelista.nome) }}" 
-                                                              class="btn btn-outline-warning btn-sm"
-                                                              aria-label="Alterar dados de {{ duelista.nome }}">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            {% else %}
-                                            <div class="d-flex gap-1">
-                                                <form method="POST" action="{{ url_for('admin.reativar_duelista', nome=duelista.nome) }}" class="d-inline">
-                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-success btn-sm"
-                                                        data-confirm="Deseja reativar o duelista {{ duelista.nome }}?"
-                                                        data-confirm-title="Reativar duelista"
-                                                        data-confirm-icon="question"
-                                                        data-confirm-confirm-text="Sim, reativar"
-                                                        data-confirm-cancel-text="Cancelar"
-                                                        title="Reativar"
-                                                        aria-label="Reativar {{ duelista.nome }}"
-                                                    >
-                                                        <i class="fas fa-user-check"></i>
-                                                    </button>
-                                                </form>
-                                                <form method="POST" action="{{ url_for('admin.excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
-                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-danger btn-sm"
-                                                        data-confirm="Tem certeza que deseja excluir DEFINITIVAMENTE o duelista {{ duelista.nome }}? Esta a��o n�o pode ser desfeita."
-                                                        data-confirm-title="Excluir definitivamente"
-                                                        data-confirm-icon="warning"
-                                                        data-confirm-confirm-text="Sim, excluir"
-                                                        data-confirm-cancel-text="Cancelar"
-                                                        title="Excluir definitivamente"
-                                                        aria-label="Excluir definitivamente {{ duelista.nome }}"
-                                                    >
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="tabela-duelistas">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Posicao</th>
+                                <th>Nome</th>
+                                <th>Vitorias</th>
+                                <th>Derrotas</th>
+                                <th>Empates</th>
+                                <th>Participacoes</th>
+                                <th>Pontos</th>
+                                <th>Acoes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for duelista in duelistas %}
+                            <tr class="{% if duelista.ativo == 0 %}table-danger{% endif %}">
+                                <td><span class="badge bg-secondary">{{ loop.index }}o</span></td>
+                                <td>{{ duelista.nome }}</td>
+                                <td>{{ duelista.vitorias }}</td>
+                                <td>{{ duelista.derrotas }}</td>
+                                <td>{{ duelista.empates }}</td>
+                                <td>{{ duelista.participacao }}</td>
+                                <td>{{ duelista.pontos }}</td>
+                                <td>
+                                    <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-chart-line"></i></a>
+                                    {% if duelista.ativo == 1 %}
+                                    <a href="{{ url_for('admin.alterar_duelista', nome=duelista.nome) }}" class="btn btn-outline-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                    {% else %}
+                                    <form method="POST" action="{{ url_for('admin.reativar_duelista', nome=duelista.nome) }}" class="d-inline">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-outline-success btn-sm"><i class="fas fa-user-check"></i></button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin.excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="mt-3 d-flex justify-content-between">
-                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar
-                    </a>
-                    
+                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
                 </div>
             </div>
         </div>
@@ -220,25 +90,17 @@
 
 <script>
 function filtrarTabela() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("nome_busca");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("tabela-duelistas");
+    const input = document.getElementById('nome_busca');
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('tabela-duelistas');
     if (!table) return;
-    tr = table.getElementsByTagName("tr");
-
-    for (i = 1; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        }       
+    const tr = table.getElementsByTagName('tr');
+    for (let i = 1; i < tr.length; i++) {
+        const td = tr[i].getElementsByTagName('td')[1];
+        if (!td) continue;
+        const txtValue = td.textContent || td.innerText;
+        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
     }
 }
 </script>
 {% endblock %}
-
