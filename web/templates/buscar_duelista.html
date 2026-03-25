@@ -1,6 +1,6 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Buscar Duelista - Liga YGO Marabá{% endblock %}
+{% block title %}Buscar Duelista - Liga YGO Marab�{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -52,33 +52,33 @@
                         <div class="col-md-8">
                             <p class="mb-0">
                                 <strong>
-                                    {{ posicao_encontrada }}º lugar - {{ duelista_encontrado.nome }}
+                                    {{ posicao_encontrada }}� lugar - {{ duelista_encontrado.nome }}
                                     {% if duelista_encontrado.ativo == 0 %}
                                     <span class="badge bg-danger ms-2">INATIVO</span>
                                     {% endif %}
                                 </strong>
                             </p>
                             <p class="mb-0">
-                                <strong>Vitórias:</strong> {{ duelista_encontrado.vitorias }} | 
+                                <strong>Vit�rias:</strong> {{ duelista_encontrado.vitorias }} | 
                                 <strong>Derrotas:</strong> {{ duelista_encontrado.derrotas }} | 
                                 <strong>Empates:</strong> {{ duelista_encontrado.empates }}
                             </p>
                             <p class="mb-0">
-                                <strong>Participações:</strong> {{ duelista_encontrado.participacao }} | 
+                                <strong>Participa��es:</strong> {{ duelista_encontrado.participacao }} | 
                                 <strong>Pontos:</strong> {{ duelista_encontrado.pontos }}
                             </p>
                         </div>
                         <div class="col-md-4 text-end">
-                            <a href="{{ url_for('dashboard_duelista', nome=duelista_encontrado.nome) }}" class="btn btn-outline-primary btn-sm me-1">
+                            <a href="{{ url_for('public.dashboard_duelista', nome=duelista_encontrado.nome) }}" class="btn btn-outline-primary btn-sm me-1">
                                 <i class="fas fa-chart-line"></i> Dashboard
                             </a>
                             {% if duelista_encontrado.ativo == 1 %}
-                            <a href="{{ url_for('alterar_duelista', nome=duelista_encontrado.nome) }}" 
+                            <a href="{{ url_for('admin.alterar_duelista', nome=duelista_encontrado.nome) }}" 
                                class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i> Alterar Dados
                             </a>
                             {% else %}
-                            <form method="POST" action="{{ url_for('reativar_duelista', nome=duelista_encontrado.nome) }}" class="d-inline">
+                            <form method="POST" action="{{ url_for('admin.reativar_duelista', nome=duelista_encontrado.nome) }}" class="d-inline">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                 <button
                                     type="submit"
@@ -110,21 +110,21 @@
                             <table class="table table-hover mb-0" id="tabela-duelistas">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Posição</th>
+                                        <th>Posi��o</th>
                                         <th>Nome</th>
-                                        <th>Vitórias</th>
+                                        <th>Vit�rias</th>
                                         <th>Derrotas</th>
                                         <th>Empates</th>
-                                        <th>Participações</th>
+                                        <th>Participa��es</th>
                                         <th>Pontos</th>
-                                        <th>Ações</th>
+                                        <th>A��es</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for duelista in duelistas %}
                                     <tr class="{% if duelista == duelista_encontrado %}table-warning{% endif %} {% if duelista.ativo == 0 %}table-danger{% endif %}">
                                         <td>
-                                            <span class="badge bg-secondary">{{ loop.index }}º</span>
+                                            <span class="badge bg-secondary">{{ loop.index }}�</span>
                                         </td>
                                         <td>
                                             <strong class="{% if duelista.ativo == 0 %}text-danger{% endif %}">
@@ -150,21 +150,21 @@
                                             <strong class="text-warning">{{ duelista.pontos }}</strong>
                                         </td>
                                         <td>
-                                            <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" 
+                                            <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" 
                                                class="btn btn-outline-primary btn-sm"
                                                               title="Dashboard do duelista"
                                                               aria-label="Abrir dashboard de {{ duelista.nome }}">
                                                 <i class="fas fa-chart-line"></i>
                                             </a>
                                             {% if duelista.ativo == 1 %}
-                                            <a href="{{ url_for('alterar_duelista', nome=duelista.nome) }}" 
+                                            <a href="{{ url_for('admin.alterar_duelista', nome=duelista.nome) }}" 
                                                               class="btn btn-outline-warning btn-sm"
                                                               aria-label="Alterar dados de {{ duelista.nome }}">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             {% else %}
                                             <div class="d-flex gap-1">
-                                                <form method="POST" action="{{ url_for('reativar_duelista', nome=duelista.nome) }}" class="d-inline">
+                                                <form method="POST" action="{{ url_for('admin.reativar_duelista', nome=duelista.nome) }}" class="d-inline">
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                     <button
                                                         type="submit"
@@ -180,12 +180,12 @@
                                                         <i class="fas fa-user-check"></i>
                                                     </button>
                                                 </form>
-                                                <form method="POST" action="{{ url_for('excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
+                                                <form method="POST" action="{{ url_for('admin.excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
                                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                     <button
                                                         type="submit"
                                                         class="btn btn-outline-danger btn-sm"
-                                                        data-confirm="Tem certeza que deseja excluir DEFINITIVAMENTE o duelista {{ duelista.nome }}? Esta ação não pode ser desfeita."
+                                                        data-confirm="Tem certeza que deseja excluir DEFINITIVAMENTE o duelista {{ duelista.nome }}? Esta a��o n�o pode ser desfeita."
                                                         data-confirm-title="Excluir definitivamente"
                                                         data-confirm-icon="warning"
                                                         data-confirm-confirm-text="Sim, excluir"
@@ -208,7 +208,7 @@
                 </div>
 
                 <div class="mt-3 d-flex justify-content-between">
-                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                     
@@ -241,3 +241,4 @@ function filtrarTabela() {
 }
 </script>
 {% endblock %}
+

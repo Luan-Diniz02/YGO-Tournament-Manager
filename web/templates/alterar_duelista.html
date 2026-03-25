@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ url_for('buscar_duelista') }}" class="btn btn-secondary me-md-2">
+                        <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-secondary me-md-2">
                             <i class="fas fa-arrow-left"></i> Cancelar
                         </a>
                         <!-- Botão de alterar -->
@@ -85,7 +85,7 @@
                 <hr class="mt-4 mb-4">
                 
                 <!-- Formulário separado para exclusão com botão vermelho -->
-                <form method="POST" action="{{ url_for('desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
+                <form method="POST" action="{{ url_for('admin.desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <button
                         type="submit"

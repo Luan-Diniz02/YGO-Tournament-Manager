@@ -1,6 +1,6 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Visualizar Torneios - Liga YGO Marabá{% endblock %}
+{% block title %}Visualizar Torneios - Liga YGO Marab�{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -11,7 +11,7 @@
                     <i class="fas fa-eye"></i> Visualizar Torneios
                 </h4>
                 {% if is_admin %}
-                <a href="{{ url_for('cadastrar_torneio') }}" class="btn btn-light btn-sm">
+                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-plus"></i> Novo Torneio
                 </a>
                 {% endif %}
@@ -29,7 +29,7 @@
                                 <th>Participantes</th>
                                 <th>Placar</th>
                                 {% if is_admin %}
-                                <th>Ações</th>
+                                <th>A��es</th>
                                 {% endif %}
                             </tr>
                         </thead>
@@ -42,19 +42,19 @@
                                 <td>{{ t.rodadas }}</td>
                                 <td>{{ t.qtd_participantes|default(0) }} / {{ t.quant_duelistas }}</td>
                                 <td>
-                                    <a href="{{ url_for('painel_torneio', id=t.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye"></i> Ver placar
                                     </a>
                                 </td>
                                 {% if is_admin %}
                                 <td class="d-flex gap-2">
-    <a href="{{ url_for('painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
-    <form method="POST" action="{{ url_for('excluir_torneio', id=t.id) }}" style="display:inline;">
+    <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-cog"></i> Gerenciar</a>
+    <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" style="display:inline;">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <button
             type="submit"
             class="btn btn-sm btn-danger"
-            data-confirm="Deseja excluir permanentemente este torneio e todo o placar/histórico atrelado a ele? Isso não pode ser desfeito."
+            data-confirm="Deseja excluir permanentemente este torneio e todo o placar/hist�rico atrelado a ele? Isso n�o pode ser desfeito."
             data-confirm-title="Excluir torneio"
             data-confirm-icon="warning"
             data-confirm-confirm-text="Sim, excluir"
@@ -75,16 +75,16 @@
                     <i class="fas fa-calendar-times fa-4x text-muted mb-4"></i>
                     <h5 class="text-muted">Nenhum torneio cadastrado ainda</h5>
                     {% if is_admin %}
-                    <p class="text-muted">Cadastre o primeiro torneio clicando no botão acima.</p>
+                    <p class="text-muted">Cadastre o primeiro torneio clicando no bot�o acima.</p>
                     {% else %}
-                    <p class="text-muted">Os torneios aparecerão aqui assim que forem cadastrados pelo administrador.</p>
+                    <p class="text-muted">Os torneios aparecer�o aqui assim que forem cadastrados pelo administrador.</p>
                     {% endif %}
                 </div>
                 {% endif %}
                 
                 <div class="mt-3">
-                    <a href="{{ url_for('index') }}" class="btn btn-secondary"> 
-                        <i class="fas fa-arrow-left"></i> Voltar ao Início     
+                    <a href="{{ url_for('public.index') }}" class="btn btn-secondary"> 
+                        <i class="fas fa-arrow-left"></i> Voltar ao In�cio     
                     </a>
                 </div>
             </div>
@@ -92,5 +92,6 @@
     </div>
 </div>
 {% endblock %}
+
 
 

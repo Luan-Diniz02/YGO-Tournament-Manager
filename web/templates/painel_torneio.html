@@ -10,7 +10,7 @@
                 <h4 class="mb-0">
                     <i class="fas fa-trophy"></i> {{ torneio.nome }}
                 </h4>
-                <a href="{{ url_for('visualizar_torneios') }}" class="btn btn-light btn-sm text-primary">
+                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-light btn-sm text-primary">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -45,7 +45,7 @@
             <div class="card-body">
                 <p class="small text-muted mb-4">Adicione o placar final do participante nesta etapa (incluindo as vitórias/derrotas do Top Cut). <b>Isso também computará no Ranking Global</b> da Liga.</p>
 
-                <form method="POST" action="{{ url_for('adicionar_jogador_torneio', id=torneio.id) }}">
+                <form method="POST" action="{{ url_for('admin.adicionar_jogador_torneio', id=torneio.id) }}">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="nome_duelista" class="form-label fw-bold">Nome do Duelista</label>

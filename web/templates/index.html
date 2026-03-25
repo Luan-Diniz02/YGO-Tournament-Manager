@@ -1,6 +1,6 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Liga YGO Marabá - Página Inicial{% endblock %}
+{% block title %}Liga YGO Marab� - P�gina Inicial{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="hero-section bg-primary text-white rounded p-5 mb-4">
             <div class="text-center">
                 <h1 class="display-4">
-                    <i class="fas fa-trophy"></i> Liga YGO Marabá
+                    <i class="fas fa-trophy"></i> Liga YGO Marab�
                 </h1>
                 <p class="lead">Sistema de Gerenciamento de Torneios Yu-Gi-Oh!</p>
             </div>
@@ -25,8 +25,8 @@
                     <i class="fas fa-calendar-plus fa-3x text-primary"></i>
                 </div>
                 <h5 class="card-title">Cadastrar Torneio</h5>
-                <p class="card-text">Cadastre novos torneios com informações como nome, rodadas e participantes.</p>
-                <a href="{{ url_for('cadastrar_torneio') }}" class="btn btn-primary">
+                <p class="card-text">Cadastre novos torneios com informa��es como nome, rodadas e participantes.</p>
+                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Cadastrar Torneio
                 </a>
             </div>
@@ -40,8 +40,8 @@
                     <i class="fas fa-search fa-3x text-info"></i>
                 </div>
                 <h5 class="card-title">Encontrar Duelista</h5>
-                <p class="card-text">Busque informações específicas de qualquer duelista cadastrado no sistema.</p>
-                <a href="{{ url_for('buscar_duelista') }}" class="btn btn-info text-white">
+                <p class="card-text">Busque informa��es espec�ficas de qualquer duelista cadastrado no sistema.</p>
+                <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-info text-white">
                     <i class="fas fa-search"></i> Buscar Duelista
                 </a>
             </div>
@@ -57,7 +57,7 @@
                 </div>
                 <h5 class="card-title">Rank dos Duelistas</h5>
                 <p class="card-text">Visualize o ranking completo de todos os duelistas ordenado por pontos.</p>
-                <a href="{{ url_for('ranking') }}" class="btn btn-warning">
+                <a href="{{ url_for('public.ranking') }}" class="btn btn-warning">
                     <i class="fas fa-trophy"></i> Ver Ranking
                 </a>
             </div>
@@ -71,8 +71,8 @@
                     <i class="fas fa-chart-pie fa-3x text-dark"></i>
                 </div>
                 <h5 class="card-title">Dashboard da Liga</h5>
-                <p class="card-text">Acompanhe métricas avançadas dos duelistas e acesse análises individuais em um clique.</p>
-                <a href="{{ url_for('dashboard_estatisticas') }}" class="btn btn-dark">
+                <p class="card-text">Acompanhe m�tricas avan�adas dos duelistas e acesse an�lises individuais em um clique.</p>
+                <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-dark">
                     <i class="fas fa-chart-line"></i> Abrir Dashboard
                 </a>
             </div>
@@ -86,8 +86,8 @@
                     <i class="fas fa-eye fa-3x text-secondary"></i>
                 </div>
                 <h5 class="card-title">Visualizar Torneios</h5>
-                <p class="card-text">Consulte informações sobre torneios já realizados e seus participantes.</p>
-                <a href="{{ url_for('visualizar_torneios') }}" class="btn btn-secondary">
+                <p class="card-text">Consulte informa��es sobre torneios j� realizados e seus participantes.</p>
+                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-secondary">
                     <i class="fas fa-list"></i> Ver Torneios
                 </a>
             </div>
@@ -108,10 +108,10 @@
                         <ul class="list-unstyled">
                             {% if is_admin %}
                             <li><i class="fas fa-check text-success"></i> Cadastre torneios para organizar eventos</li>
-                            <li><i class="fas fa-check text-success"></i> Adicione pontos após cada partida</li>
+                            <li><i class="fas fa-check text-success"></i> Adicione pontos ap�s cada partida</li>
                             {% else %}
                             <li><i class="fas fa-check text-success"></i> Consulte o ranking atualizado em tempo real</li>
-                            <li><i class="fas fa-check text-success"></i> Visualize torneios e histórico público</li>
+                            <li><i class="fas fa-check text-success"></i> Visualize torneios e hist�rico p�blico</li>
                             {% endif %}
                             <li><i class="fas fa-check text-success"></i> Consulte o ranking atualizado</li>
                         </ul>
@@ -119,11 +119,11 @@
                     <div class="col-md-6">
                         <ul class="list-unstyled">
                             {% if is_admin %}
-                            <li><i class="fas fa-check text-success"></i> Busque duelistas específicos</li>
-                            <li><i class="fas fa-check text-success"></i> Altere dados quando necessário</li>
+                            <li><i class="fas fa-check text-success"></i> Busque duelistas espec�ficos</li>
+                            <li><i class="fas fa-check text-success"></i> Altere dados quando necess�rio</li>
                             {% else %}
-                            <li><i class="fas fa-check text-success"></i> Acompanhe a classificação da liga</li>
-                            <li><i class="fas fa-check text-success"></i> Faça login admin para gerenciar dados</li>
+                            <li><i class="fas fa-check text-success"></i> Acompanhe a classifica��o da liga</li>
+                            <li><i class="fas fa-check text-success"></i> Fa�a login admin para gerenciar dados</li>
                             {% endif %}
                             
                         </ul>
@@ -134,3 +134,4 @@
     </div>
 </div>
 {% endblock %}
+

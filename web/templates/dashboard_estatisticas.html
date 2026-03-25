@@ -59,7 +59,7 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.maior_win_rate %}
-                <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.maior_win_rate.nome }}">
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.maior_win_rate.nome }}">
                     <i class="fas fa-chart-line"></i>
                 </a>
                 {% endif %}
@@ -79,7 +79,7 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.mais_tops %}
-                <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_tops.nome }}">
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_tops.nome }}">
                     <i class="fas fa-chart-line"></i>
                 </a>
                 {% endif %}
@@ -99,7 +99,7 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.mais_campeonatos %}
-                <a href="{{ url_for('dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_campeonatos.nome }}">
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_campeonatos.nome }}">
                     <i class="fas fa-chart-line"></i>
                 </a>
                 {% endif %}
@@ -151,7 +151,7 @@
                                 <td class="text-center"><span class="badge bg-primary {% if max_titulos > 0 and duelista.campeonatos == max_titulos %}record-badge{% endif %}">{{ duelista.campeonatos }}</span></td>
                                 <td class="text-center"><span class="badge bg-dark {% if max_conversao > 0 and duelista.taxa_conversao_top_titulo == max_conversao %}record-badge{% endif %}">{{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%</span></td>
                                 <td class="text-center">
-                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
+                                    <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
                                         <i class="fas fa-chart-line"></i>
                                     </a>
                                 </td>
@@ -220,3 +220,4 @@ document.getElementById('filtro-min-partidas')?.addEventListener('input', aplica
 aplicarFiltrosDashboard();
 </script>
 {% endblock %}
+

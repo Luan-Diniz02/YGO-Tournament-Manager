@@ -12,7 +12,7 @@
     {% set endpoint = request.endpoint or '' %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
+            <a class="navbar-brand" href="{{ url_for('public.index') }}">
                 <i class="fas fa-trophy"></i> Liga YGO Marabá
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menu de navegação">
@@ -21,40 +21,40 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}" {% if endpoint == 'index' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint == 'public.index' %}active{% endif %}" href="{{ url_for('public.index') }}" {% if endpoint == 'public.index' %}aria-current="page"{% endif %}>
                             <i class="fas fa-home"></i> Início
                         </a>
                     </li>
                     {% if is_admin %}
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'cadastrar_torneio' %}active{% endif %}" href="{{ url_for('cadastrar_torneio') }}" {% if endpoint == 'cadastrar_torneio' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint == 'admin.cadastrar_torneio' %}active{% endif %}" href="{{ url_for('admin.cadastrar_torneio') }}" {% if endpoint == 'admin.cadastrar_torneio' %}aria-current="page"{% endif %}>
                             <i class="fas fa-calendar-plus"></i> Cadastrar Torneio
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'buscar_duelista' %}active{% endif %}" href="{{ url_for('buscar_duelista') }}" {% if endpoint == 'buscar_duelista' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint == 'admin.buscar_duelista' %}active{% endif %}" href="{{ url_for('admin.buscar_duelista') }}" {% if endpoint == 'admin.buscar_duelista' %}aria-current="page"{% endif %}>
                             <i class="fas fa-search"></i> Buscar Duelista
                         </a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'ranking' %}active{% endif %}" href="{{ url_for('ranking') }}" {% if endpoint == 'ranking' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint == 'public.ranking' %}active{% endif %}" href="{{ url_for('public.ranking') }}" {% if endpoint == 'public.ranking' %}aria-current="page"{% endif %}>
                             <i class="fas fa-medal"></i> Ranking
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint in ['dashboard_estatisticas', 'dashboard_duelista'] %}active{% endif %}" href="{{ url_for('dashboard_estatisticas') }}" {% if endpoint in ['dashboard_estatisticas', 'dashboard_duelista'] %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint in ['public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" href="{{ url_for('public.dashboard_estatisticas') }}" {% if endpoint in ['public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
                             <i class="fas fa-chart-pie"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint in ['visualizar_torneios', 'painel_torneio'] %}active{% endif %}" href="{{ url_for('visualizar_torneios') }}" {% if endpoint in ['visualizar_torneios', 'painel_torneio'] %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}active{% endif %}" href="{{ url_for('public.visualizar_torneios') }}" {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}aria-current="page"{% endif %}>
                             <i class="fas fa-eye"></i> Visualizar Torneios
                         </a>
                     </li>
                     {% if is_admin %}
                     <li class="nav-item">
-                        <form method="POST" action="{{ url_for('admin_logout') }}" class="d-inline">
+                        <form method="POST" action="{{ url_for('admin.admin_logout') }}" class="d-inline">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="nav-link btn btn-link text-decoration-none" aria-label="Sair da área administrativa">
                                 <i class="fas fa-right-from-bracket"></i> Sair (Admin)
@@ -63,7 +63,7 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'admin_login' %}active{% endif %}" href="{{ url_for('admin_login') }}" {% if endpoint == 'admin_login' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint == 'admin.admin_login' %}active{% endif %}" href="{{ url_for('admin.admin_login') }}" {% if endpoint == 'admin.admin_login' %}aria-current="page"{% endif %}>
                             <i class="fas fa-user-shield"></i> Entrar (Admin)
                         </a>
                     </li>

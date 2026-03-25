@@ -59,7 +59,7 @@ def _enforce_csrf():
         return None
 
     flash('Sessão inválida ou expirada. Tente novamente.', 'error')
-    return redirect(request.referrer or url_for('index'))
+    return redirect(request.referrer or url_for('public.index'))
 
 
 def configure_security(app):

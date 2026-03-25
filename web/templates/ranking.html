@@ -1,6 +1,6 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Ranking - Liga YGO Marabá{% endblock %}
+{% block title %}Ranking - Liga YGO Marab�{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -20,12 +20,12 @@
                     <table class="table table-hover mb-0 ranking-table" aria-label="Tabela de ranking dos duelistas">
                         <thead class="table-dark">
                             <tr>
-                                <th width="10%">Posição</th>
+                                <th width="10%">Posi��o</th>
                                 <th width="25%">Nome</th>
-                                <th width="12%">Vitórias</th>
+                                <th width="12%">Vit�rias</th>
                                 <th width="12%">Derrotas</th>
                                 <th width="12%">Empates</th>
-                                <th width="14%">Participações</th>
+                                <th width="14%">Participa��es</th>
                                 <th width="15%">Pontos</th>
                                 <th width="10%" class="text-center">Dashboard</th>
                             </tr>
@@ -42,15 +42,15 @@
                             {% elif loop.index == 4 %}
                             <tr class="ranking-separador ranking-separador-ra">
                                 <td colspan="8">
-                                    <span class="badge bg-warning text-dark me-2">O Dragão Alado de Rá</span>
-                                    <small class="text-muted">4º ao 7º colocados</small>
+                                    <span class="badge bg-warning text-dark me-2">O Drag�o Alado de R�</span>
+                                    <small class="text-muted">4� ao 7� colocados</small>
                                 </td>
                             </tr>
                             {% elif loop.index == 8 %}
                             <tr class="ranking-separador ranking-separador-slifer">
                                 <td colspan="8">
-                                    <span class="badge bg-danger me-2">Slifer, o Dragão Celeste</span>
-                                    <small class="text-muted">8º em diante</small>
+                                    <span class="badge bg-danger me-2">Slifer, o Drag�o Celeste</span>
+                                    <small class="text-muted">8� em diante</small>
                                 </td>
                             </tr>
                             {% endif %}
@@ -65,7 +65,7 @@
                                             <i class="fas fa-award text-warning me-2"></i>
                                         {% endif %}
                                         <span class="badge bg-{% if loop.index == 1 %}warning{% elif loop.index == 2 %}secondary{% elif loop.index == 3 %}info{% else %}primary{% endif %} fs-6">
-                                            {{ loop.index }}º
+                                            {{ loop.index }}�
                                         </span>
                                     </div>
                                 </td>
@@ -92,7 +92,7 @@
                                     </strong>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ url_for('dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
+                                    <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver dashboard do duelista" aria-label="Ver dashboard de {{ duelista.nome }}">
                                         <i class="fas fa-chart-line"></i>
                                     </a>
                                 </td>
@@ -107,11 +107,11 @@
                     <h5 class="text-muted">Nenhum duelista cadastrado</h5>
                     {% if is_admin %}
                     <p class="text-muted">Comece cadastrando pontos para os duelistas</p>
-                    <a href="{{ url_for('cadastrar_torneio') }}" class="btn btn-primary">
+                    <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Cadastrar Primeiro Torneio
                     </a>
                     {% else %}
-                    <p class="text-muted">Os duelistas aparecerão aqui assim que forem cadastrados pelo administrador.</p>
+                    <p class="text-muted">Os duelistas aparecer�o aqui assim que forem cadastrados pelo administrador.</p>
                     {% endif %}
                 </div>
                 {% endif %}
@@ -124,13 +124,13 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle text-info me-2"></i>
                             <small class="text-muted">
-                                <strong>Sistema de Pontuação:</strong> Vitória (3pts) + Empate (1pt) + Participação (1pt)
+                                <strong>Sistema de Pontua��o:</strong> Vit�ria (3pts) + Empate (1pt) + Participa��o (1pt)
                             </small>
                         </div>
                     </div>
                     <div class="col-md-5 text-md-end">
                         <div class="btn-group" role="group">
-                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for('public.index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Voltar
                             </a>
                             
@@ -143,4 +143,5 @@
     </div>
 </div>
 {% endblock %}
+
 

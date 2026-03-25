@@ -30,13 +30,13 @@ def admin_required(func):
     def wrapper(*args, **kwargs):
         if not ip_admin_permitido():
             flash('Acesso administrativo bloqueado para este IP.', 'error')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
 
         if admin_esta_logado():
             return func(*args, **kwargs)
 
         flash('Acesso restrito ao administrador. Faça login para continuar.', 'error')
-        return redirect(url_for('admin_login', next=request.path))
+        return redirect(url_for('admin.admin_login', next=request.path))
 
     return wrapper
 

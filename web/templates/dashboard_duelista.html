@@ -41,10 +41,10 @@
                 {% endif %}
 
                 <div class="dashboard-top-toolbar d-flex flex-wrap gap-2">
-                    <a href="{{ url_for('dashboard_estatisticas') }}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-arrow-left"></i> Voltar ao dashboard
                     </a>
-                    <a href="{{ url_for('ranking') }}" class="btn btn-outline-primary btn-sm">
+                    <a href="{{ url_for('public.ranking') }}" class="btn btn-outline-primary btn-sm">
                         <i class="fas fa-medal"></i> Ranking
                     </a>
                 </div>
@@ -133,7 +133,7 @@
                             <tr>
                                 <td>{{ evento.torneio_data.strftime('%d/%m/%Y') if evento.torneio_data else 'N/A' }}</td>
                                 <td>
-                                    <a href="{{ url_for('painel_torneio', id=evento.torneio_id) }}" class="text-decoration-none fw-semibold">
+                                    <a href="{{ url_for('public.painel_torneio', id=evento.torneio_id) }}" class="text-decoration-none fw-semibold">
                                         {{ evento.torneio_nome }}
                                     </a>
                                 </td>
@@ -174,3 +174,4 @@
     </div>
 </div>
 {% endblock %}
+
