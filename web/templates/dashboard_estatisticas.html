@@ -53,7 +53,7 @@
                     <small class="text-uppercase text-muted d-block"><i class="fas fa-bolt text-success"></i> Maior Win Rate</small>
                     {% if dashboard.lideres.maior_win_rate %}
                     <strong>{{ dashboard.lideres.maior_win_rate.nome }}</strong>
-                    <small class="text-muted d-block">{{ '%.2f'|format(dashboard.lideres.maior_win_rate.win_rate) }}% | {{ dashboard.lideres.maior_win_rate.partidas }} partidas</small>
+                    <small class="text-muted d-block">{% if dashboard.lideres.maior_win_rate.vitorias > 0 %}{{ dashboard.lideres.maior_win_rate.vitorias }} Vitórias{% endif %} em {{ dashboard.lideres.maior_win_rate.partidas }} {{ 'Partida' if dashboard.lideres.maior_win_rate.partidas == 1 else 'Partidas' }} ({{ '%.2f'|format(dashboard.lideres.maior_win_rate.win_rate) }}%)</small>
                     {% else %}
                     <small class="text-muted">Sem elegíveis (mín. {{ dashboard.resumo.min_participacoes_win_rate }} participações)</small>
                     {% endif %}
@@ -73,7 +73,7 @@
                     <small class="text-uppercase text-muted d-block"><i class="fas fa-layer-group text-warning"></i> Mais Top Cut</small>
                     {% if dashboard.lideres.mais_tops %}
                     <strong>{{ dashboard.lideres.mais_tops.nome }}</strong>
-                    <small class="text-muted d-block">{{ dashboard.lideres.mais_tops.tops }} Top Cuts | {{ dashboard.lideres.mais_tops.campeonatos }} títulos</small>
+                    <small class="text-muted d-block">{{ dashboard.lideres.mais_tops.tops }} {{ 'Top Cut' if dashboard.lideres.mais_tops.tops == 1 else 'Top Cuts' }} em {{ dashboard.lideres.mais_tops.participacao }} {{ 'Torneio' if dashboard.lideres.mais_tops.participacao == 1 else 'Torneios' }} </small>
                     {% else %}
                     <small class="text-muted">Nenhum Top Cut registrado</small>
                     {% endif %}
@@ -93,7 +93,7 @@
                     <small class="text-uppercase text-muted d-block"><i class="fas fa-crown text-primary"></i> Mais Títulos</small>
                     {% if dashboard.lideres.mais_campeonatos %}
                     <strong>{{ dashboard.lideres.mais_campeonatos.nome }}</strong>
-                    <small class="text-muted d-block">{{ dashboard.lideres.mais_campeonatos.campeonatos }} títulos | {{ dashboard.lideres.mais_campeonatos.tops }} Top Cuts</small>
+                    <small class="text-muted d-block">{{ dashboard.lideres.mais_campeonatos.campeonatos }} {{ 'Título' if dashboard.lideres.mais_campeonatos.campeonatos == 1 else 'Títulos' }} em {{ dashboard.lideres.mais_campeonatos.tops }} {{ 'Top Cut' if dashboard.lideres.mais_campeonatos.tops == 1 else 'Top Cuts' }}</small>
                     {% else %}
                     <small class="text-muted">Nenhum campeão registrado</small>
                     {% endif %}
@@ -130,7 +130,7 @@
                                 <th class="text-center">Partidas</th>
                                 <th class="text-center">Vitórias</th>
                                 <th class="text-center">Derrotas</th>
-                                <th class="text-center">Empates</th>
+                                {# <th class="text-center">Empates</th> #}
                                 <th class="text-center">Win Rate</th>
                                 <th class="text-center">Top Cut</th>
                                 <th class="text-center">Títulos</th>
@@ -145,7 +145,7 @@
                                 <td class="text-center">{{ duelista.partidas }}</td>
                                 <td class="text-center text-success {% if max_vitorias > 0 and duelista.vitorias == max_vitorias %}record-cell{% endif %}">{{ duelista.vitorias }}</td>
                                 <td class="text-center text-danger">{{ duelista.derrotas }}</td>
-                                <td class="text-center text-info">{{ duelista.empates }}</td>
+                                {# <td class="text-center text-info">{{ duelista.empates }}</td> #}
                                 <td class="text-center"><span class="badge bg-success {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}record-badge{% endif %}">{{ '%.2f'|format(duelista.win_rate) }}%</span></td>
                                 <td class="text-center"><span class="badge bg-warning text-dark {% if max_tops > 0 and duelista.tops == max_tops %}record-badge{% endif %}">{{ duelista.tops }}</span></td>
                                 <td class="text-center"><span class="badge bg-primary {% if max_titulos > 0 and duelista.campeonatos == max_titulos %}record-badge{% endif %}">{{ duelista.campeonatos }}</span></td>
@@ -174,7 +174,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <small class="text-muted">
-            Fórmulas: Win Rate = vitórias / (vitórias + derrotas + empates). Conversão Top Cut -> Título = títulos / Top Cuts.
+            Fórmulas: Win Rate calculado a partir das partidas registradas. Conversão Top Cut -> Título = títulos / Top Cuts.
         </small>
     </div>
 </div>

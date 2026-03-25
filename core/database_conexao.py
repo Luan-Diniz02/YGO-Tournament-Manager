@@ -804,7 +804,7 @@ class Conexao:
 
                 if max_win_rate is not None and resumo['win_rate_geral'] == max_win_rate:
                     conquistas.append({
-                        'rotulo': f'Elite Win Rate ({min_participacoes_win_rate}+ participações)',
+                        'rotulo': f'Elite Win Rate',
                         'icone': 'fa-bolt',
                         'classe': 'bg-success'
                     })
