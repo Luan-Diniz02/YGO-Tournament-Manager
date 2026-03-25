@@ -7,6 +7,29 @@ Aplicação web em Flask para gerenciamento de torneios de Yu-Gi-Oh, com ranking
 - Produção (Render): https://ygo-tournament-manager.onrender.com
 - Healthcheck: https://ygo-tournament-manager.onrender.com/health
 
+## Imagens da Aplicação
+
+### Tela Inicial
+
+![Tela Inicial](docs/images/home.png)
+
+### Ranking
+
+![Ranking](docs/images/ranking.png)
+
+### Cadastrar Torneios
+
+![Cadastrar Torneio](docs/images/cadastrar-torneio.png)
+
+### Painel do Torneio
+
+![Painel do Torneio](docs/images/painel-torneio.png)
+
+### Dashboard
+
+![Dashboard Geral](docs/images/dashboard.png)
+
+
 ## Principais Recursos
 
 - Cadastro e gerenciamento de torneios
