@@ -234,7 +234,8 @@ class Conexao:
             cursor.execute(sql, (novo_nome, vitorias, derrotas, empates, pontos, nome_antigo))
             conexao.commit()
         except Exception as e:
-            print(f"Erro ao atualizar duelista: {e}")
+            conexao.rollback()
+            raise e
         finally:
             if 'cursor' in locals():
                 cursor.close()

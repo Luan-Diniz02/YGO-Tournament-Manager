@@ -1,66 +1,20 @@
-import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import os
-from functools import wraps
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from core.models import Duelistas, Torneio
 from core.database_conexao import Conexao
+from web.auth import admin_required, ip_admin_permitido, inject_auth_context
+from web.security import configure_security, is_safe_redirect_target
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 app = Flask(__name__)
-# Carrega a chave secreta a partir das variáveis de ambiente (com fallback seguro apenas para evitar quebrar bruscamente)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key_if_env_not_found')
+configure_security(app)
 
 # Instancia da conexão
 conexao = Conexao()
-
-
-def admin_esta_logado():
-    return session.get('is_admin', False)
-
-
-def obter_ip_cliente():
-    forwarded_for = request.headers.get('X-Forwarded-For', '').strip()
-    if forwarded_for:
-        return forwarded_for.split(',')[0].strip()
-    return (request.remote_addr or '').strip()
-
-
-def ip_admin_permitido():
-    ips_permitidos = os.getenv('ADMIN_ALLOWED_IPS', '').strip()
-    if not ips_permitidos:
-        return True
-
-    cliente_ip = obter_ip_cliente()
-    allowlist = {ip.strip() for ip in ips_permitidos.split(',') if ip.strip()}
-    return cliente_ip in allowlist
-
-
-def admin_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not ip_admin_permitido():
-            flash('Acesso administrativo bloqueado para este IP.', 'error')
-            return redirect(url_for('index'))
-
-        if admin_esta_logado():
-            return func(*args, **kwargs)
-
-        flash('Acesso restrito ao administrador. Faça login para continuar.', 'error')
-        return redirect(url_for('admin_login', next=request.path))
-
-    return wrapper
-
-
-@app.context_processor
-def inject_auth_context():
-    return {
-        'is_admin': admin_esta_logado(),
-    }
+app.context_processor(inject_auth_context)
 
 
 def inicializar_estrutura_banco_se_necessario():
@@ -107,7 +61,7 @@ def admin_login():
             flash('Login de administrador realizado com sucesso.', 'success')
 
             next_url = request.args.get('next') or request.form.get('next')
-            if next_url:
+            if next_url and is_safe_redirect_target(next_url):
                 return redirect(next_url)
             return redirect(url_for('index'))
 
@@ -342,9 +296,14 @@ def painel_torneio(id):
 def adicionar_jogador_torneio(id):
     """Rota invisível para processar a adição de um jogador ao torneio"""
     nome = request.form['nome_duelista'].strip()
-    vitorias = int(request.form['vitorias'])
-    derrotas = int(request.form['derrotas'])
-    empates = int(request.form['empates'])
+    try:
+        vitorias = int(request.form['vitorias'])
+        derrotas = int(request.form['derrotas'])
+        empates = int(request.form['empates'])
+    except (TypeError, ValueError):
+        flash('Vitórias, derrotas e empates devem ser números inteiros válidos.', 'error')
+        return redirect(url_for('painel_torneio', id=id))
+
     topou_torneio = request.form.get('topou_torneio') == 'on'
 
     colocacao_top = None

@@ -55,6 +55,7 @@
                     {% if is_admin %}
                     <li class="nav-item">
                         <form method="POST" action="{{ url_for('admin_logout') }}" class="d-inline">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="nav-link btn btn-link text-decoration-none" aria-label="Sair da área administrativa">
                                 <i class="fas fa-right-from-bracket"></i> Sair (Admin)
                             </button>

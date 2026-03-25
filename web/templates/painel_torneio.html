@@ -46,6 +46,7 @@
                 <p class="small text-muted mb-4">Adicione o placar final do participante nesta etapa (incluindo as vitórias/derrotas do Top Cut). <b>Isso também computará no Ranking Global</b> da Liga.</p>
 
                 <form method="POST" action="{{ url_for('adicionar_jogador_torneio', id=torneio.id) }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="nome_duelista" class="form-label fw-bold">Nome do Duelista</label>
                         <input type="text" class="form-control" id="nome_duelista" name="nome_duelista" placeholder="Ex: Yugi Muto" required autocomplete="off" list="lista_duelistas">

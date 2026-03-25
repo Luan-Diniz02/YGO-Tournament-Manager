@@ -13,6 +13,7 @@
             </div>
             <div class="card-body">
                 <form method="POST" class="mb-4">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="row align-items-end">
                         <div class="col-md-6">
                             <label for="nome_busca" class="form-label">
@@ -78,6 +79,7 @@
                             </a>
                             {% else %}
                             <form method="POST" action="{{ url_for('reativar_duelista', nome=duelista_encontrado.nome) }}" class="d-inline">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                 <button
                                     type="submit"
                                     class="btn btn-success btn-sm"
@@ -163,6 +165,7 @@
                                             {% else %}
                                             <div class="d-flex gap-1">
                                                 <form method="POST" action="{{ url_for('reativar_duelista', nome=duelista.nome) }}" class="d-inline">
+                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                     <button
                                                         type="submit"
                                                         class="btn btn-outline-success btn-sm"
@@ -178,6 +181,7 @@
                                                     </button>
                                                 </form>
                                                 <form method="POST" action="{{ url_for('excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
+                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                     <button
                                                         type="submit"
                                                         class="btn btn-outline-danger btn-sm"

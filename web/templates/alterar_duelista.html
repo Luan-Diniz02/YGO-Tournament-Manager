@@ -13,6 +13,7 @@
             </div>
             <div class="card-body">
                 <form method="POST">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="nome" class="form-label">
                             <i class="fas fa-user"></i> Nome do Duelista
@@ -85,6 +86,7 @@
                 
                 <!-- Formulário separado para exclusão com botão vermelho -->
                 <form method="POST" action="{{ url_for('desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <button
                         type="submit"
                         class="btn btn-danger"
