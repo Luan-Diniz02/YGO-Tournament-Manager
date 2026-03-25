@@ -20,6 +20,8 @@ echo.
 echo Pressione Ctrl+C para parar o servidor
 echo ========================================
 
-python app.py
+pushd "%~dp0.."
+python -m web.app
+popd
 
 pause
