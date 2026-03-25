@@ -274,6 +274,10 @@ Executar a suíte de testes:
 pytest -q
 ```
 
+A suíte atual cobre:
+- Testes unitários de serviços (`AdminService` e `PublicService`)
+- Testes de integração HTTP com Flask test client (login admin, CSRF, redirect seguro e proteção de rota admin)
+
 Observação: a aplicação agora exige `FLASK_SECRET_KEY` configurada para inicializar com segurança.
 
 ### Porta 5000 em Uso
