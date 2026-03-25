@@ -282,23 +282,14 @@ footer {
         border-radius: 10px;
     }
 
-    .ranking-table th,
-    .ranking-table td,
-    #tabela-dashboard-duelistas th,
-    #tabela-dashboard-duelistas td,
-    .torneios-table th,
-    .torneios-table td,
-    .painel-torneio-table th,
-    .painel-torneio-table td {
+    .table th,
+    .table td {
         white-space: nowrap;
         font-size: 0.84rem;
         padding: 0.45rem 0.5rem;
     }
 
-    .ranking-table .badge,
-    #tabela-dashboard-duelistas .badge,
-    .torneios-table .badge,
-    .painel-torneio-table .badge {
+    .table .badge {
         font-size: 0.76rem;
         padding: 0.38em 0.58em;
     }
@@ -306,25 +297,6 @@ footer {
     .ranking-separador td {
         white-space: normal;
         font-size: 0.8rem;
-    }
-
-    .ranking-tier-label-long {
-        display: none;
-    }
-
-    .ranking-tier-label-short {
-        display: inline;
-    }
-
-    .mobile-card-header-stack {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 0.55rem;
-    }
-
-    .mobile-card-header-stack .mobile-header-action,
-    .mobile-card-header-stack .badge {
-        align-self: flex-start;
     }
 
     .ranking-header-wrap {
@@ -379,73 +351,6 @@ footer {
 
     .card-footer .btn-group .btn {
         flex: 1 1 auto;
-    }
-
-    /* Dashboard: converte tabela ampla em cards no mobile */
-    #tabela-dashboard-duelistas thead {
-        display: none;
-    }
-
-    #tabela-dashboard-duelistas,
-    #tabela-dashboard-duelistas tbody,
-    #tabela-dashboard-duelistas tr,
-    #tabela-dashboard-duelistas td {
-        display: block;
-        width: 100%;
-    }
-
-    #tabela-dashboard-duelistas tr {
-        border: 1px solid #d9e3ee;
-        border-radius: 12px;
-        padding: 0.55rem 0.65rem;
-        margin: 0.55rem;
-        background: #ffffff;
-        box-shadow: 0 4px 10px rgba(25, 45, 67, 0.08);
-    }
-
-    #tabela-dashboard-duelistas td {
-        white-space: normal;
-        border: none;
-        border-bottom: 1px dashed #e7edf5;
-        padding: 0.38rem 0;
-        min-width: 0;
-        font-size: 0.86rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        text-align: right !important;
-    }
-
-    #tabela-dashboard-duelistas td:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    #tabela-dashboard-duelistas td::before {
-        content: attr(data-label);
-        font-weight: 700;
-        color: #526579;
-        text-align: left;
-        margin-right: 0.75rem;
-    }
-
-    #tabela-dashboard-duelistas td:first-child {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #1f2d3d;
-    }
-
-    #tabela-dashboard-duelistas .dashboard-action-cell {
-        justify-content: flex-end;
-    }
-
-    #tabela-dashboard-duelistas .dashboard-action-cell::before {
-        display: none;
-    }
-
-    #tabela-dashboard-duelistas .dashboard-action-cell .btn {
-        width: 100%;
     }
 }
 
@@ -512,10 +417,6 @@ footer {
 
 .ranking-row-slifer td:first-child {
     border-left: 4px solid rgba(220, 53, 69, 0.8);
-}
-
-.ranking-tier-label-short {
-    display: none;
 }
 
 /* Special Ranking Styles */
