@@ -11,7 +11,7 @@
 
 /* General Styles */
 body {
-    background-color: #f4f6f9;
+    background-color: #e2e8f0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #1a2a3a;
 }
@@ -230,8 +230,15 @@ footer {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .slide-in {
@@ -239,8 +246,15 @@ footer {
 }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Loading Animation */
@@ -255,7 +269,9 @@ footer {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Responsive Enhancements */
@@ -268,16 +284,16 @@ footer {
         font-size: 1.95rem;
         line-height: 1.2;
     }
-    
+
     .card-body {
         padding: 1rem;
     }
-    
+
     .btn {
         padding: 8px 16px;
         font-size: 0.9rem;
     }
-    
+
     .table-responsive {
         border-radius: 10px;
     }
@@ -371,7 +387,8 @@ footer {
 }
 
 /* Icon Enhancements */
-.fas, .far {
+.fas,
+.far {
     transition: all 0.3s ease;
 }
 
@@ -580,6 +597,7 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -617,7 +635,7 @@ footer {
 .mobile-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     margin-bottom: 0.75rem;
     padding: 1rem;
     border: none;
@@ -626,7 +644,7 @@ footer {
 
 .mobile-card:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-card-header {
@@ -719,10 +737,21 @@ footer {
 }
 
 /* Specific Subtle Accents (Optional, can be used for text or indicators) */
-.mobile-text-success { color: var(--success-color); }
-.mobile-text-warning { color: var(--warning-color); }
-.mobile-text-danger { color: var(--danger-color); }
-.mobile-text-info { color: var(--info-color); }
+.mobile-text-success {
+    color: var(--success-color);
+}
+
+.mobile-text-warning {
+    color: var(--warning-color);
+}
+
+.mobile-text-danger {
+    color: var(--danger-color);
+}
+
+.mobile-text-info {
+    color: var(--info-color);
+}
 
 @media print {
     body {
@@ -770,5 +799,33 @@ footer {
     .table td {
         color: #000 !important;
         background: #fff !important;
+    }
+}@media (max-width: 991.98px) {
+    /* Torna o card principal transparente no mobile */
+    .wrapper-transparent-mobile {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    
+    /* Descola o cabeçalho do resto do conteúdo */
+    .wrapper-transparent-mobile > .card-header {
+        border-radius: 15px !important;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    /* Remove o fundo do footer e ajusta o padding */
+    .wrapper-transparent-mobile > .card-footer {
+        background-color: transparent !important;
+        border-top: none !important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    /* Remove o padding interno extra do corpo no mobile */
+    .wrapper-transparent-mobile > .card-body > .mobile-cards-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 }
