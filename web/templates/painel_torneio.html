@@ -104,62 +104,105 @@
             </div>
             <div class="card-body p-0">
                 {% if participantes %}
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="text-center" style="width: 50px;">Pos</th>
-                                <th>Duelista</th>
-                                <th class="text-center">V</th>
-                                <th class="text-center">D</th>
-                                <th class="text-center">E</th>
-                                <th class="text-center text-primary">Pts da Etapa</th>
-                                {% if is_admin %}
-                                <th class="text-center">Ações</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in participantes %}
-                            <tr>
-                                <td class="text-center align-middle">
-                                    {% if loop.index == 1 %}
-                                        <i class="fas fa-medal text-warning fs-5"></i>
-                                    {% elif loop.index == 2 %}
-                                        <i class="fas fa-medal text-secondary fs-5"></i>
-                                    {% elif loop.index == 3 %}
-                                        <i class="fas fa-medal" style="color: #cd7f32;"></i>
-                                    {% else %}
-                                        <span class="text-muted fw-bold">{{ loop.index }}º</span>
+                <!-- Desktop View -->
+                <div class="d-none d-lg-block">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">Posição</th>
+                                    <th>Nome</th>
+                                    <th class="text-center">V</th>
+                                    <th class="text-center">D</th>
+                                    <th class="text-center">E</th>
+                                    <th class="text-center">Pts</th>
+                                    <th class="text-center">Top Cut</th>
+                                    {% if is_admin %}<th class="text-center">Ação</th>{% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in participantes %}
+                                <tr>
+                                    <td class="text-center"><span class="badge bg-primary">{{ loop.index }}º</span></td>
+                                    <td><strong>{{ p.nome }}</strong></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-success">{{ p.vitorias }}</span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-danger">{{ p.derrotas }}</span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-info text-dark">{{ p.empates }}</span></td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold">{{ p.pontos_obtidos }} pts</span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if p.topou_torneio %}
+                                            <span class="badge bg-warning text-dark">TOP {{ p.colocacao_top if p.colocacao_top else '' }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Não</span>
+                                        {% endif %}
+                                    </td>
+                                    {% if is_admin %}
+                                    <td class="text-center">
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-outline-warning btn-sm js-editar-resultado"
+                                            data-nome="{{ p.nome }}"
+                                            data-vitorias="{{ p.vitorias }}"
+                                            data-derrotas="{{ p.derrotas }}"
+                                            data-empates="{{ p.empates }}"
+                                            data-topou="{{ 1 if p.topou_torneio else 0 }}"
+                                            data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
+                                        >
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
                                     {% endif %}
-                                </td>
-                                <td class="align-middle fw-bold">{{ p.nome }}</td>
-                                <td class="text-center align-middle text-success">{{ p.vitorias }}</td>
-                                <td class="text-center align-middle text-danger">{{ p.derrotas }}</td>
-                                <td class="text-center align-middle text-info">{{ p.empates }}</td>
-                                <td class="text-center align-middle fw-bold text-primary fs-5">{{ p.pontos_obtidos }}</td>
-                                {% if is_admin %}
-                                <td class="text-center align-middle">
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-secondary js-editar-resultado"
-                                        data-nome="{{ p.nome }}"
-                                        data-vitorias="{{ p.vitorias }}"
-                                        data-derrotas="{{ p.derrotas }}"
-                                        data-empates="{{ p.empates }}"
-                                        data-topou="{{ 1 if p.topou_torneio else 0 }}"
-                                        data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
-                                        title="Editar Resultado"
-                                        aria-label="Editar resultado de {{ p.nome }}"
-                                    >
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="d-lg-none mobile-cards-container p-3">
+                    {% for p in participantes %}
+                    <div class="mobile-card shadow-sm border-0">
+                        <div class="mobile-card-header mb-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.9rem;">{{ loop.index }}º</span>
+                                <div class="mobile-card-title fw-bold">{{ p.nome }}</div>
+                            </div>
+                            <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold">{{ p.pontos_obtidos }} pts</span>
+                        </div>
+                        <div class="mobile-card-body pb-1">
+                            <div class="d-flex justify-content-between align-items-center w-100 mobile-card-full mt-2">
+                                <div class="d-flex align-items-center flex-nowrap gap-1">
+                                    <span class="badge rounded-pill bg-success">{{ p.vitorias }} V</span>
+                                    <span class="badge rounded-pill bg-danger">{{ p.derrotas }} D</span>
+                                    <span class="badge rounded-pill bg-info text-dark">{{ p.empates }} E</span>
+                                </div>
+                                <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="btn btn-sm btn-light text-primary rounded-circle shadow-none p-2" title="Dashboard" aria-label="Dashboard de {{ p.nome }}">
+                                    <i class="fas fa-chart-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% if is_admin %}
+                        <div class="mobile-card-footer d-flex justify-content-end pt-2 border-0">
+                            <button 
+                                type="button" 
+                                class="btn btn-sm btn-light text-warning border-0 shadow-none js-editar-resultado fw-bold"
+                                data-nome="{{ p.nome }}"
+                                data-vitorias="{{ p.vitorias }}"
+                                data-derrotas="{{ p.derrotas }}"
+                                data-empates="{{ p.empates }}"
+                                data-topou="{{ 1 if p.topou_torneio else 0 }}"
+                                data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
+                                title="Editar Resultado"
+                            >
+                                <i class="fas fa-edit me-1"></i> Editar
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
                 {% else %}
                 <div class="text-center py-5">

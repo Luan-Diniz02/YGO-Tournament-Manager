@@ -1,6 +1,6 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Liga YGO Maraba - Pagina Inicial{% endblock %}
+{% block title %}Liga YGO Marabá - Página Inicial{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="hero-section bg-primary text-white rounded p-5 mb-4">
             <div class="text-center">
                 <h1 class="display-4">
-                    <i class="fas fa-trophy"></i> Liga YGO Maraba
+                    <i class="fas fa-trophy"></i> Liga YGO Marabá
                 </h1>
                 <p class="lead">Sistema de Gerenciamento de Torneios Yu-Gi-Oh!</p>
             </div>
@@ -23,7 +23,7 @@
             <div class="card-body text-center">
                 <div class="mb-3"><i class="fas fa-calendar-plus fa-3x text-primary"></i></div>
                 <h5 class="card-title">Cadastrar Torneio</h5>
-                <p class="card-text">Cadastre novos torneios com informacoes como nome, rodadas e participantes.</p>
+                <p class="card-text">Cadastre novos torneios com informações como nome, rodadas e participantes.</p>
                 <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Cadastrar Torneio
                 </a>
@@ -36,7 +36,7 @@
             <div class="card-body text-center">
                 <div class="mb-3"><i class="fas fa-search fa-3x text-info"></i></div>
                 <h5 class="card-title">Encontrar Duelista</h5>
-                <p class="card-text">Busque informacoes especificas de qualquer duelista cadastrado no sistema.</p>
+                <p class="card-text">Busque informações específicas de qualquer duelista cadastrado no sistema.</p>
                 <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-info text-white">
                     <i class="fas fa-search"></i> Buscar Duelista
                 </a>
@@ -63,7 +63,7 @@
             <div class="card-body text-center">
                 <div class="mb-3"><i class="fas fa-chart-pie fa-3x text-dark"></i></div>
                 <h5 class="card-title">Dashboard da Liga</h5>
-                <p class="card-text">Acompanhe metricas avancadas dos duelistas e acesse analises individuais.</p>
+                <p class="card-text">Acompanhe métricas avançadas dos duelistas e acesse análises individuais.</p>
                 <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-dark">
                     <i class="fas fa-chart-line"></i> Abrir Dashboard
                 </a>
@@ -76,7 +76,7 @@
             <div class="card-body text-center">
                 <div class="mb-3"><i class="fas fa-eye fa-3x text-secondary"></i></div>
                 <h5 class="card-title">Visualizar Torneios</h5>
-                <p class="card-text">Consulte informacoes sobre torneios ja realizados e seus participantes.</p>
+                <p class="card-text">Consulte informações sobre torneios já realizados e seus participantes.</p>
                 <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-secondary">
                     <i class="fas fa-list"></i> Ver Torneios
                 </a>
@@ -85,3 +85,4 @@
     </div>
 </div>
 {% endblock %}
+

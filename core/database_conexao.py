@@ -700,6 +700,7 @@ class Conexao:
                         t.id AS torneio_id,
                         t.nome AS torneio_nome,
                         t.data AS torneio_data,
+                        t.rodadas,
                         tp.vitorias,
                         tp.derrotas,
                         tp.empates,

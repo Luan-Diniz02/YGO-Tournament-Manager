@@ -11,9 +11,9 @@
 
 /* General Styles */
 body {
-    background-color: #f8f9fa;
+    background-color: #f4f6f9;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #1f2d3d;
+    color: #1a2a3a;
 }
 
 /* Hero Section */
@@ -155,7 +155,7 @@ body {
 }
 
 .text-muted {
-    color: #5a6c7e !important;
+    color: #4b5e71 !important;
 }
 
 /* Alert Enhancements */
@@ -309,7 +309,7 @@ footer {
 
     .ranking-table th,
     .ranking-table td {
-        min-width: 86px;
+        min-width: 90px;
     }
 
     .ranking-table th:nth-child(2),
@@ -608,6 +608,121 @@ footer {
 .table tbody tr td strong a:hover {
     text-decoration: underline !important;
 }
+
+/* Mobile Card System */
+.mobile-cards-container {
+    padding: 0.5rem;
+}
+
+.mobile-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-card:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f2f5;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.mobile-card-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a2a3a;
+    margin: 0;
+}
+
+.mobile-card-body {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.mobile-card-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.15rem;
+}
+
+.mobile-card-value {
+    font-weight: 700;
+    color: #1f2d3d;
+}
+
+.mobile-card-full {
+    grid-column: span 2;
+}
+
+.mobile-card-footer {
+    gap: 0.5rem;
+}
+
+/* Compact Mobile Cards for List View */
+.mobile-card-compact {
+    padding: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.mobile-card-compact .mobile-card-header {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0.25rem;
+}
+
+.mobile-card-compact .mobile-card-title {
+    font-size: 1rem;
+}
+
+.mobile-card-compact .mobile-card-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+}
+
+.mobile-card-compact .mobile-card-item {
+    flex-direction: row;
+    gap: 0.25rem;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.mobile-card-compact .mobile-card-label {
+    margin-bottom: 0;
+    font-size: 0.7rem;
+}
+
+.mobile-card-compact .mobile-card-footer {
+    margin-top: 0.5rem;
+    padding-top: 0.25rem;
+    border-top: none;
+}
+
+/* Specific Subtle Accents (Optional, can be used for text or indicators) */
+.mobile-text-success { color: var(--success-color); }
+.mobile-text-warning { color: var(--warning-color); }
+.mobile-text-danger { color: var(--danger-color); }
+.mobile-text-info { color: var(--info-color); }
 
 @media print {
     body {
