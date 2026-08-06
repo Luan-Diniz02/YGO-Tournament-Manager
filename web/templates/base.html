@@ -38,13 +38,8 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'public.ranking' %}active{% endif %}" href="{{ url_for('public.ranking') }}" {% if endpoint == 'public.ranking' %}aria-current="page"{% endif %}>
+                        <a class="nav-link {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" href="{{ url_for('public.dashboard_estatisticas') }}" {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
                             <i class="fas fa-medal"></i> Ranking
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if endpoint in ['public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" href="{{ url_for('public.dashboard_estatisticas') }}" {% if endpoint in ['public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
-                            <i class="fas fa-chart-pie"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">

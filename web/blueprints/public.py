@@ -17,12 +17,7 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
 
     @public_bp.route('/ranking')
     def ranking():
-        try:
-            duelistas_ordenados = public_service.carregar_ranking()
-        except Exception:
-            duelistas_ordenados = []
-            flash('Nao foi possivel carregar o ranking agora. Verifique a conexao com o banco e tente novamente.', 'error')
-        return render_template('ranking.html', duelistas=duelistas_ordenados)
+        return redirect(url_for('public.dashboard_estatisticas'))
 
     @public_bp.route('/dashboard')
     def dashboard_estatisticas():

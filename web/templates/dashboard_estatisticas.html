@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard de Estatísticas - Liga YGO Marabá{% endblock %}
+{% block title %}Ranking - Liga YGO Marabá{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -10,18 +10,18 @@
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3 dashboard-hero-top">
                     <div class="d-flex align-items-center gap-3">
                         <span class="dashboard-hero-icon">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-medal"></i>
                         </span>
                         <div>
-                            <h4 class="mb-1">Dashboard de Estatísticas</h4>
+                            <h4 class="mb-1">Ranking & Estatísticas</h4>
                             <p class="mb-0 text-muted">
-                                Visão comparativa por duelista com foco em win rate, Top Cut e títulos.
+                                Classificação oficial por pontos com Win Rate, Top Cut e títulos de cada duelista.
                             </p>
                         </div>
                     </div>
                     <div class="d-flex flex-wrap gap-2 dashboard-hero-badges">
                         <span class="badge bg-dark">{{ dashboard.duelistas|length }} duelistas</span>
-                        <span class="badge bg-secondary">Destaques: Win Rate, Top Cut e Títulos de Torneio</span>
+                        <span class="badge bg-secondary">Pontos · Win Rate · Top Cut · Títulos</span>
                     </div>
                 </div>
 
@@ -59,8 +59,8 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.maior_win_rate %}
-                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.maior_win_rate.nome }}">
-                    <i class="fas fa-chart-line"></i>
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.maior_win_rate.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir perfil do duelista" aria-label="Abrir perfil de {{ dashboard.lideres.maior_win_rate.nome }}">
+                    <i class="fas fa-user"></i>
                 </a>
                 {% endif %}
             </div>
@@ -79,8 +79,8 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.mais_tops %}
-                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_tops.nome }}">
-                    <i class="fas fa-chart-line"></i>
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_tops.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir perfil do duelista" aria-label="Abrir perfil de {{ dashboard.lideres.mais_tops.nome }}">
+                    <i class="fas fa-user"></i>
                 </a>
                 {% endif %}
             </div>
@@ -99,8 +99,8 @@
                     {% endif %}
                 </div>
                 {% if dashboard.lideres.mais_campeonatos %}
-                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir dashboard do duelista" aria-label="Abrir dashboard de {{ dashboard.lideres.mais_campeonatos.nome }}">
-                    <i class="fas fa-chart-line"></i>
+                <a href="{{ url_for('public.dashboard_duelista', nome=dashboard.lideres.mais_campeonatos.nome) }}" class="btn btn-sm dashboard-mini-action" title="Abrir perfil do duelista" aria-label="Abrir perfil de {{ dashboard.lideres.mais_campeonatos.nome }}">
+                    <i class="fas fa-user"></i>
                 </a>
                 {% endif %}
             </div>
@@ -112,41 +112,59 @@
     <div class="col-12">
         <div class="card shadow-sm wrapper-transparent-mobile">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-table"></i> Estatísticas por Duelista</h5>
+                <h5 class="mb-0"><i class="fas fa-table"></i> Classificação</h5>
                 <span class="badge bg-light text-dark" id="contador-visivel-dashboard">0 visíveis</span>
             </div>
             <div class="card-body p-0">
                 {% if dashboard.duelistas %}
-                {% set max_vitorias = (dashboard.duelistas | map(attribute='vitorias') | max) if dashboard.duelistas else 0 %}
                 {% set max_win_rate = (dashboard.duelistas | map(attribute='win_rate') | max) if dashboard.duelistas else 0 %}
                 {% set max_tops = (dashboard.duelistas | map(attribute='tops') | max) if dashboard.duelistas else 0 %}
                 {% set max_titulos = (dashboard.duelistas | map(attribute='campeonatos') | max) if dashboard.duelistas else 0 %}
                 {% set max_conversao = (dashboard.duelistas | map(attribute='taxa_conversao_top_titulo') | max) if dashboard.duelistas else 0 %}
+                {% set max_pontos = (dashboard.duelistas | map(attribute='pontos') | max) if dashboard.duelistas else 0 %}
 
                 <!-- Desktop View -->
                 <div class="d-none d-lg-block">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0" id="tabela-dashboard-duelistas">
-                            <thead class="table-light">
+                            <thead class="table-dark">
                                 <tr>
+                                    <th class="text-center" style="width: 56px;">#</th>
                                     <th>Duelista</th>
-                                    <th class="text-center">Partidas</th>
-                                    <th class="text-center">Vitórias</th>
-                                    <th class="text-center">Derrotas</th>
-                                    <th class="text-center">Win Rate</th>
-                                    <th class="text-center">Top Cut</th>
-                                    <th class="text-center">Títulos</th>
-                                    <th class="text-center">Conversão Top Cut -> Título</th>
-                                    <th class="text-center">Dashboard</th>
+                                    <th class="text-center" title="Pontos acumulados na liga">Pontos</th>
+                                    <th class="text-center" title="Vitórias / Derrotas">V / D</th>
+                                    <th class="text-center" title="Win Rate geral">Win Rate</th>
+                                    <th class="text-center" title="Número de Top Cuts">Top Cut</th>
+                                    <th class="text-center" title="Títulos conquistados">Títulos</th>
+                                    <th class="text-center" title="Taxa de conversão Top Cut → Título">Conv. Top→Tít.</th>
+                                    <th class="text-center">Perfil</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for duelista in dashboard.duelistas %}
                                 <tr class="js-linha-duelista" data-nome="{{ duelista.nome|lower }}" data-partidas="{{ duelista.partidas }}">
+                                    <td class="text-center">
+                                        {% if duelista.posicao_ranking == 1 %}
+                                        <span class="badge bg-warning text-dark fw-bold">🥇 1º</span>
+                                        {% elif duelista.posicao_ranking == 2 %}
+                                        <span class="badge bg-secondary fw-bold">🥈 2º</span>
+                                        {% elif duelista.posicao_ranking == 3 %}
+                                        <span class="badge bg-danger fw-bold" style="background-color: #cd7f32 !important;">🥉 3º</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">{{ duelista.posicao_ranking }}º</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="fw-bold">{{ duelista.nome }}</td>
-                                    <td class="text-center">{{ duelista.partidas }}</td>
-                                    <td class="text-center text-success {% if max_vitorias > 0 and duelista.vitorias == max_vitorias %}record-cell{% endif %}">{{ duelista.vitorias }}</td>
-                                    <td class="text-center text-danger">{{ duelista.derrotas }}</td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold {% if max_pontos > 0 and duelista.pontos == max_pontos %}record-badge{% endif %}">
+                                            {{ duelista.pontos }} pts
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-success fw-semibold">{{ duelista.vitorias }}</span>
+                                        <span class="text-muted mx-1">/</span>
+                                        <span class="text-danger fw-semibold">{{ duelista.derrotas }}</span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="badge bg-success {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}record-badge{% endif %}">
                                             {{ '%.2f'|format(duelista.win_rate) }}%
@@ -163,13 +181,13 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge rounded-pill bg-dark {% if max_conversao > 0 and duelista.taxa_conversao_top_titulo == max_conversao %}record-badge{% endif %}">
+                                        <span class="badge rounded-pill bg-dark {% if max_conversao > 0 and duelista.taxa_conversao_top_titulo == max_conversao %}record-badge{% endif %}" title="{{ duelista.campeonatos }} título(s) em {{ duelista.tops }} Top Cut(s)">
                                             {{ '%.2f'|format(duelista.taxa_conversao_top_titulo) }}%
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-chart-line"></i> Dashboard
+                                        <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver perfil de {{ duelista.nome }}" aria-label="Perfil de {{ duelista.nome }}">
+                                            <i class="fas fa-user"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -184,20 +202,32 @@
                     {% for duelista in dashboard.duelistas %}
                     <div class="mobile-card shadow-sm border-0 js-linha-duelista" data-nome="{{ duelista.nome|lower }}" data-partidas="{{ duelista.partidas }}">
                         <div class="mobile-card-header mb-2 d-flex justify-content-between align-items-center">
-                            <div class="mobile-card-title fw-bold">{{ duelista.nome }}</div>
-                            <span class="badge bg-success">{{ '%.2f'|format(duelista.win_rate) }}% WR</span>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if duelista.posicao_ranking == 1 %}
+                                <span class="badge bg-warning text-dark fw-bold">🥇 1º</span>
+                                {% elif duelista.posicao_ranking == 2 %}
+                                <span class="badge bg-secondary fw-bold">2º</span>
+                                {% elif duelista.posicao_ranking == 3 %}
+                                <span class="badge fw-bold" style="background-color: #cd7f32; color: white;">3º</span>
+                                {% else %}
+                                <span class="badge bg-dark">{{ duelista.posicao_ranking }}º</span>
+                                {% endif %}
+                                <div class="mobile-card-title fw-bold">{{ duelista.nome }}</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold">{{ duelista.pontos }} pts</span>
+                                <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-sm btn-light text-primary rounded-circle shadow-none p-2" title="Ver Perfil" aria-label="Perfil de {{ duelista.nome }}">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                            </div>
                         </div>
                         <div class="mobile-card-body pb-1">
-                            <div class="d-flex justify-content-between align-items-center w-100 mobile-card-full mt-2">
-                                <div class="d-flex align-items-center flex-nowrap gap-1">
-                                    <span class="badge rounded-pill bg-secondary">{{ duelista.partidas }} P</span>
-                                    <span class="badge rounded-pill bg-success">{{ duelista.vitorias }} V</span>
-                                    <span class="badge rounded-pill bg-warning text-dark">{{ duelista.tops }} Top</span>
-                                    <span class="badge rounded-pill bg-primary">{{ duelista.campeonatos }} 1ºs</span>
-                                </div>
-                                <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="btn btn-sm btn-light text-primary rounded-circle shadow-none p-2" title="Ver Dashboard" aria-label="Dashboard de {{ duelista.nome }}">
-                                    <i class="fas fa-chart-line"></i>
-                                </a>
+                            <div class="d-flex align-items-center flex-nowrap gap-1 mobile-card-full mt-1">
+                                <span class="badge rounded-pill bg-success">{{ duelista.vitorias }} V</span>
+                                <span class="badge rounded-pill bg-danger">{{ duelista.derrotas }} D</span>
+                                <span class="badge bg-success">{{ '%.1f'|format(duelista.win_rate) }}% WR</span>
+                                <span class="badge bg-warning text-dark">{{ duelista.tops }} Top</span>
+                                <span class="badge rounded-pill bg-primary">{{ duelista.campeonatos }} 🏆</span>
                             </div>
                         </div>
                     </div>
@@ -207,7 +237,7 @@
                 {% else %}
                 <div class="text-center py-5">
                     <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
-                    <h6 class="text-muted">Ainda não há dados suficientes para montar o dashboard.</h6>
+                    <h6 class="text-muted">Ainda não há dados suficientes para montar o ranking.</h6>
                 </div>
                 {% endif %}
             </div>
@@ -218,7 +248,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <small class="text-muted">
-            Fórmulas: Win Rate calculado a partir das partidas registradas. Conversão Top Cut -> Título = títulos / Top Cuts.
+            Fórmulas: Pontos = (Vitórias × 3) + Empates + Participações. Win Rate = Vitórias / Partidas. Conv. Top→Tít. = Títulos / Top Cuts.
         </small>
     </div>
 </div>
@@ -233,9 +263,7 @@ function aplicarFiltrosDashboard() {
 
     const termo = (inputNome.value || '').trim().toLowerCase();
     const minPartidas = Number(inputMinPartidas.value || 0);
-    let visiveisTotais = 0;
 
-    // Filtra tanto as linhas da tabela quanto os cards simultaneamente
     document.querySelectorAll('.js-linha-duelista').forEach((elemento) => {
         const nome = (elemento.dataset.nome || '');
         const partidas = Number(elemento.dataset.partidas || 0);
@@ -247,7 +275,7 @@ function aplicarFiltrosDashboard() {
         elemento.style.display = mostrar ? '' : 'none';
     });
 
-    // Conta quantos duelistas únicos estão visíveis
+    let visiveisTotais;
     if (window.innerWidth < 992) {
         visiveisTotais = document.querySelectorAll('.mobile-card.js-linha-duelista:not([style*="display: none"])').length;
     } else {

@@ -587,16 +587,17 @@ class Conexao:
                         GROUP BY duelista_id
                     ) tp ON tp.duelista_id = d.id
                     {filtro_status}
-                    ORDER BY campeonatos DESC, tops DESC, d.pontos DESC, d.vitorias DESC, d.nome ASC
+                    ORDER BY d.pontos DESC, d.derrotas ASC, d.nome ASC
                 """
                 cursor.execute(duelistas_sql)
                 duelistas = cursor.fetchall()
 
-                for duelista in duelistas:
+                for idx, duelista in enumerate(duelistas, start=1):
                     partidas = int(duelista['vitorias']) + int(duelista['derrotas']) + int(duelista['empates'])
                     duelista['partidas'] = partidas
                     duelista['win_rate'] = percentual(int(duelista['vitorias']), partidas)
                     duelista['taxa_conversao_top_titulo'] = percentual(int(duelista['campeonatos']), int(duelista['tops']))
+                    duelista['posicao_ranking'] = idx
 
                 total_vitorias = int(resumo.get('total_vitorias', 0) or 0)
                 total_derrotas = int(resumo.get('total_derrotas', 0) or 0)
