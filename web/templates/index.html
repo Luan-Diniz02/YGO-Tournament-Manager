@@ -49,23 +49,10 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
                 <div class="mb-3"><i class="fas fa-medal fa-3x text-warning"></i></div>
-                <h5 class="card-title">Ranking dos Duelistas</h5>
-                <p class="card-text">Visualize o ranking completo de todos os duelistas ordenado por pontos.</p>
-                <a href="{{ url_for('public.ranking') }}" class="btn btn-warning">
+                <h5 class="card-title">Ranking & Estatísticas</h5>
+                <p class="card-text">Veja a classificação completa por pontos, Win Rate, Top Cuts e títulos de cada duelista.</p>
+                <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-warning">
                     <i class="fas fa-trophy"></i> Ver Ranking
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-chart-pie fa-3x text-dark"></i></div>
-                <h5 class="card-title">Dashboard da Liga</h5>
-                <p class="card-text">Acompanhe métricas avançadas dos duelistas e acesse análises individuais.</p>
-                <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-dark">
-                    <i class="fas fa-chart-line"></i> Abrir Dashboard
                 </a>
             </div>
         </div>
