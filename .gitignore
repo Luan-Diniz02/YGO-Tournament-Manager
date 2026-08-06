@@ -40,3 +40,13 @@ MANIFEST
 # OS
 .DS_Store
 Thumbs.db
+
+# Test artifacts
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Docs screenshots (geradas localmente)
+docs/images/*.png
+docs/images/*.jpg
+docs/images/*.webp

@@ -1,87 +1,70 @@
-# Liga YGO Marabá - Tournament Manager
+# Liga YGO Marabá — Tournament Manager
 
-Aplicação web em Flask para gerenciamento de torneios de Yu-Gi-Oh, com ranking, dashboards, painel de torneio e área administrativa protegida.
+Aplicação web em Flask para gerenciamento de torneios de Yu-Gi-Oh!, com ranking unificado,
+perfis individuais de duelistas, painel por etapa e área administrativa protegida.
 
 ## Demo
 
 - Produção (Render): https://ygo-tournament-manager.onrender.com
 - Healthcheck: https://ygo-tournament-manager.onrender.com/health
 
-## Imagens da Aplicação
-
-### Tela Inicial
-
-![Tela Inicial](docs/images/home.png)
-
-### Ranking
-
-![Ranking](docs/images/ranking.png)
-
-### Cadastrar Torneios
-
-![Cadastrar Torneio](docs/images/cadastrar-torneio.png)
-
-### Painel do Torneio
-
-![Painel do Torneio](docs/images/painel-torneio.png)
-
-### Dashboard
-
-![Dashboard Geral](docs/images/dashboard.png)
-
+---
 
 ## Principais Recursos
 
-- Cadastro e gerenciamento de torneios
-- Ranking global de duelistas
-- Dashboard geral e dashboard individual por duelista
-- Controle de Top Cut por participante
-- Área administrativa com sessão
-- Proteção CSRF em formulários mutáveis
-- Redirecionamento seguro no login admin
+- Cadastro e gerenciamento de etapas de torneio
+- **Ranking unificado** com pontos, Win Rate, Top Cut, Títulos e conversão Top→Título
+- **Perfil individual** por duelista: histórico por etapa, conquistas contextuais e métricas
+- Controle de Top Cut e colocação final por participante
+- Área administrativa com sessão, proteção CSRF e restrição por IP
+- Layout responsivo (desktop/mobile) com sistema de cards adaptativo
+
+---
 
 ## Arquitetura
 
-- `core/`: acesso a dados e modelos
-- `web/blueprints/`: camada HTTP (rotas públicas e admin)
-- `web/services/`: regras de negócio
-- `web/security.py`: CSRF, redirect seguro, secret key obrigatória
-- `web/auth.py`: autenticação/admin guard
-
-Estrutura resumida:
-
 ```text
 ygo-tournament-manager/
-|- core/
-|  |- database_conexao.py
-|  `- models.py
-|- web/
-|  |- app.py
-|  |- routes.py
-|  |- auth.py
-|  |- security.py
-|  |- blueprints/
-|  |  |- admin.py
-|  |  `- public.py
-|  |- services/
-|  |  |- admin_service.py
-|  |  `- public_service.py
-|  |- templates/
-|  `- static/
-|- scripts/
-|  |- run.bat
-|  `- run.ps1
-|- requirements.txt
-|- requirements-dev.txt
-|- render.yaml
-|- Procfile
-`- schema.sql
+├── core/
+│   ├── database_conexao.py   # Acesso a dados (MySQL) e lógica de query
+│   └── models.py             # Dataclasses (Duelistas, etc.)
+├── web/
+│   ├── app.py                # Entry point Flask
+│   ├── routes.py             # Registro de blueprints
+│   ├── auth.py               # Guard de autenticação admin
+│   ├── security.py           # CSRF, secret key, redirect seguro
+│   ├── blueprints/
+│   │   ├── admin.py          # Rotas administrativas (protegidas)
+│   │   └── public.py         # Rotas públicas
+│   ├── services/
+│   │   ├── admin_service.py  # Regras de negócio admin
+│   │   └── public_service.py # Regras de negócio públicas
+│   ├── templates/            # Jinja2 (ver docs/CONTEXT.md para mapa completo)
+│   └── static/
+│       ├── css/style.css     # CSS global do projeto
+│       └── js/script.js      # JS global (SweetAlert confirms, etc.)
+├── docs/
+│   └── CONTEXT.md            # Regras de UI/UX, arquitetura e decisões do projeto
+├── scripts/
+│   ├── run.bat               # Inicialização Windows (CMD)
+│   └── run.ps1               # Inicialização Windows (PowerShell)
+├── tests/                    # Testes unitários e de integração HTTP
+├── schema.sql                # DDL para criação manual das tabelas
+├── requirements.txt
+├── requirements-dev.txt
+├── render.yaml               # Deploy no Render (Blueprint)
+└── Procfile
 ```
+
+> Consulte [`docs/CONTEXT.md`](docs/CONTEXT.md) para o mapa completo de rotas,
+> padrões visuais e regras de negócio consolidadas.
+
+---
 
 ## Requisitos
 
 - Python 3.10+
-- MySQL (ou TiDB compatível MySQL)
+- MySQL (ou TiDB compatível com MySQL)
 
 ## Instalação
 
@@ -97,22 +80,22 @@ pip install -r requirements-dev.txt
 
 ## Configuração de Ambiente
 
-Variáveis principais:
+Copie `.env.example` para `.env` e preencha as variáveis:
 
-- `FLASK_SECRET_KEY` (obrigatória)
-- `AUTO_INIT_DB` (`0` ou `1`)
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
-- `DB_SSL_DISABLED`, `DB_SSL_CA`, `DB_SSL_VERIFY_CERT`, `DB_SSL_VERIFY_IDENTITY`
-- `ADMIN_USERNAME`, `ADMIN_PASSWORD`
-- `ADMIN_ALLOWED_IPS` (opcional)
-
-Use `.env.example` como referência.
+| Variável | Descrição |
+|---|---|
+| `FLASK_SECRET_KEY` | **Obrigatória.** Chave da sessão Flask |
+| `AUTO_INIT_DB` | `1` para criar tabelas automaticamente no boot |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conexão MySQL |
+| `DB_SSL_DISABLED`, `DB_SSL_CA`, `DB_SSL_VERIFY_CERT`, `DB_SSL_VERIFY_IDENTITY` | TLS/SSL |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Credenciais do painel admin |
+| `ADMIN_ALLOWED_IPS` | IPs permitidos para o admin (opcional) |
 
 ## Como Executar
 
-### Opção 1 (recomendada no Windows)
+### Windows (recomendado)
 
-```bash
+```bat
 scripts\run.bat
 ```
 
@@ -122,7 +105,7 @@ ou
 .\scripts\run.ps1
 ```
 
-### Opção 2 (recomendada em geral)
+### Geral
 
 ```bash
 python -m web.app
@@ -130,60 +113,53 @@ python -m web.app
 
 A aplicação sobe em `http://localhost:5000`.
 
+---
+
 ## Testes
 
-Executar suíte:
-
 ```bash
+# Executar suíte completa
 pytest -q
-```
 
-Executar com cobertura:
-
-```bash
+# Com cobertura
 pytest --cov=web --cov-report=term-missing -q
 ```
 
-Cobertura atual inclui:
+Cobertura inclui:
+- Testes unitários de services (`tests/test_admin_service.py`, `test_public_service.py`)
+- Testes de integração HTTP (`tests/test_http_integration.py`)
+- Testes de segurança (`tests/test_security.py`)
 
-- Testes unitários de services
-- Testes de integração HTTP (login admin, CSRF, redirect seguro e rotas admin)
+---
 
 ## Deploy (Render + TiDB)
 
 1. Crie banco MySQL/TiDB e obtenha credenciais
-2. Suba o serviço no Render via `render.yaml` (Blueprint)
+2. Suba o serviço via `render.yaml` (Blueprint do Render)
 3. Configure variáveis de ambiente (`DB_*`, `FLASK_SECRET_KEY`, etc.)
-4. No primeiro deploy, opcionalmente use `AUTO_INIT_DB=1`
-5. Valide `GET /health` e fluxos principais
+4. No primeiro deploy, use `AUTO_INIT_DB=1`
+5. Valide `GET /health` e os fluxos principais
 
 Comandos de deploy esperados:
+- **Build:** `pip install -r requirements.txt`
+- **Start:** `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
 
-- Build: `pip install -r requirements.txt`
-- Start: `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
+---
 
 ## Troubleshooting
 
-### ModuleNotFoundError ao iniciar
+**`ModuleNotFoundError` ao iniciar**
+→ Use `python -m web.app` (não `python web/app.py`)
 
-Use:
+**Erro de conexão com banco**
+→ Verifique variáveis `DB_*` e configurações SSL do provedor
 
-```bash
-python -m web.app
-```
-
-### Erro de conexão com banco
-
-- Verifique se o banco está ativo
-- Revise `DB_*`
-- Confirme SSL/TLS conforme o provedor
-
-### Porta 5000 em uso
-
+**Porta 5000 em uso**
 ```powershell
-$env:PORT=8080
-python -m web.app
+$env:PORT=8080; python -m web.app
 ```
+
+---
 
 ## Licença
 
