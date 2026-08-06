@@ -1,4 +1,4 @@
-/* Custom CSS for Liga YGO MarabÃ¡ */
+ï»¿/* Custom CSS for Liga YGO MarabÃ¡ */
 
 :root {
     --primary-color: #007bff;
@@ -7,6 +7,12 @@
     --warning-color: #ffc107;
     --danger-color: #dc3545;
     --info-color: #17a2b8;
+
+    /* Sobrescreve o border-radius padrao do Bootstrap para inputs, selects e afins */
+    --bs-border-radius:    10px;
+    --bs-border-radius-sm: 8px;
+    --bs-border-radius-lg: 12px;
+    --bs-border-radius-xl: 16px;
 }
 
 /* General Styles */
@@ -808,7 +814,7 @@ footer {
         border: none !important;
     }
     
-    /* Descola o cabeçalho do resto do conteúdo */
+    /* Descola o cabeï¿½alho do resto do conteï¿½do */
     .wrapper-transparent-mobile > .card-header {
         border-radius: 15px !important;
         margin-bottom: 0.5rem;
