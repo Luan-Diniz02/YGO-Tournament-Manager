@@ -45,11 +45,21 @@ class PublicService:
             'duelistas': [],
         }
 
-    def carregar_dashboard(self):
-        return self.conexao.obter_estatisticas_dashboard()
+    def carregar_dashboard(self, temporada_id=None, data_inicio=None, data_fim=None):
+        return self.conexao.obter_estatisticas_dashboard(
+            temporada_id=temporada_id, data_inicio=data_inicio, data_fim=data_fim
+        )
 
-    def carregar_dashboard_duelista(self, nome):
-        return self.conexao.obter_estatisticas_duelista(nome)
+    def carregar_dashboard_duelista(self, nome, temporada_id=None, data_inicio=None, data_fim=None):
+        return self.conexao.obter_estatisticas_duelista(
+            nome, temporada_id=temporada_id, data_inicio=data_inicio, data_fim=data_fim
+        )
+
+    def listar_temporadas(self):
+        return self.conexao.listar_temporadas()
+        
+    def obter_temporada_ativa(self):
+        return self.conexao.obter_temporada_ativa()
 
     def listar_torneios(self):
         return self.conexao.listar_torneios()

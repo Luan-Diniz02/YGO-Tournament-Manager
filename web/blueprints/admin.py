@@ -44,12 +44,16 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
     @admin_bp.route('/cadastrar_torneio', methods=['GET', 'POST'])
     @admin_required
     def cadastrar_torneio():
+        temporadas = admin_service.listar_temporadas()
+        temporada_ativa = admin_service.obter_temporada_ativa()
+        
         if request.method == 'POST':
             ok, torneio_id, mensagem = admin_service.cadastrar_torneio(
                 request.form['nome_torneio'].strip(),
                 request.form.get('rodadas'),
                 request.form.get('duelistas'),
                 request.form['data'].strip(),
+                request.form.get('temporada_id')
             )
 
             if ok:
@@ -57,9 +61,9 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
                 return redirect(url_for('public.painel_torneio', id=torneio_id))
 
             flash(mensagem, 'error')
-            return render_template('cadastrar_torneio.html')
+            return render_template('cadastrar_torneio.html', temporadas=temporadas, temporada_ativa=temporada_ativa)
 
-        return render_template('cadastrar_torneio.html')
+        return render_template('cadastrar_torneio.html', temporadas=temporadas, temporada_ativa=temporada_ativa)
 
     @admin_bp.route('/buscar_duelista', methods=['GET', 'POST'])
     @admin_required
@@ -179,5 +183,38 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
             flash(f'Erro ao excluir torneio: {str(e)}', 'error')
 
         return redirect(url_for('public.visualizar_torneios'))
+
+    @admin_bp.route('/temporadas', methods=['GET'])
+    @admin_required
+    def gerenciar_temporadas():
+        temporadas = admin_service.listar_temporadas()
+        return render_template('gerenciar_temporadas.html', temporadas=temporadas)
+
+    @admin_bp.route('/temporadas/cadastrar', methods=['POST'])
+    @admin_required
+    def cadastrar_temporada():
+        nome = request.form.get('nome', '').strip()
+        data_inicio = request.form.get('data_inicio')
+        data_fim = request.form.get('data_fim')
+        ativa = request.form.get('ativa') == 'on'
+
+        ok, msg = admin_service.criar_temporada(nome, data_inicio, data_fim, ativa)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+        
+        return redirect(url_for('admin.gerenciar_temporadas'))
+
+    @admin_bp.route('/temporadas/<int:id>/ativar', methods=['POST'])
+    @admin_required
+    def ativar_temporada(id):
+        ok, msg = admin_service.definir_temporada_ativa(id)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+        
+        return redirect(url_for('admin.gerenciar_temporadas'))
 
     return admin_bp

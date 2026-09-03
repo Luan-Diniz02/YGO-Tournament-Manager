@@ -84,15 +84,31 @@ class Conexao:
             """)
 
             cursor.execute("""
+                CREATE TABLE IF NOT EXISTS temporadas (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    nome VARCHAR(120) NOT NULL,
+                    data_inicio DATE,
+                    data_fim DATE,
+                    ativa TINYINT(1) NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    INDEX idx_temporadas_ativa (ativa)
+                )
+            """)
+
+            cursor.execute("""
                 CREATE TABLE IF NOT EXISTS torneios (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     nome VARCHAR(120) NOT NULL,
+                    temporada_id INT NULL,
                     rodadas INT NOT NULL,
                     quant_duelistas INT NOT NULL,
                     data DATE NOT NULL,
                     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    INDEX idx_torneios_data (data)
+                    CONSTRAINT fk_torneios_temporada FOREIGN KEY (temporada_id) REFERENCES temporadas(id) ON DELETE SET NULL,
+                    INDEX idx_torneios_data (data),
+                    INDEX idx_torneios_temporada (temporada_id)
                 )
             """)
 
@@ -129,6 +145,26 @@ class Conexao:
                 cursor.execute(
                     "ALTER TABLE torneio_participantes ADD COLUMN colocacao_top INT NULL"
                 )
+
+            # Migração de temporadas para bases antigas
+            if not self._coluna_existe(cursor, 'torneios', 'temporada_id'):
+                cursor.execute(
+                    "ALTER TABLE torneios ADD COLUMN temporada_id INT NULL"
+                )
+                try:
+                    cursor.execute(
+                        "ALTER TABLE torneios ADD CONSTRAINT fk_torneios_temporada FOREIGN KEY (temporada_id) REFERENCES temporadas(id) ON DELETE SET NULL"
+                    )
+                except Exception as e:
+                    # Ignore se a constraint já existir por algum motivo ou outro erro leve
+                    print(f"Aviso ao adicionar constraint: {e}")
+                
+                # Criar Temporada 1 se não houver temporadas, e associar os torneios antigos a ela
+                cursor.execute("SELECT COUNT(*) FROM temporadas")
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute("INSERT INTO temporadas (nome, ativa) VALUES ('Temporada 1', 1)")
+                    id_temp = cursor.lastrowid
+                    cursor.execute("UPDATE torneios SET temporada_id = %s WHERE temporada_id IS NULL", (id_temp,))
 
             conexao.commit()
         except Exception:
@@ -279,21 +315,32 @@ class Conexao:
         finally:
             conexao.close()
 
-    def listar_torneios(self):
+    def listar_torneios(self, temporada_id=None):
         """
         Retorna a lista de todos os torneios cadastrados no banco de dados.
         """
         conexao = self.conectar_bd()
         try:
             cursor = conexao.cursor(dictionary=True)
-            sql = """
-                SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes 
-                FROM torneios t 
-                LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id 
-                GROUP BY t.id 
-                ORDER BY t.data DESC, t.id DESC
-            """
-            cursor.execute(sql)
+            if temporada_id:
+                sql = """
+                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes 
+                    FROM torneios t 
+                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id 
+                    WHERE t.temporada_id = %s
+                    GROUP BY t.id 
+                    ORDER BY t.data DESC, t.id DESC
+                """
+                cursor.execute(sql, (temporada_id,))
+            else:
+                sql = """
+                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes 
+                    FROM torneios t 
+                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id 
+                    GROUP BY t.id 
+                    ORDER BY t.data DESC, t.id DESC
+                """
+                cursor.execute(sql)
             torneios = cursor.fetchall()
             return torneios
         finally:
@@ -307,9 +354,9 @@ class Conexao:
         try:
             cursor = conexao.cursor()
             
-            sql = """INSERT INTO torneios (nome, rodadas, quant_duelistas, data) 
-                     VALUES (%s, %s, %s, %s)"""
-            val = (torneio.nome, torneio.rodadas, torneio.quant_duelistas, torneio.data)
+            sql = """INSERT INTO torneios (nome, rodadas, quant_duelistas, data, temporada_id) 
+                     VALUES (%s, %s, %s, %s, %s)"""
+            val = (torneio.nome, torneio.rodadas, torneio.quant_duelistas, torneio.data, torneio.temporada_id)
             
             cursor.execute(sql, val)
             conexao.commit()
@@ -528,7 +575,7 @@ class Conexao:
                 return
             raise
 
-    def obter_estatisticas_dashboard(self, incluir_inativos=False):
+    def obter_estatisticas_dashboard(self, incluir_inativos=False, temporada_id=None, data_inicio=None, data_fim=None):
         def percentual(numerador, denominador):
             if not denominador:
                 return 0.0
@@ -542,55 +589,111 @@ class Conexao:
                 cursor = conexao.cursor(dictionary=True)
 
                 filtro_status = "" if incluir_inativos else "WHERE d.ativo = 1"
+                
+                is_geral = temporada_id == 'geral' or (not temporada_id and not data_inicio and not data_fim)
 
-                resumo_sql = f"""
-                    SELECT
-                        COUNT(*) AS total_duelistas,
-                        COALESCE(SUM(d.vitorias), 0) AS total_vitorias,
-                        COALESCE(SUM(d.derrotas), 0) AS total_derrotas,
-                        COALESCE(SUM(d.empates), 0) AS total_empates,
-                        COALESCE(SUM(tp.tops), 0) AS total_tops,
-                        COALESCE(SUM(tp.campeonatos), 0) AS total_campeonatos
-                    FROM duelistas d
-                    LEFT JOIN (
+                if is_geral:
+                    resumo_sql = f"""
                         SELECT
-                            duelista_id,
-                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
-                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
-                        FROM torneio_participantes
-                        GROUP BY duelista_id
-                    ) tp ON tp.duelista_id = d.id
-                    {filtro_status}
-                """
-                cursor.execute(resumo_sql)
-                resumo = cursor.fetchone() or {}
+                            COUNT(*) AS total_duelistas,
+                            COALESCE(SUM(d.vitorias), 0) AS total_vitorias,
+                            COALESCE(SUM(d.derrotas), 0) AS total_derrotas,
+                            COALESCE(SUM(d.empates), 0) AS total_empates,
+                            COALESCE(SUM(tp.tops), 0) AS total_tops,
+                            COALESCE(SUM(tp.campeonatos), 0) AS total_campeonatos
+                        FROM duelistas d
+                        LEFT JOIN (
+                            SELECT
+                                duelista_id,
+                                SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                                SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                            FROM torneio_participantes
+                            GROUP BY duelista_id
+                        ) tp ON tp.duelista_id = d.id
+                        {filtro_status}
+                    """
+                    cursor.execute(resumo_sql)
+                    resumo = cursor.fetchone() or {}
 
-                duelistas_sql = f"""
-                    SELECT
-                        d.id,
-                        d.nome,
-                        d.vitorias,
-                        d.derrotas,
-                        d.empates,
-                        d.participacao,
-                        d.pontos,
-                        d.ativo,
-                        COALESCE(tp.tops, 0) AS tops,
-                        COALESCE(tp.campeonatos, 0) AS campeonatos
-                    FROM duelistas d
-                    LEFT JOIN (
+                    duelistas_sql = f"""
                         SELECT
-                            duelista_id,
-                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
-                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
-                        FROM torneio_participantes
-                        GROUP BY duelista_id
-                    ) tp ON tp.duelista_id = d.id
-                    {filtro_status}
-                    ORDER BY d.pontos DESC, d.derrotas ASC, d.nome ASC
-                """
-                cursor.execute(duelistas_sql)
-                duelistas = cursor.fetchall()
+                            d.id,
+                            d.nome,
+                            d.vitorias,
+                            d.derrotas,
+                            d.empates,
+                            d.participacao,
+                            d.pontos,
+                            d.ativo,
+                            COALESCE(tp.tops, 0) AS tops,
+                            COALESCE(tp.campeonatos, 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN (
+                            SELECT
+                                duelista_id,
+                                SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                                SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                            FROM torneio_participantes
+                            GROUP BY duelista_id
+                        ) tp ON tp.duelista_id = d.id
+                        {filtro_status}
+                        ORDER BY d.pontos DESC, d.derrotas ASC, d.nome ASC
+                    """
+                    cursor.execute(duelistas_sql)
+                    duelistas = cursor.fetchall()
+                else:
+                    filtro_torneio = []
+                    params_torneio = []
+                    if temporada_id and temporada_id != 'geral':
+                        filtro_torneio.append("t.temporada_id = %s")
+                        params_torneio.append(temporada_id)
+                    if data_inicio:
+                        filtro_torneio.append("t.data >= %s")
+                        params_torneio.append(data_inicio)
+                    if data_fim:
+                        filtro_torneio.append("t.data <= %s")
+                        params_torneio.append(data_fim)
+                        
+                    where_torneio = " AND ".join(filtro_torneio) if filtro_torneio else "1=1"
+                    
+                    resumo_sql = f"""
+                        SELECT
+                            COUNT(DISTINCT tp.duelista_id) AS total_duelistas,
+                            COALESCE(SUM(tp.vitorias), 0) AS total_vitorias,
+                            COALESCE(SUM(tp.derrotas), 0) AS total_derrotas,
+                            COALESCE(SUM(tp.empates), 0) AS total_empates,
+                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS total_tops,
+                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS total_campeonatos
+                        FROM torneio_participantes tp
+                        JOIN torneios t ON t.id = tp.torneio_id
+                        JOIN duelistas d ON d.id = tp.duelista_id
+                        WHERE {where_torneio} {"AND d.ativo = 1" if not incluir_inativos else ""}
+                    """
+                    cursor.execute(resumo_sql, params_torneio)
+                    resumo = cursor.fetchone() or {}
+                    
+                    # Garantir os dados de tds jogadores pra manter ranking (mas com 0)
+                    duelistas_sql = f"""
+                        SELECT
+                            d.id,
+                            d.nome,
+                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp.empates), 0) AS empates,
+                            COUNT(tp.torneio_id) AS participacao,
+                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
+                            d.ativo,
+                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
+                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        {filtro_status}
+                        GROUP BY d.id, d.nome, d.ativo
+                        ORDER BY pontos DESC, derrotas ASC, d.nome ASC
+                    """
+                    cursor.execute(duelistas_sql, params_torneio)
+                    duelistas = cursor.fetchall()
 
                 for idx, duelista in enumerate(duelistas, start=1):
                     partidas = int(duelista['vitorias']) + int(duelista['derrotas']) + int(duelista['empates'])
@@ -607,7 +710,7 @@ class Conexao:
                 total_partidas = total_vitorias + total_derrotas + total_empates
 
                 resumo_formatado = {
-                    'total_duelistas': int(resumo.get('total_duelistas', 0) or 0),
+                    'total_duelistas': int(resumo.get('total_duelistas', 0) or 0) if is_geral else len([d for d in duelistas if d['participacao'] > 0]),
                     'total_partidas': total_partidas,
                     'total_vitorias': total_vitorias,
                     'total_derrotas': total_derrotas,
@@ -653,7 +756,7 @@ class Conexao:
                 return executar_consulta()
             raise
 
-    def obter_estatisticas_duelista(self, nome_duelista):
+    def obter_estatisticas_duelista(self, nome_duelista, temporada_id=None, data_inicio=None, data_fim=None):
         def percentual(numerador, denominador):
             if not denominador:
                 return 0.0
@@ -663,40 +766,89 @@ class Conexao:
             conexao = self.conectar_bd()
             try:
                 cursor = conexao.cursor(dictionary=True)
+                
+                is_geral = temporada_id == 'geral' or (not temporada_id and not data_inicio and not data_fim)
+                
+                filtro_torneio = []
+                params_torneio = []
+                if not is_geral:
+                    if temporada_id and temporada_id != 'geral':
+                        filtro_torneio.append("t.temporada_id = %s")
+                        params_torneio.append(temporada_id)
+                    if data_inicio:
+                        filtro_torneio.append("t.data >= %s")
+                        params_torneio.append(data_inicio)
+                    if data_fim:
+                        filtro_torneio.append("t.data <= %s")
+                        params_torneio.append(data_fim)
+                
+                where_torneio = " AND ".join(filtro_torneio) if filtro_torneio else "1=1"
 
-                cursor.execute(
-                    """
-                    SELECT
-                        d.id,
-                        d.nome,
-                        d.vitorias,
-                        d.derrotas,
-                        d.empates,
-                        d.participacao,
-                        d.pontos,
-                        d.ativo,
-                        COALESCE(tp.tops, 0) AS tops,
-                        COALESCE(tp.campeonatos, 0) AS campeonatos
-                    FROM duelistas d
-                    LEFT JOIN (
+                if is_geral:
+                    cursor.execute(
+                        """
                         SELECT
-                            duelista_id,
-                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
-                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
-                        FROM torneio_participantes
-                        GROUP BY duelista_id
-                    ) tp ON tp.duelista_id = d.id
-                    WHERE LOWER(d.nome) = LOWER(%s)
-                    LIMIT 1
-                    """,
-                    (nome_duelista,),
-                )
-                duelista = cursor.fetchone()
+                            d.id,
+                            d.nome,
+                            d.vitorias,
+                            d.derrotas,
+                            d.empates,
+                            d.participacao,
+                            d.pontos,
+                            d.ativo,
+                            COALESCE(tp.tops, 0) AS tops,
+                            COALESCE(tp.campeonatos, 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN (
+                            SELECT
+                                duelista_id,
+                                SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                                SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                            FROM torneio_participantes
+                            GROUP BY duelista_id
+                        ) tp ON tp.duelista_id = d.id
+                        WHERE LOWER(d.nome) = LOWER(%s)
+                        LIMIT 1
+                        """,
+                        (nome_duelista,),
+                    )
+                    duelista = cursor.fetchone()
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            d.id,
+                            d.nome,
+                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp.empates), 0) AS empates,
+                            COUNT(tp.torneio_id) AS participacao,
+                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
+                            d.ativo,
+                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
+                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        WHERE LOWER(d.nome) = LOWER(%s)
+                        GROUP BY d.id, d.nome, d.ativo
+                        LIMIT 1
+                        """,
+                        tuple(params_torneio + [nome_duelista]),
+                    )
+                    duelista = cursor.fetchone()
+
                 if not duelista:
                     return None
 
+                hist_params = [duelista['id']]
+                hist_where = ""
+                if not is_geral:
+                    hist_where = f" AND {where_torneio}"
+                    hist_params = [duelista['id']] + params_torneio
+
                 cursor.execute(
-                    """
+                    f"""
                     SELECT
                         t.id AS torneio_id,
                         t.nome AS torneio_nome,
@@ -710,10 +862,10 @@ class Conexao:
                         tp.colocacao_top
                     FROM torneio_participantes tp
                     JOIN torneios t ON t.id = tp.torneio_id
-                    WHERE tp.duelista_id = %s
+                    WHERE tp.duelista_id = %s {hist_where}
                     ORDER BY t.data DESC, t.id DESC
                     """,
-                    (duelista['id'],),
+                    tuple(hist_params),
                 )
                 historico = cursor.fetchall()
 
@@ -722,7 +874,6 @@ class Conexao:
                     evento['partidas'] = partidas_evento
                     evento['win_rate_evento'] = percentual(int(evento['vitorias']), partidas_evento)
 
-                    # Calcula a posição final do duelista na etapa, mesmo sem Top Cut.
                     posicao_geral = None
                     participantes_torneio = self.listar_participantes_torneio(evento['torneio_id'])
                     for idx, participante in enumerate(participantes_torneio, start=1):
@@ -742,32 +893,54 @@ class Conexao:
                     'qtd_torneios_historico': len(historico),
                 }
 
-                # Conquistas do duelista no contexto da liga (somente ativos)
                 min_participacoes_win_rate = 2
-                cursor.execute(
-                    """
-                    SELECT
-                        d.nome,
-                        d.pontos,
-                        d.derrotas,
-                        d.participacao,
-                        d.vitorias,
-                        d.empates,
-                        COALESCE(tp.tops, 0) AS tops,
-                        COALESCE(tp.campeonatos, 0) AS campeonatos
-                    FROM duelistas d
-                    LEFT JOIN (
+                
+                if is_geral:
+                    cursor.execute(
+                        """
                         SELECT
-                            duelista_id,
-                            SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
-                            SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
-                        FROM torneio_participantes
-                        GROUP BY duelista_id
-                    ) tp ON tp.duelista_id = d.id
-                    WHERE d.ativo = 1
-                    """
-                )
-                liga_duelistas = cursor.fetchall()
+                            d.nome,
+                            d.pontos,
+                            d.derrotas,
+                            d.participacao,
+                            d.vitorias,
+                            d.empates,
+                            COALESCE(tp.tops, 0) AS tops,
+                            COALESCE(tp.campeonatos, 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN (
+                            SELECT
+                                duelista_id,
+                                SUM(CASE WHEN topou_torneio = 1 THEN 1 ELSE 0 END) AS tops,
+                                SUM(CASE WHEN colocacao_top = 1 THEN 1 ELSE 0 END) AS campeonatos
+                            FROM torneio_participantes
+                            GROUP BY duelista_id
+                        ) tp ON tp.duelista_id = d.id
+                        WHERE d.ativo = 1
+                        """
+                    )
+                    liga_duelistas = cursor.fetchall()
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            d.nome,
+                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp.empates), 0) AS empates,
+                            COUNT(tp.torneio_id) AS participacao,
+                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
+                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                        FROM duelistas d
+                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
+                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        WHERE d.ativo = 1
+                        GROUP BY d.id, d.nome
+                        """,
+                        tuple(params_torneio)
+                    )
+                    liga_duelistas = cursor.fetchall()
 
                 for item in liga_duelistas:
                     partidas_item = int(item['vitorias']) + int(item['derrotas']) + int(item['empates'])
@@ -828,3 +1001,74 @@ class Conexao:
                 self.garantir_estrutura_bd()
                 return executar_consulta()
             raise
+
+    # ==========================
+
+    # GERENCIAMENTO DE TEMPORADAS
+    # ==========================
+
+    def listar_temporadas(self):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM temporadas ORDER BY data_inicio DESC, id DESC")
+            return cursor.fetchall()
+        finally:
+            conexao.close()
+
+    def obter_temporada_ativa(self):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM temporadas WHERE ativa = 1 LIMIT 1")
+            return cursor.fetchone()
+        finally:
+            conexao.close()
+
+    def criar_temporada(self, nome, data_inicio, data_fim, ativa=False):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            if ativa:
+                # Desativa todas as outras
+                cursor.execute("UPDATE temporadas SET ativa = 0")
+            
+            sql = "INSERT INTO temporadas (nome, data_inicio, data_fim, ativa) VALUES (%s, %s, %s, %s)"
+            cursor.execute(sql, (nome, data_inicio or None, data_fim or None, int(ativa)))
+            conexao.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    def atualizar_temporada(self, id, nome, data_inicio, data_fim, ativa=False):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            if ativa:
+                cursor.execute("UPDATE temporadas SET ativa = 0")
+            
+            sql = "UPDATE temporadas SET nome = %s, data_inicio = %s, data_fim = %s, ativa = %s WHERE id = %s"
+            cursor.execute(sql, (nome, data_inicio or None, data_fim or None, int(ativa), id))
+            conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    def definir_temporada_ativa(self, id):
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            cursor.execute("UPDATE temporadas SET ativa = 0")
+            cursor.execute("UPDATE temporadas SET ativa = 1 WHERE id = %s", (id,))
+            conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+

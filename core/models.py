@@ -21,11 +21,12 @@ class Duelistas:
         return f"Nome: {self.nome}, Vitórias: {self.vitorias}, Derrotas: {self.derrotas}, Empates: {self.empates}, Participação: {self.participacao}, Pontos: {self.pontos}, Ativo: {self.ativo}"
 
 class Torneio:
-    def __init__(self, nome: str, rodadas: int, quant_duelistas: int, data: str):
+    def __init__(self, nome: str, rodadas: int, quant_duelistas: int, data: str, temporada_id: int = None):
         self.nome = nome
         self.rodadas = rodadas
         self.quant_duelistas = quant_duelistas
         self.data = data
+        self.temporada_id = temporada_id
         self.participantes = []
 
     def adicionar_participantes(self, participante: Duelistas):

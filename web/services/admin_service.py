@@ -20,7 +20,7 @@ class AdminService:
 
         return False, 'Usuario ou senha invalidos.'
 
-    def cadastrar_torneio(self, nome, rodadas_raw, duelistas_raw, data):
+    def cadastrar_torneio(self, nome, rodadas_raw, duelistas_raw, data, temporada_id=None):
         try:
             rodadas = int(rodadas_raw)
             duelistas = int(duelistas_raw)
@@ -33,7 +33,12 @@ class AdminService:
         if rodadas <= 0 or duelistas <= 0:
             return False, None, 'Os valores de rodadas e duelistas devem ser positivos.'
 
-        torneio = Torneio(nome, rodadas, duelistas, data)
+        try:
+            temporada_id = int(temporada_id) if temporada_id else None
+        except ValueError:
+            temporada_id = None
+
+        torneio = Torneio(nome, rodadas, duelistas, data, temporada_id)
         torneio_id = self.conexao.cadastrar_torneio(torneio)
         return True, torneio_id, 'Torneio cadastrado com sucesso!'
 
@@ -182,3 +187,25 @@ class AdminService:
     def excluir_torneio(self, torneio_id):
         self.conexao.excluir_torneio(torneio_id)
         return 'Torneio excluido com sucesso!'
+
+    def listar_temporadas(self):
+        return self.conexao.listar_temporadas()
+
+    def obter_temporada_ativa(self):
+        return self.conexao.obter_temporada_ativa()
+
+    def criar_temporada(self, nome, data_inicio, data_fim, ativa):
+        if not nome:
+            return False, 'O nome da temporada é obrigatório.'
+        try:
+            self.conexao.criar_temporada(nome, data_inicio, data_fim, ativa)
+            return True, 'Temporada criada com sucesso!'
+        except Exception as e:
+            return False, f'Erro ao criar temporada: {str(e)}'
+
+    def definir_temporada_ativa(self, id):
+        try:
+            self.conexao.definir_temporada_ativa(id)
+            return True, 'Temporada ativada com sucesso!'
+        except Exception as e:
+            return False, f'Erro ao ativar temporada: {str(e)}'
