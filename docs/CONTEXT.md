@@ -77,7 +77,7 @@ O vínculo é **híbrido**:
 
 ### Filtro de ranking por temporada
 
-O ranking (`/dashboard`) filtra por temporada usando uma **subquery** — nunca um `LEFT JOIN` no `torneios` com filtro na cláusula de JOIN (que não filtra `torneio_participantes`):
+O ranking (`/dashboard`) filtra por temporada usando uma **subquery** — nunca um `LEFT JOIN` no `torneios` com filtro na cláusula de JOIN (que não filtra `torneio_participantes`). Além disso, o backend omite automaticamente qualquer duelista que possua 0 participações na temporada vigente, assegurando que o ranking liste somente os jogadores ativos no filtro selecionado:
 
 ```sql
 -- ✅ Correto — subquery pré-filtra as participações antes dos SUM()
