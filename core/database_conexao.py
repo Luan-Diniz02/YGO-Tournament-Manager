@@ -703,6 +703,9 @@ class Conexao:
                     cursor.execute(duelistas_sql, params_torneio)
                     duelistas = cursor.fetchall()
 
+                # Apenas duelistas que participaram de ao menos um torneio no filtro
+                duelistas = [d for d in duelistas if int(d.get('participacao', 0)) > 0]
+
                 for idx, duelista in enumerate(duelistas, start=1):
                     partidas = int(duelista['vitorias']) + int(duelista['derrotas']) + int(duelista['empates'])
                     duelista['partidas'] = partidas
@@ -718,7 +721,7 @@ class Conexao:
                 total_partidas = total_vitorias + total_derrotas + total_empates
 
                 resumo_formatado = {
-                    'total_duelistas': int(resumo.get('total_duelistas', 0) or 0) if is_geral else len([d for d in duelistas if d['participacao'] > 0]),
+                    'total_duelistas': len(duelistas),
                     'total_partidas': total_partidas,
                     'total_vitorias': total_vitorias,
                     'total_derrotas': total_derrotas,
