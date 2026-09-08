@@ -15,13 +15,27 @@
                 <form method="POST">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="nome_torneio" class="form-label">
                                 <i class="fas fa-trophy"></i> Nome do Torneio
                             </label>
                             <input type="text" class="form-control" id="nome_torneio" name="nome_torneio" required>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
+                            <label for="temporada_id" class="form-label">
+                                <i class="fas fa-layer-group"></i> Temporada
+                            </label>
+                            <select class="form-select" id="temporada_id" name="temporada_id">
+                                <option value="">Geral / Sem Temporada</option>
+                                {% for temporada in temporadas %}
+                                <option value="{{ temporada.id }}" 
+                                    {% if temporada_ativa and temporada_ativa.id == temporada.id %}selected{% endif %}>
+                                    {{ temporada.nome }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
                             <label for="data" class="form-label">
                                 <i class="fas fa-calendar-alt"></i> Data do Torneio
                             </label>

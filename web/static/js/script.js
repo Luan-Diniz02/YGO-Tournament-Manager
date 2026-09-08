@@ -242,8 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
             message = 'Digite apenas números';
         }
 
-        // Name validation (only letters and spaces)
-        if (input.name === 'nome_duelista' || input.name === 'nome') {
+        // Name validation (only letters and spaces) — applies only to duelista names
+        if (input.name === 'nome_duelista') {
             if (value && !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)) {
                 isValid = false;
                 message = 'Use apenas letras e espaços';

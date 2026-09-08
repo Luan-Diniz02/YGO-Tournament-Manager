@@ -7,19 +7,31 @@ Este documento deve ser consultado antes de qualquer nova implementação.
 
 ## Arquitetura de Páginas
 
-### Mapa de rotas
+### Mapa de rotas públicas
 
 | Rota | Template | Propósito |
 |---|---|---|
-| `/` | `index.html` | Landing page com acesso rápido às seções |
-| `/dashboard` | `dashboard_estatisticas.html` | Ranking unificado + estatísticas comparativas |
+| `/` | `index.html` | Landing page com acesso rápido às seções e card da temporada ativa |
+| `/dashboard` | `dashboard_estatisticas.html` | Ranking unificado + estatísticas comparativas (filtrável por temporada) |
 | `/ranking` | — | **Redireciona para `/dashboard`** (não tem template próprio) |
 | `/dashboard/duelista/<nome>` | `dashboard_duelista.html` | Perfil individual — drill-down exclusivo |
-| `/visualizar_torneios` | `visualizar_torneios.html` | Lista de todas as etapas cadastradas |
+| `/visualizar_torneios` | `visualizar_torneios.html` | Lista de todas as etapas cadastradas (com coluna de temporada) |
 | `/torneio/<id>` | `painel_torneio.html` | Resultados de uma etapa específica |
-| `/admin/cadastrar_torneio` | `cadastrar_torneio.html` | Formulário de criação de torneio (admin) |
-| `/admin/buscar_duelista` | `buscar_duelista.html` | Busca + edição/reativação de duelistas (admin) |
-| `/admin/alterar/<nome>` | `alterar_duelista.html` | Formulário de edição de duelista (admin) |
+
+### Mapa de rotas administrativas (`/admin/*` — protegidas por sessão)
+
+| Rota | Método | Propósito |
+|---|---|---|
+| `/admin/cadastrar_torneio` | GET / POST | Formulário de criação de torneio |
+| `/admin/torneio/<id>/editar` | GET / POST | Edição de torneio (GET retorna JSON, POST aplica) |
+| `/admin/torneio/<id>/excluir` | POST | Exclusão de torneio |
+| `/admin/buscar_duelista` | GET / POST | Busca + edição/reativação de duelistas |
+| `/admin/alterar/<nome>` | GET / POST | Formulário de edição de duelista |
+| `/admin/temporadas` | GET | Listagem e gerenciamento de temporadas |
+| `/admin/temporadas/cadastrar` | POST | Criação de nova temporada |
+| `/admin/temporadas/<id>/ativar` | POST | Define uma temporada como ativa (atual) |
+| `/admin/temporadas/<id>/editar` | POST | Edição de nome, datas e status de temporada |
+| `/admin/temporadas/<id>/excluir` | POST | Exclusão de temporada (torneios não são apagados) |
 
 ### Regra de responsabilidade das páginas
 
@@ -30,6 +42,63 @@ Este documento deve ser consultado antes de qualquer nova implementação.
 - **`/dashboard/duelista/<nome>`** é o destino de drill-down. Deve conter **apenas**
   informações exclusivas do contexto individual: histórico etapa a etapa, conquistas
   contextuais, win rate por torneio. Não duplicar dados já visíveis no ranking.
+
+---
+
+## Temporadas
+
+### Modelo de dados
+
+A tabela `temporadas` agrupa torneios em períodos competitivos:
+
+```sql
+CREATE TABLE temporadas (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    nome       VARCHAR(120) NOT NULL,
+    data_inicio DATE,
+    data_fim    DATE,
+    ativa      TINYINT(1) NOT NULL DEFAULT 0,  -- apenas uma pode ser ativa
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+```
+
+A coluna `temporada_id` em `torneios` usa `ON DELETE SET NULL`:
+- Ao excluir uma temporada, os torneios **não são apagados**
+- A coluna `temporada_id` dos torneios vinculados passa para `NULL`
+- Esses torneios ficam visíveis apenas no filtro "Geral (All-time)"
+
+### Vínculo torneio-temporada
+
+O vínculo é **híbrido**:
+- Ao cadastrar um torneio, a temporada ativa é pré-selecionada no dropdown
+- O admin pode alterar ou deixar sem temporada ("Geral / Sem Temporada")
+- Ao editar um torneio (modal), o campo Temporada é pré-preenchido com o vínculo atual
+
+### Filtro de ranking por temporada
+
+O ranking (`/dashboard`) filtra por temporada usando uma **subquery** — nunca um `LEFT JOIN` no `torneios` com filtro na cláusula de JOIN (que não filtra `torneio_participantes`):
+
+```sql
+-- ✅ Correto — subquery pré-filtra as participações antes dos SUM()
+FROM duelistas d
+LEFT JOIN (
+    SELECT tp.*
+    FROM torneio_participantes tp
+    JOIN torneios t ON t.id = tp.torneio_id
+    WHERE t.temporada_id = %s
+) tp_f ON tp_f.duelista_id = d.id
+```
+
+```sql
+-- ❌ Errado — tp entra SEM filtro; o filtro no JOIN de torneios não impede que
+--             tp.vitorias, tp.derrotas etc. somem todos os torneios
+FROM duelistas d
+LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
+LEFT JOIN torneios t ON t.id = tp.torneio_id AND t.temporada_id = %s
+```
+
+O `temporada_atual` passado ao template é **sempre `str`** para garantir que a comparação Jinja2 `temporada_atual == temp.id|string` funcione corretamente no `<select>`.
 
 ---
 
@@ -79,6 +148,12 @@ no `style.css`. **Não adicionar `border-radius` inline em inputs.**
 --bs-border-radius:    10px;
 --bs-border-radius-sm: 8px;
 ```
+
+### Validação de campos (`script.js`)
+
+A validação "apenas letras e espaços" aplica-se **somente** a `input[name="nome_duelista"]`.
+Campos `name="nome"` (temporadas, torneios) **não** têm essa restrição — aceitam hífens,
+números e qualquer caractere.
 
 ### Botões
 

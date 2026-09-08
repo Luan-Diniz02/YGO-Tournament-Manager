@@ -16,15 +16,29 @@ CREATE TABLE IF NOT EXISTS duelistas (
     INDEX idx_duelistas_pontos (pontos)
 );
 
+CREATE TABLE IF NOT EXISTS temporadas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(120) NOT NULL,
+    data_inicio DATE,
+    data_fim DATE,
+    ativa TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_temporadas_ativa (ativa)
+);
+
 CREATE TABLE IF NOT EXISTS torneios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
+    temporada_id INT NULL,
     rodadas INT NOT NULL,
     quant_duelistas INT NOT NULL,
     data DATE NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_torneios_data (data)
+    CONSTRAINT fk_torneios_temporada FOREIGN KEY (temporada_id) REFERENCES temporadas(id) ON DELETE SET NULL,
+    INDEX idx_torneios_data (data),
+    INDEX idx_torneios_temporada (temporada_id)
 );
 
 CREATE TABLE IF NOT EXISTS torneio_participantes (

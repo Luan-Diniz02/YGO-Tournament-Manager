@@ -44,12 +44,16 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
     @admin_bp.route('/cadastrar_torneio', methods=['GET', 'POST'])
     @admin_required
     def cadastrar_torneio():
+        temporadas = admin_service.listar_temporadas()
+        temporada_ativa = admin_service.obter_temporada_ativa()
+        
         if request.method == 'POST':
             ok, torneio_id, mensagem = admin_service.cadastrar_torneio(
                 request.form['nome_torneio'].strip(),
                 request.form.get('rodadas'),
                 request.form.get('duelistas'),
                 request.form['data'].strip(),
+                request.form.get('temporada_id')
             )
 
             if ok:
@@ -57,9 +61,9 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
                 return redirect(url_for('public.painel_torneio', id=torneio_id))
 
             flash(mensagem, 'error')
-            return render_template('cadastrar_torneio.html')
+            return render_template('cadastrar_torneio.html', temporadas=temporadas, temporada_ativa=temporada_ativa)
 
-        return render_template('cadastrar_torneio.html')
+        return render_template('cadastrar_torneio.html', temporadas=temporadas, temporada_ativa=temporada_ativa)
 
     @admin_bp.route('/buscar_duelista', methods=['GET', 'POST'])
     @admin_required
@@ -179,5 +183,98 @@ def create_admin_blueprint(conexao, ordenar_duelistas_para_rank):
             flash(f'Erro ao excluir torneio: {str(e)}', 'error')
 
         return redirect(url_for('public.visualizar_torneios'))
+
+    @admin_bp.route('/temporadas', methods=['GET'])
+    @admin_required
+    def gerenciar_temporadas():
+        temporadas = admin_service.listar_temporadas()
+        return render_template('gerenciar_temporadas.html', temporadas=temporadas)
+
+    @admin_bp.route('/temporadas/cadastrar', methods=['POST'])
+    @admin_required
+    def cadastrar_temporada():
+        nome = request.form.get('nome', '').strip()
+        data_inicio = request.form.get('data_inicio') or None
+        data_fim = request.form.get('data_fim') or None
+        ativa = request.form.get('ativa') == 'on'
+
+        ok, msg = admin_service.criar_temporada(nome, data_inicio, data_fim, ativa)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+        
+        return redirect(url_for('admin.gerenciar_temporadas'))
+
+    @admin_bp.route('/temporadas/<int:id>/ativar', methods=['POST'])
+    @admin_required
+    def ativar_temporada(id):
+        ok, msg = admin_service.definir_temporada_ativa(id)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+        
+        return redirect(url_for('admin.gerenciar_temporadas'))
+
+    @admin_bp.route('/temporadas/<int:id>/editar', methods=['POST'])
+    @admin_required
+    def editar_temporada(id):
+        nome = request.form.get('nome', '').strip()
+        data_inicio = request.form.get('data_inicio') or None
+        data_fim = request.form.get('data_fim') or None
+        ativa = request.form.get('ativa') == 'on'
+
+        ok, msg = admin_service.atualizar_temporada(id, nome, data_inicio, data_fim, ativa)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+
+        return redirect(url_for('admin.gerenciar_temporadas'))
+
+    @admin_bp.route('/temporadas/<int:id>/excluir', methods=['POST'])
+    @admin_required
+    def excluir_temporada(id):
+        ok, msg = admin_service.excluir_temporada(id)
+        if ok:
+            flash(msg, 'success')
+        else:
+            flash(msg, 'error')
+
+        return redirect(url_for('admin.gerenciar_temporadas'))
+
+    @admin_bp.route('/torneio/<int:id>/editar', methods=['GET', 'POST'])
+    @admin_required
+    def editar_torneio(id):
+        torneio = conexao.get_torneio(id)
+        if not torneio:
+            flash('Torneio não encontrado!', 'error')
+            return redirect(url_for('public.visualizar_torneios'))
+
+        if request.method == 'POST':
+            ok, msg = admin_service.atualizar_torneio(
+                id,
+                request.form.get('nome_torneio', '').strip(),
+                request.form.get('rodadas'),
+                request.form.get('duelistas'),
+                request.form.get('data', '').strip(),
+                request.form.get('temporada_id'),
+            )
+            if ok:
+                flash(msg, 'success')
+            else:
+                flash(msg, 'error')
+            return redirect(url_for('public.visualizar_torneios'))
+
+        # GET: retorna os dados do torneio como JSON (usado pelo modal via fetch)
+        from flask import jsonify
+        import datetime
+        torneio_data = dict(torneio)
+        # Serializa campos de data para string
+        for campo in ('data', 'created_at', 'updated_at'):
+            if campo in torneio_data and isinstance(torneio_data[campo], (datetime.date, datetime.datetime)):
+                torneio_data[campo] = torneio_data[campo].isoformat()
+        return jsonify(torneio_data)
 
     return admin_bp
