@@ -8,7 +8,8 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
 
     @public_bp.route('/')
     def index():
-        return render_template('index.html')
+        temp_ativa = public_service.obter_temporada_ativa()
+        return render_template('index.html', temporada_ativa=temp_ativa)
 
     @public_bp.route('/health')
     def healthcheck():
@@ -29,20 +30,32 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
         if temporada_id is None:
             temporada_id = str(temp_ativa['id']) if temp_ativa else 'geral'
 
-        data_inicio = request.args.get('data_inicio')
-        data_fim = request.args.get('data_fim')
+        # Converte para int quando for numérico (garante branch correto no banco)
+        if temporada_id and temporada_id != 'geral':
+            try:
+                temporada_id = int(temporada_id)
+            except (ValueError, TypeError):
+                temporada_id = 'geral'
+
+        data_inicio = request.args.get('data_inicio') or ''
+        data_fim = request.args.get('data_fim') or ''
 
         dados_dashboard = public_service.dashboard_default()
         try:
-            dados_dashboard = public_service.carregar_dashboard(temporada_id, data_inicio, data_fim)
+            dados_dashboard = public_service.carregar_dashboard(
+                temporada_id,
+                data_inicio or None,
+                data_fim or None
+            )
         except Exception as e:
             flash(f'Nao foi possivel carregar o dashboard agora. Erro: {e}', 'error')
 
+        # temporada_atual sempre como str para a comparação Jinja2 no dropdown
         return render_template(
             'dashboard_estatisticas.html', 
             dashboard=dados_dashboard,
             temporadas=temporadas,
-            temporada_atual=temporada_id,
+            temporada_atual=str(temporada_id),
             data_inicio=data_inicio,
             data_fim=data_fim
         )
@@ -55,12 +68,21 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
         temporada_id = request.args.get('temporada')
         if temporada_id is None:
             temporada_id = str(temp_ativa['id']) if temp_ativa else 'geral'
-            
-        data_inicio = request.args.get('data_inicio')
-        data_fim = request.args.get('data_fim')
+
+        # Converte para int quando for numérico (garante branch correto no banco)
+        if temporada_id and temporada_id != 'geral':
+            try:
+                temporada_id = int(temporada_id)
+            except (ValueError, TypeError):
+                temporada_id = 'geral'
+
+        data_inicio = request.args.get('data_inicio') or ''
+        data_fim = request.args.get('data_fim') or ''
 
         try:
-            dados_duelista = public_service.carregar_dashboard_duelista(nome, temporada_id, data_inicio, data_fim)
+            dados_duelista = public_service.carregar_dashboard_duelista(
+                nome, temporada_id, data_inicio or None, data_fim or None
+            )
         except Exception:
             dados_duelista = None
             flash('Nao foi possivel carregar as estatisticas deste duelista agora.', 'error')
@@ -69,11 +91,12 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
             flash('Duelista nao encontrado para visualizacao de estatisticas.', 'error')
             return redirect(url_for('public.dashboard_estatisticas'))
 
+        # temporada_atual sempre como str para a comparação Jinja2 no dropdown
         return render_template(
             'dashboard_duelista.html', 
             dados=dados_duelista,
             temporadas=temporadas,
-            temporada_atual=temporada_id,
+            temporada_atual=str(temporada_id),
             data_inicio=data_inicio,
             data_fim=data_fim
         )
@@ -81,7 +104,8 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     @public_bp.route('/visualizar_torneios')
     def visualizar_torneios():
         torneios_bd = public_service.listar_torneios()
-        return render_template('visualizar_torneios.html', torneios=torneios_bd)
+        temporadas = public_service.listar_temporadas()
+        return render_template('visualizar_torneios.html', torneios=torneios_bd, temporadas=temporadas)
 
     @public_bp.route('/torneio/<int:id>')
     def painel_torneio(id):

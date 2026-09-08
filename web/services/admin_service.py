@@ -209,3 +209,43 @@ class AdminService:
             return True, 'Temporada ativada com sucesso!'
         except Exception as e:
             return False, f'Erro ao ativar temporada: {str(e)}'
+
+    def atualizar_temporada(self, id, nome, data_inicio, data_fim, ativa):
+        if not nome:
+            return False, 'O nome da temporada é obrigatório.'
+        try:
+            self.conexao.atualizar_temporada(id, nome, data_inicio, data_fim, ativa)
+            return True, 'Temporada atualizada com sucesso!'
+        except Exception as e:
+            return False, f'Erro ao atualizar temporada: {str(e)}'
+
+    def excluir_temporada(self, id):
+        try:
+            self.conexao.excluir_temporada(id)
+            return True, 'Temporada excluída. Os torneios vinculados a ela não foram apagados.'
+        except Exception as e:
+            return False, f'Erro ao excluir temporada: {str(e)}'
+
+    def atualizar_torneio(self, id, nome, rodadas_raw, duelistas_raw, data, temporada_id=None):
+        try:
+            rodadas = int(rodadas_raw)
+            duelistas = int(duelistas_raw)
+        except (TypeError, ValueError):
+            return False, 'Rodadas e duelistas devem ser números inteiros válidos.'
+
+        if not nome or not data:
+            return False, 'O nome do torneio e a data não podem estar vazios.'
+
+        if rodadas <= 0 or duelistas <= 0:
+            return False, 'Os valores de rodadas e duelistas devem ser positivos.'
+
+        try:
+            temporada_id = int(temporada_id) if temporada_id else None
+        except ValueError:
+            temporada_id = None
+
+        try:
+            self.conexao.atualizar_torneio(id, nome, rodadas, duelistas, data, temporada_id)
+            return True, 'Torneio atualizado com sucesso!'
+        except Exception as e:
+            return False, f'Erro ao atualizar torneio: {str(e)}'

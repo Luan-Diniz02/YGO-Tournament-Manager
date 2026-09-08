@@ -22,6 +22,7 @@
                                 <tr>
                                     <th class="text-center">ID</th>
                                     <th>Nome do Torneio</th>
+                                    <th class="text-center">Temporada</th>
                                     <th class="text-center">Data</th>
                                     <th class="text-center">Participantes</th>
                                     <th class="text-center">Rodadas</th>
@@ -33,6 +34,13 @@
                                 <tr>
                                     <td class="text-center"><span class="badge bg-secondary">{{ t.id }}</span></td>
                                     <td><strong>{{ t.nome }}</strong></td>
+                                    <td class="text-center">
+                                        {% if t.temporada_nome %}
+                                        <span class="badge bg-info text-dark">{{ t.temporada_nome }}</span>
+                                        {% else %}
+                                        <span class="text-muted small">&mdash;</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="text-center">{{ t.data.strftime('%d/%m/%Y') if t.data else 'N/A' }}</td>
                                     <td class="text-center">
                                         <span class="badge rounded-pill bg-primary">{{ t.qtd_participantes|default(0) }} / {{ t.quant_duelistas }}</span>
@@ -42,6 +50,16 @@
                                         <div class="d-flex justify-content-center gap-1">
                                             <a href="{{ url_for('public.painel_torneio', id=t.id) }}" class="btn btn-outline-primary btn-sm" title="Ver Placar"><i class="fas fa-eye"></i></a>
                                             {% if is_admin %}
+                                            <button type="button" class="btn btn-outline-secondary btn-sm btn-editar-torneio" title="Editar"
+                                                data-id="{{ t.id }}"
+                                                data-nome="{{ t.nome }}"
+                                                data-rodadas="{{ t.rodadas }}"
+                                                data-duelistas="{{ t.quant_duelistas }}"
+                                                data-data="{{ t.data.isoformat() if t.data else '' }}"
+                                                data-temporada="{{ t.temporada_id if t.temporada_id else '' }}"
+                                                data-bs-toggle="modal" data-bs-target="#editarTorneioModal">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                             <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" class="d-inline">
                                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                 <button type="submit" class="btn btn-outline-danger btn-sm js-confirm-delete" data-type="torneio" title="Excluir"><i class="fas fa-trash-alt"></i></button>
@@ -71,6 +89,10 @@
                                 <span class="text-primary fw-bold"><i class="fas fa-users me-1"></i>{{ t.qtd_participantes|default(0) }} / {{ t.quant_duelistas }}</span>
                                 <span class="mx-2 text-muted-subtle">|</span>
                                 <span class="text-secondary fw-bold"><i class="fas fa-layer-group me-1"></i>{{ t.rodadas }} R</span>
+                                {% if t.temporada_nome %}
+                                <span class="mx-2 text-muted-subtle">|</span>
+                                <span class="badge bg-info text-dark">{{ t.temporada_nome }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="mobile-card-footer d-flex gap-2 pt-2 border-0">
@@ -78,6 +100,16 @@
                                 <i class="fas fa-eye me-1"></i> Ver Placar
                             </a>
                             {% if is_admin %}
+                            <button type="button" class="btn btn-sm btn-light text-secondary border-0 shadow-none btn-editar-torneio"
+                                data-id="{{ t.id }}"
+                                data-nome="{{ t.nome }}"
+                                data-rodadas="{{ t.rodadas }}"
+                                data-duelistas="{{ t.quant_duelistas }}"
+                                data-data="{{ t.data.isoformat() if t.data else '' }}"
+                                data-temporada="{{ t.temporada_id if t.temporada_id else '' }}"
+                                data-bs-toggle="modal" data-bs-target="#editarTorneioModal">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" class="d-inline">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-light text-danger border-0 shadow-none js-confirm-delete" data-type="torneio">
@@ -103,5 +135,80 @@
         </div>
     </div>
 </div>
+
+{% if is_admin %}
+<!-- Modal Editar Torneio -->
+<div class="modal fade" id="editarTorneioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Torneio</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarTorneio" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_nome_torneio" class="form-label fw-bold">Nome do Torneio</label>
+                        <input type="text" class="form-control" id="edit_nome_torneio" name="nome_torneio" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_rodadas" class="form-label">Rodadas</label>
+                            <input type="number" class="form-control" id="edit_rodadas" name="rodadas" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_duelistas" class="form-label">Nº de Duelistas</label>
+                            <input type="number" class="form-control" id="edit_duelistas" name="duelistas" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_data" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="edit_data" name="data" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_temporada_id" class="form-label"><i class="fas fa-layer-group"></i> Temporada</label>
+                        <select class="form-select" id="edit_temporada_id" name="temporada_id">
+                            <option value="">Geral / Sem Temporada</option>
+                            {% for temp in temporadas %}
+                            <option value="{{ temp.id }}">{{ temp.nome }}{% if temp.ativa %} (Atual){% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.btn-editar-torneio').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id         = this.dataset.id;
+        var nome       = this.dataset.nome;
+        var rodadas    = this.dataset.rodadas;
+        var duelistas  = this.dataset.duelistas;
+        var data       = this.dataset.data;
+        var temporada  = this.dataset.temporada;
+
+        document.getElementById('formEditarTorneio').action = '/torneio/' + id + '/editar';
+        document.getElementById('edit_nome_torneio').value  = nome;
+        document.getElementById('edit_rodadas').value       = rodadas;
+        document.getElementById('edit_duelistas').value     = duelistas;
+        document.getElementById('edit_data').value          = data;
+
+        // Seleciona a temporada correta no dropdown
+        var sel = document.getElementById('edit_temporada_id');
+        if (sel) {
+            sel.value = temporada || '';
+        }
+    });
+});
+</script>
+{% endif %}
 {% endblock %}
 

@@ -324,9 +324,11 @@ class Conexao:
             cursor = conexao.cursor(dictionary=True)
             if temporada_id:
                 sql = """
-                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes 
+                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes,
+                           temp.nome as temporada_nome
                     FROM torneios t 
-                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id 
+                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id
+                    LEFT JOIN temporadas temp ON t.temporada_id = temp.id
                     WHERE t.temporada_id = %s
                     GROUP BY t.id 
                     ORDER BY t.data DESC, t.id DESC
@@ -334,9 +336,11 @@ class Conexao:
                 cursor.execute(sql, (temporada_id,))
             else:
                 sql = """
-                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes 
+                    SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes,
+                           temp.nome as temporada_nome
                     FROM torneios t 
-                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id 
+                    LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id
+                    LEFT JOIN temporadas temp ON t.temporada_id = temp.id
                     GROUP BY t.id 
                     ORDER BY t.data DESC, t.id DESC
                 """
@@ -672,22 +676,26 @@ class Conexao:
                     cursor.execute(resumo_sql, params_torneio)
                     resumo = cursor.fetchone() or {}
                     
-                    # Garantir os dados de tds jogadores pra manter ranking (mas com 0)
+                    # Subquery garante que apenas as participações do filtro entrem nos SUM()
                     duelistas_sql = f"""
                         SELECT
                             d.id,
                             d.nome,
-                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
-                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
-                            COALESCE(SUM(tp.empates), 0) AS empates,
-                            COUNT(tp.torneio_id) AS participacao,
-                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
+                            COALESCE(SUM(tp_f.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp_f.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp_f.empates), 0) AS empates,
+                            COUNT(tp_f.torneio_id) AS participacao,
+                            COALESCE(SUM(tp_f.pontos_obtidos), 0) AS pontos,
                             d.ativo,
-                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
-                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                            COALESCE(SUM(CASE WHEN tp_f.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp_f.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
                         FROM duelistas d
-                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
-                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        LEFT JOIN (
+                            SELECT tp.*
+                            FROM torneio_participantes tp
+                            JOIN torneios t ON t.id = tp.torneio_id
+                            WHERE {where_torneio}
+                        ) tp_f ON tp_f.duelista_id = d.id
                         {filtro_status}
                         GROUP BY d.id, d.nome, d.ativo
                         ORDER BY pontos DESC, derrotas ASC, d.nome ASC
@@ -819,17 +827,21 @@ class Conexao:
                         SELECT
                             d.id,
                             d.nome,
-                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
-                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
-                            COALESCE(SUM(tp.empates), 0) AS empates,
-                            COUNT(tp.torneio_id) AS participacao,
-                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
+                            COALESCE(SUM(tp_f.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp_f.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp_f.empates), 0) AS empates,
+                            COUNT(tp_f.torneio_id) AS participacao,
+                            COALESCE(SUM(tp_f.pontos_obtidos), 0) AS pontos,
                             d.ativo,
-                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
-                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                            COALESCE(SUM(CASE WHEN tp_f.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp_f.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
                         FROM duelistas d
-                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
-                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        LEFT JOIN (
+                            SELECT tp.*
+                            FROM torneio_participantes tp
+                            JOIN torneios t ON t.id = tp.torneio_id
+                            WHERE {where_torneio}
+                        ) tp_f ON tp_f.duelista_id = d.id
                         WHERE LOWER(d.nome) = LOWER(%s)
                         GROUP BY d.id, d.nome, d.ativo
                         LIMIT 1
@@ -925,16 +937,20 @@ class Conexao:
                         f"""
                         SELECT
                             d.nome,
-                            COALESCE(SUM(tp.vitorias), 0) AS vitorias,
-                            COALESCE(SUM(tp.derrotas), 0) AS derrotas,
-                            COALESCE(SUM(tp.empates), 0) AS empates,
-                            COUNT(tp.torneio_id) AS participacao,
-                            COALESCE(SUM(tp.pontos_obtidos), 0) AS pontos,
-                            COALESCE(SUM(CASE WHEN tp.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
-                            COALESCE(SUM(CASE WHEN tp.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
+                            COALESCE(SUM(tp_f.vitorias), 0) AS vitorias,
+                            COALESCE(SUM(tp_f.derrotas), 0) AS derrotas,
+                            COALESCE(SUM(tp_f.empates), 0) AS empates,
+                            COUNT(tp_f.torneio_id) AS participacao,
+                            COALESCE(SUM(tp_f.pontos_obtidos), 0) AS pontos,
+                            COALESCE(SUM(CASE WHEN tp_f.topou_torneio = 1 THEN 1 ELSE 0 END), 0) AS tops,
+                            COALESCE(SUM(CASE WHEN tp_f.colocacao_top = 1 THEN 1 ELSE 0 END), 0) AS campeonatos
                         FROM duelistas d
-                        LEFT JOIN torneio_participantes tp ON tp.duelista_id = d.id
-                        LEFT JOIN torneios t ON t.id = tp.torneio_id AND {where_torneio}
+                        LEFT JOIN (
+                            SELECT tp.*
+                            FROM torneio_participantes tp
+                            JOIN torneios t ON t.id = tp.torneio_id
+                            WHERE {where_torneio}
+                        ) tp_f ON tp_f.duelista_id = d.id
                         WHERE d.ativo = 1
                         GROUP BY d.id, d.nome
                         """,
@@ -1065,6 +1081,46 @@ class Conexao:
             cursor = conexao.cursor()
             cursor.execute("UPDATE temporadas SET ativa = 0")
             cursor.execute("UPDATE temporadas SET ativa = 1 WHERE id = %s", (id,))
+            conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    def excluir_temporada(self, id):
+        """Exclui uma temporada. Os torneios vinculados ficam com temporada_id = NULL (FK ON DELETE SET NULL)."""
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            cursor.execute("DELETE FROM temporadas WHERE id = %s", (id,))
+            conexao.commit()
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            conexao.close()
+
+    # ==========================
+
+    # GERENCIAMENTO DE TORNEIOS (EDIÇÃO)
+    # ==========================
+
+    def atualizar_torneio(self, id, nome, rodadas, quant_duelistas, data, temporada_id):
+        """Atualiza os metadados de um torneio existente."""
+        conexao = self.conectar_bd()
+        try:
+            cursor = conexao.cursor()
+            sql = """
+                UPDATE torneios
+                SET nome = %s,
+                    rodadas = %s,
+                    quant_duelistas = %s,
+                    data = %s,
+                    temporada_id = %s
+                WHERE id = %s
+            """
+            cursor.execute(sql, (nome, rodadas, quant_duelistas, data, temporada_id, id))
             conexao.commit()
         except Exception as e:
             conexao.rollback()

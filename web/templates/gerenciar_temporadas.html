@@ -32,7 +32,9 @@
                                 <td>{{ temporada.nome }}</td>
                                 <td>
                                     {% if temporada.data_inicio or temporada.data_fim %}
-                                        {{ temporada.data_inicio | default('?') }} até {{ temporada.data_fim | default('?') }}
+                                        {{ temporada.data_inicio.strftime('%d/%m/%Y') if temporada.data_inicio else '?' }}
+                                        &ndash;
+                                        {{ temporada.data_fim.strftime('%d/%m/%Y') if temporada.data_fim else '?' }}
                                     {% else %}
                                         Não definido
                                     {% endif %}
@@ -45,14 +47,34 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if not temporada.ativa %}
-                                    <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Tornar esta temporada ativa? Isso alterará a visão padrão do Dashboard.')">
-                                            <i class="fas fa-check"></i> Definir Ativa
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-editar-temporada"
+                                            data-id="{{ temporada.id }}"
+                                            data-nome="{{ temporada.nome }}"
+                                            data-inicio="{{ temporada.data_inicio.isoformat() if temporada.data_inicio else '' }}"
+                                            data-fim="{{ temporada.data_fim.isoformat() if temporada.data_fim else '' }}"
+                                            data-ativa="{{ '1' if temporada.ativa else '0' }}"
+                                            data-bs-toggle="modal" data-bs-target="#editarTemporadaModal">
+                                            <i class="fas fa-edit"></i> Editar
                                         </button>
-                                    </form>
-                                    {% endif %}
+
+                                        {% if not temporada.ativa %}
+                                        <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Tornar esta temporada ativa? Isso alterará a visão padrão do Dashboard.')">
+                                                <i class="fas fa-check"></i> Definir Ativa
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                        <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?\n\nOs torneios vinculados NÃO serão excluídos — apenas ficarão sem temporada associada.')">
+                                                <i class="fas fa-trash-alt"></i> Excluir
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -107,4 +129,62 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Editar Temporada -->
+<div class="modal fade" id="editarTemporadaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Temporada</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarTemporada" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_nome" class="form-label">Nome da Temporada</label>
+                        <input type="text" class="form-control" id="edit_nome" name="nome" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_data_inicio" class="form-label">Data de Início</label>
+                            <input type="date" class="form-control" id="edit_data_inicio" name="data_inicio">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_data_fim" class="form-label">Data de Fim</label>
+                            <input type="date" class="form-control" id="edit_data_fim" name="data_fim">
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="edit_ativa" name="ativa">
+                        <label class="form-check-label" for="edit_ativa">Definir como temporada ativa (atual)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.btn-editar-temporada').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id    = this.dataset.id;
+        var nome  = this.dataset.nome;
+        var ini   = this.dataset.inicio;
+        var fim   = this.dataset.fim;
+        var ativa = this.dataset.ativa === '1';
+
+        document.getElementById('formEditarTemporada').action =
+            '/temporadas/' + id + '/editar';
+        document.getElementById('edit_nome').value        = nome;
+        document.getElementById('edit_data_inicio').value = ini;
+        document.getElementById('edit_data_fim').value    = fim;
+        document.getElementById('edit_ativa').checked     = ativa;
+    });
+});
+</script>
 {% endblock %}

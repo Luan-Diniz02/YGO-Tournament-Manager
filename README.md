@@ -1,22 +1,24 @@
-# Liga YGO Marab√° ‚Äî Tournament Manager
+# Liga YGO Marab· ó Tournament Manager
 
-Aplica√ß√£o web em Flask para gerenciamento de torneios de Yu-Gi-Oh!, com ranking unificado,
-perfis individuais de duelistas, painel por etapa e √°rea administrativa protegida.
+AplicaÁ„o web em Flask para gerenciamento de torneios de Yu-Gi-Oh!, com ranking unificado,
+perfis individuais de duelistas, painel por etapa, temporadas e ·rea administrativa protegida.
 
 ## Demo
 
-- Produ√ß√£o (Render): https://ygo-tournament-manager.onrender.com
+- ProduÁ„o (Render): https://ygo-tournament-manager.onrender.com
 - Healthcheck: https://ygo-tournament-manager.onrender.com/health
 
 ---
 
 ## Principais Recursos
 
-- Cadastro e gerenciamento de etapas de torneio
-- **Ranking unificado** com pontos, Win Rate, Top Cut, T√≠tulos e convers√£o Top‚ÜíT√≠tulo
-- **Perfil individual** por duelista: hist√≥rico por etapa, conquistas contextuais e m√©tricas
-- Controle de Top Cut e coloca√ß√£o final por participante
-- √Årea administrativa com sess√£o, prote√ß√£o CSRF e restri√ß√£o por IP
+- Cadastro e gerenciamento de etapas de torneio (com ediÁ„o de nome, rodadas e data)
+- **Temporadas**: agrupamento de torneios em perÌodos competitivos com nome e datas
+- **Ranking unificado** com pontos, Win Rate, Top Cut, TÌtulos e convers„o Top?TÌtulo
+- **Filtro de ranking por temporada**: cada temporada exibe apenas as estatÌsticas dos torneios que a compıem
+- **Perfil individual** por duelista: histÛrico por etapa, conquistas contextuais e mÈtricas
+- Controle de Top Cut e colocaÁ„o final por participante
+- ¡rea administrativa com sess„o, proteÁ„o CSRF e restriÁ„o por IP
 - Layout responsivo (desktop/mobile) com sistema de cards adaptativo
 
 ---
@@ -25,48 +27,48 @@ perfis individuais de duelistas, painel por etapa e √°rea administrativa protegi
 
 ```text
 ygo-tournament-manager/
-‚îú‚îÄ‚îÄ core/
-‚îÇ   ‚îú‚îÄ‚îÄ database_conexao.py   # Acesso a dados (MySQL) e l√≥gica de query
-‚îÇ   ‚îî‚îÄ‚îÄ models.py             # Dataclasses (Duelistas, etc.)
-‚îú‚îÄ‚îÄ web/
-‚îÇ   ‚îú‚îÄ‚îÄ app.py                # Entry point Flask
-‚îÇ   ‚îú‚îÄ‚îÄ routes.py             # Registro de blueprints
-‚îÇ   ‚îú‚îÄ‚îÄ auth.py               # Guard de autentica√ß√£o admin
-‚îÇ   ‚îú‚îÄ‚îÄ security.py           # CSRF, secret key, redirect seguro
-‚îÇ   ‚îú‚îÄ‚îÄ blueprints/
-‚îÇ   ‚îÇ   ‚îú‚îÄ‚îÄ admin.py          # Rotas administrativas (protegidas)
-‚îÇ   ‚îÇ   ‚îî‚îÄ‚îÄ public.py         # Rotas p√∫blicas
-‚îÇ   ‚îú‚îÄ‚îÄ services/
-‚îÇ   ‚îÇ   ‚îú‚îÄ‚îÄ admin_service.py  # Regras de neg√≥cio admin
-‚îÇ   ‚îÇ   ‚îî‚îÄ‚îÄ public_service.py # Regras de neg√≥cio p√∫blicas
-‚îÇ   ‚îú‚îÄ‚îÄ templates/            # Jinja2 (ver docs/CONTEXT.md para mapa completo)
-‚îÇ   ‚îî‚îÄ‚îÄ static/
-‚îÇ       ‚îú‚îÄ‚îÄ css/style.css     # CSS global do projeto
-‚îÇ       ‚îî‚îÄ‚îÄ js/script.js      # JS global (SweetAlert confirms, etc.)
-‚îú‚îÄ‚îÄ docs/
-‚îÇ   ‚îî‚îÄ‚îÄ CONTEXT.md            # Regras de UI/UX, arquitetura e decis√µes do projeto
-‚îú‚îÄ‚îÄ scripts/
-‚îÇ   ‚îú‚îÄ‚îÄ run.bat               # Inicializa√ß√£o Windows (CMD)
-‚îÇ   ‚îî‚îÄ‚îÄ run.ps1               # Inicializa√ß√£o Windows (PowerShell)
-‚îú‚îÄ‚îÄ tests/                    # Testes unit√°rios e de integra√ß√£o HTTP
-‚îú‚îÄ‚îÄ schema.sql                # DDL para cria√ß√£o manual das tabelas
-‚îú‚îÄ‚îÄ requirements.txt
-‚îú‚îÄ‚îÄ requirements-dev.txt
-‚îú‚îÄ‚îÄ render.yaml               # Deploy no Render (Blueprint)
-‚îî‚îÄ‚îÄ Procfile
++-- core/
+¶   +-- database_conexao.py   # Acesso a dados (MySQL) e lÛgica de query
+¶   +-- models.py             # Dataclasses (Duelistas, etc.)
++-- web/
+¶   +-- app.py                # Entry point Flask
+¶   +-- routes.py             # Registro de blueprints
+¶   +-- auth.py               # Guard de autenticaÁ„o admin
+¶   +-- security.py           # CSRF, secret key, redirect seguro
+¶   +-- blueprints/
+¶   ¶   +-- admin.py          # Rotas administrativas (protegidas)
+¶   ¶   +-- public.py         # Rotas p˙blicas
+¶   +-- services/
+¶   ¶   +-- admin_service.py  # Regras de negÛcio admin
+¶   ¶   +-- public_service.py # Regras de negÛcio p˙blicas
+¶   +-- templates/            # Jinja2 (ver docs/CONTEXT.md para mapa completo)
+¶   +-- static/
+¶       +-- css/style.css     # CSS global do projeto
+¶       +-- js/script.js      # JS global (validaÁıes, confirmaÁıes, etc.)
++-- docs/
+¶   +-- CONTEXT.md            # Regras de UI/UX, arquitetura e decisıes do projeto
++-- scripts/
+¶   +-- run.bat               # InicializaÁ„o Windows (CMD)
+¶   +-- run.ps1               # InicializaÁ„o Windows (PowerShell)
++-- tests/                    # Testes unit·rios e de integraÁ„o HTTP
++-- schema.sql                # DDL para criaÁ„o manual das tabelas
++-- requirements.txt
++-- requirements-dev.txt
++-- render.yaml               # Deploy no Render (Blueprint)
++-- Procfile
 ```
 
 > Consulte [`docs/CONTEXT.md`](docs/CONTEXT.md) para o mapa completo de rotas,
-> padr√µes visuais e regras de neg√≥cio consolidadas.
+> padrıes visuais e regras de negÛcio consolidadas.
 
 ---
 
 ## Requisitos
 
 - Python 3.10+
-- MySQL (ou TiDB compat√≠vel com MySQL)
+- MySQL (ou TiDB compatÌvel com MySQL)
 
-## Instala√ß√£o
+## InstalaÁ„o
 
 ```bash
 pip install -r requirements.txt
@@ -78,15 +80,15 @@ Para desenvolvimento e testes:
 pip install -r requirements-dev.txt
 ```
 
-## Configura√ß√£o de Ambiente
+## ConfiguraÁ„o de Ambiente
 
-Copie `.env.example` para `.env` e preencha as vari√°veis:
+Copie `.env.example` para `.env` e preencha as vari·veis:
 
-| Vari√°vel | Descri√ß√£o |
+| Vari·vel | DescriÁ„o |
 |---|---|
-| `FLASK_SECRET_KEY` | **Obrigat√≥ria.** Chave da sess√£o Flask |
+| `FLASK_SECRET_KEY` | **ObrigatÛria.** Chave da sess„o Flask |
 | `AUTO_INIT_DB` | `1` para criar tabelas automaticamente no boot |
-| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conex√£o MySQL |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conex„o MySQL |
 | `DB_SSL_DISABLED`, `DB_SSL_CA`, `DB_SSL_VERIFY_CERT`, `DB_SSL_VERIFY_IDENTITY` | TLS/SSL |
 | `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Credenciais do painel admin |
 | `ADMIN_ALLOWED_IPS` | IPs permitidos para o admin (opcional) |
@@ -111,14 +113,14 @@ ou
 python -m web.app
 ```
 
-A aplica√ß√£o sobe em `http://localhost:5000`.
+A aplicaÁ„o sobe em `http://localhost:5000`.
 
 ---
 
 ## Testes
 
 ```bash
-# Executar su√≠te completa
+# Executar suÌte completa
 pytest -q
 
 # Com cobertura
@@ -126,17 +128,17 @@ pytest --cov=web --cov-report=term-missing -q
 ```
 
 Cobertura inclui:
-- Testes unit√°rios de services (`tests/test_admin_service.py`, `test_public_service.py`)
-- Testes de integra√ß√£o HTTP (`tests/test_http_integration.py`)
-- Testes de seguran√ßa (`tests/test_security.py`)
+- Testes unit·rios de services (`tests/test_admin_service.py`, `test_public_service.py`)
+- Testes de integraÁ„o HTTP (`tests/test_http_integration.py`)
+- Testes de seguranÁa (`tests/test_security.py`)
 
 ---
 
 ## Deploy (Render + TiDB)
 
 1. Crie banco MySQL/TiDB e obtenha credenciais
-2. Suba o servi√ßo via `render.yaml` (Blueprint do Render)
-3. Configure vari√°veis de ambiente (`DB_*`, `FLASK_SECRET_KEY`, etc.)
+2. Suba o serviÁo via `render.yaml` (Blueprint do Render)
+3. Configure vari·veis de ambiente (`DB_*`, `FLASK_SECRET_KEY`, etc.)
 4. No primeiro deploy, use `AUTO_INIT_DB=1`
 5. Valide `GET /health` e os fluxos principais
 
@@ -149,10 +151,10 @@ Comandos de deploy esperados:
 ## Troubleshooting
 
 **`ModuleNotFoundError` ao iniciar**
-‚Üí Use `python -m web.app` (n√£o `python web/app.py`)
+? Use `python -m web.app` (n„o `python web/app.py`)
 
-**Erro de conex√£o com banco**
-‚Üí Verifique vari√°veis `DB_*` e configura√ß√µes SSL do provedor
+**Erro de conex„o com banco**
+? Verifique vari·veis `DB_*` e configuraÁıes SSL do provedor
 
 **Porta 5000 em uso**
 ```powershell
@@ -161,6 +163,6 @@ $env:PORT=8080; python -m web.app
 
 ---
 
-## Licen√ßa
+## LicenÁa
 
 MIT
