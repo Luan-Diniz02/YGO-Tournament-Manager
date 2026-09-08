@@ -325,7 +325,7 @@ class Conexao:
             if temporada_id:
                 sql = """
                     SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes,
-                           temp.nome as temporada_nome
+                           MAX(temp.nome) as temporada_nome
                     FROM torneios t 
                     LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id
                     LEFT JOIN temporadas temp ON t.temporada_id = temp.id
@@ -337,7 +337,7 @@ class Conexao:
             else:
                 sql = """
                     SELECT t.*, COUNT(tp.duelista_id) as qtd_participantes,
-                           temp.nome as temporada_nome
+                           MAX(temp.nome) as temporada_nome
                     FROM torneios t 
                     LEFT JOIN torneio_participantes tp ON t.id = tp.torneio_id
                     LEFT JOIN temporadas temp ON t.temporada_id = temp.id
