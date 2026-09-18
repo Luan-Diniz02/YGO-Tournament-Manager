@@ -216,6 +216,81 @@
     color: #fbbf24 !important;
 }
 
+/* Dark Mode Contrast Fixes */
+.season-highlight-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .season-highlight-card {
+    background: linear-gradient(135deg, #131c2e 0%, #172338 100%) !important;
+    border-color: #24344d !important;
+}
+
+[data-bs-theme="dark"] .season-highlight-card h3,
+[data-bs-theme="dark"] .season-highlight-card h4 {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .season-highlight-card .text-muted {
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .badge-podium-2 {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: #f1f5f9;
+    border-color: #475569;
+}
+
+[data-bs-theme="dark"] .badge-podium-3 {
+    background: linear-gradient(135deg, #431407, #7c2d12);
+    color: #ffedd5;
+    border-color: #c2410c;
+}
+
+[data-bs-theme="dark"] .podium-slot-2 .podium-avatar {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: #f1f5f9;
+    border-color: #64748b;
+}
+
+[data-bs-theme="dark"] .podium-slot-3 .podium-avatar {
+    background: linear-gradient(135deg, #431407, #7c2d12);
+    color: #ffedd5;
+    border-color: #ea580c;
+}
+
+[data-bs-theme="dark"] .podium-slot-2 .podium-pillar {
+    background: linear-gradient(180deg, rgba(71, 85, 105, 0.3) 0%, rgba(71, 85, 105, 0.08) 100%);
+    border-color: #475569;
+}
+
+[data-bs-theme="dark"] .podium-slot-3 .podium-pillar {
+    background: linear-gradient(180deg, rgba(154, 52, 18, 0.3) 0%, rgba(154, 52, 18, 0.08) 100%);
+    border-color: #9a3412;
+}
+
+[data-bs-theme="dark"] .form-label {
+    color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .bg-success-subtle {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .text-success {
+    color: #34d399 !important;
+}
+
+[data-bs-theme="dark"] a.text-dark {
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] a.text-dark:hover {
+    color: #60a5fa !important;
+}
+
 /* --------------------------------------------------------------------------
    Global Reset & Base
    -------------------------------------------------------------------------- */

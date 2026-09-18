@@ -434,8 +434,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 btnDownload.innerHTML = '<span class="loading"></span> Gerando imagem...';
 
                 html2canvas(cardEl, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                    const cleanName = ("{{ dados.duelista.nome }}".toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) || 'duelista';
                     const link = document.createElement('a');
-                    link.download = `card-duelista-{{ dados.duelista.nome|slugify|default("duelista") }}.png`;
+                    link.download = `card-duelista-${cleanName}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
 
