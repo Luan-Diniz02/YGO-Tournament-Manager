@@ -8,6 +8,38 @@ document.addEventListener('DOMContentLoaded', function() {
         card.classList.add('fade-in');
     });
 
+    // Theme Management (Light / Dark Mode)
+    function updateThemeIcons(currentTheme) {
+        const icons = document.querySelectorAll('.theme-icon');
+        icons.forEach(icon => {
+            if (currentTheme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    }
+
+    const initialTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+    updateThemeIcons(initialTheme);
+
+    const themeToggles = document.querySelectorAll('.js-theme-toggle');
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', next);
+            localStorage.setItem('ygo-theme', next);
+            updateThemeIcons(next);
+            
+            // Trigger custom event so charts can update their colors if present
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
+        });
+    });
+
     // Add loading animation to buttons on form submit
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {

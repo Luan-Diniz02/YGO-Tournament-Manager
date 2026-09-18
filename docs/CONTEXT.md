@@ -161,6 +161,22 @@ Todos os botões têm `border-radius: 25px` via regra global no `style.css`.
 Use as classes Bootstrap padrão (`btn-primary`, `btn-outline-secondary`, etc.)
 com os gradientes já definidos no CSS.
 
+### Suporte a Tema Escuro (Dark Mode)
+
+- Alternância dinâmica entre temas Claro e Escuro através do atributo `data-bs-theme="dark|light"` no elemento `<html>`.
+- Persistência das preferências do usuário no `localStorage` sob a chave `'ygo-theme'`, com fallback para `prefers-color-scheme`.
+- O Dark Mode preserva as identidades visuais de marca e as regras de contraste (ex: `.card-header.bg-dark.text-white`).
+
+### Pódio Top 3 (Showcase)
+
+- Exibido no topo da página de ranking (`/dashboard`) quando existirem ao menos 3 duelistas.
+- Estrutura visual: 2º Lugar (esquerda), 1º Lugar (centro elevado em destaque dourado) e 3º Lugar (direita).
+
+### Visualização de Dados e Cartão Compartilhável
+
+- **Chart.js**: Utilizado no perfil individual (`dashboard_duelista.html`) para gráfico de rosca (proporção de Vitórias, Derrotas e Empates) e gráfico de linha (evolução histórica de pontos por evento).
+- **html2canvas**: Permite ao jogador exportar seu Card de Duelista em formato PNG ou compartilhar link com resumo de pontuação no WhatsApp.
+
 ---
 
 ## Fórmula de Pontuação

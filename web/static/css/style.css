@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Design System — Liga YGO Marabá
    Modern Esports & TCG Tournament Interface
    ========================================================================== */
@@ -73,6 +73,147 @@
     --ygo-shadow-sm: 0 2px 4px 0 rgba(15, 23, 42, 0.06);
     --ygo-shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
     --ygo-shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   Dark Mode Custom Properties & Overrides
+   -------------------------------------------------------------------------- */
+[data-bs-theme="dark"] {
+    --ygo-bg: #090d16;
+    --ygo-surface: #111827;
+    --ygo-surface-card: #151e2e;
+    --ygo-surface-muted: #1e293b;
+    --ygo-border: #243044;
+    --ygo-border-subtle: #1e293b;
+
+    --ygo-text-main: #f1f5f9;
+    --ygo-text-muted: #94a3b8;
+    --ygo-text-subtle: #64748b;
+
+    --bs-body-bg: var(--ygo-bg);
+    --bs-body-color: var(--ygo-text-main);
+    --bs-light: #151e2e;
+
+    --ygo-primary-subtle: rgba(37, 99, 235, 0.2);
+    --ygo-primary-border: rgba(37, 99, 235, 0.4);
+    --ygo-gold-subtle: rgba(245, 158, 11, 0.18);
+    --ygo-gold-border: rgba(245, 158, 11, 0.35);
+    --ygo-emerald-subtle: rgba(16, 185, 129, 0.18);
+    --ygo-emerald-border: rgba(16, 185, 129, 0.35);
+    --ygo-rose-subtle: rgba(239, 68, 68, 0.18);
+    --ygo-rose-border: rgba(239, 68, 68, 0.35);
+    --ygo-cyan-subtle: rgba(6, 182, 212, 0.18);
+    --ygo-cyan-border: rgba(6, 182, 212, 0.35);
+
+    --ygo-shadow-xs: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --ygo-shadow-sm: 0 2px 6px 0 rgba(0, 0, 0, 0.4);
+    --ygo-shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.5);
+    --ygo-shadow-lg: 0 10px 28px -3px rgba(0, 0, 0, 0.6);
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: var(--ygo-surface-card);
+    border-color: var(--ygo-border);
+    color: var(--ygo-text-main);
+}
+
+[data-bs-theme="dark"] .card.bg-light,
+[data-bs-theme="dark"] .bg-light {
+    background-color: var(--ygo-surface-muted) !important;
+    border-color: var(--ygo-border) !important;
+    color: var(--ygo-text-main) !important;
+}
+
+[data-bs-theme="dark"] .card.bg-white {
+    background-color: var(--ygo-surface-card) !important;
+}
+
+[data-bs-theme="dark"] .text-dark {
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .table {
+    color: var(--ygo-text-main);
+}
+
+[data-bs-theme="dark"] .table tbody td {
+    color: var(--ygo-text-main);
+    border-bottom-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-bs-theme="dark"] .mobile-card {
+    background: var(--ygo-surface-card);
+    border-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .mobile-card-header {
+    border-bottom-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .mobile-card:active {
+    background-color: var(--ygo-surface-muted);
+}
+
+[data-bs-theme="dark"] .mobile-stats-grid {
+    background-color: #0c121e;
+    border-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .dashboard-leader-mini {
+    background: var(--ygo-surface-card);
+    border-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #0d1524;
+    border-color: #2b3952;
+    color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: #111b2e;
+    border-color: var(--ygo-primary);
+    color: #ffffff;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #151e2e;
+    border-color: #2b3952;
+    color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .hub-card {
+    background-color: var(--ygo-surface-card);
+    border-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .hub-card:hover {
+    border-color: var(--ygo-primary);
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: #cbd5e1;
+    border-color: #475569;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #334155;
+    color: #ffffff;
+    border-color: #64748b;
+}
+
+[data-bs-theme="dark"] .win-rate-track {
+    background-color: #243044;
+}
+
+[data-bs-theme="dark"] .theme-toggle-btn {
+    color: #fbbf24 !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -545,6 +686,140 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Podium Showcase (Top 3 Visual)
+   -------------------------------------------------------------------------- */
+.podium-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.5rem 0.5rem 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.podium-slot {
+    flex: 1;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.podium-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--ygo-shadow-sm);
+    position: relative;
+}
+
+.podium-slot-1 .podium-avatar {
+    width: 66px;
+    height: 66px;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, #fef3c7, #fbbf24);
+    color: #78350f;
+    border: 3px solid #f59e0b;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+.podium-slot-2 .podium-avatar {
+    background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+    color: #334155;
+    border: 2px solid #94a3b8;
+}
+
+.podium-slot-3 .podium-avatar {
+    background: linear-gradient(135deg, #ffedd5, #fdba74);
+    color: #7c2d12;
+    border: 2px solid #ea580c;
+}
+
+.podium-name {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--ygo-text-main);
+    margin-bottom: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.podium-slot-1 .podium-name {
+    font-size: 1.05rem;
+    color: #d97706;
+}
+
+.podium-points {
+    font-size: 0.8rem;
+    color: var(--ygo-text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.podium-pillar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 0.75rem;
+    box-shadow: var(--ygo-shadow-sm);
+    transition: transform 0.2s ease;
+}
+
+.podium-pillar:hover {
+    transform: translateY(-3px);
+}
+
+.podium-slot-1 .podium-pillar {
+    height: 120px;
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0.05) 100%);
+    border: 2px solid #f59e0b;
+    border-bottom: none;
+}
+
+.podium-slot-2 .podium-pillar {
+    height: 90px;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.2) 0%, rgba(148, 163, 184, 0.05) 100%);
+    border: 2px solid #94a3b8;
+    border-bottom: none;
+}
+
+.podium-slot-3 .podium-pillar {
+    height: 70px;
+    background: linear-gradient(180deg, rgba(234, 88, 12, 0.18) 0%, rgba(234, 88, 12, 0.05) 100%);
+    border: 2px solid #ea580c;
+    border-bottom: none;
+}
+
+.podium-rank-badge {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 575.98px) {
+    .podium-container {
+        gap: 0.4rem;
+        padding: 0.75rem 0.2rem 0;
+    }
+    .podium-slot-1 .podium-pillar { height: 95px; }
+    .podium-slot-2 .podium-pillar { height: 75px; }
+    .podium-slot-3 .podium-pillar { height: 60px; }
+    .podium-slot-1 .podium-avatar { width: 52px; height: 52px; font-size: 1.3rem; }
+    .podium-avatar { width: 44px; height: 44px; font-size: 1.1rem; }
+}
+
+/* --------------------------------------------------------------------------
    Tabelas de Dados (Desktop)
    -------------------------------------------------------------------------- */
 .table {
@@ -692,6 +967,46 @@ body {
 .btn-mobile-action:hover, .btn-mobile-action:active {
     background-color: var(--ygo-primary);
     color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Duelist Shareable Card & Charts
+   -------------------------------------------------------------------------- */
+.share-card-preview {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border: 2px solid rgba(245, 158, 11, 0.4);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.share-card-preview::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.chart-card {
+    background: var(--ygo-surface-card);
+    border: 1px solid var(--ygo-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: var(--ygo-shadow-sm);
+    height: 100%;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 220px;
 }
 
 /* --------------------------------------------------------------------------

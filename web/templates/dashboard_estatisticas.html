@@ -173,6 +173,50 @@
                 {% set max_pontos = (dashboard.duelistas | map(attribute='pontos') | max) if dashboard.duelistas else 0
                 %}
 
+                <!-- Podium Showcase (Top 3 Visual) -->
+                {% if dashboard.duelistas|length >= 3 %}
+                {% set top1 = dashboard.duelistas[0] %}
+                {% set top2 = dashboard.duelistas[1] %}
+                {% set top3 = dashboard.duelistas[2] %}
+                <div class="podium-container border-bottom">
+                    <!-- 2º Colocado -->
+                    <div class="podium-slot podium-slot-2">
+                        <div class="podium-avatar">🥈</div>
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top2.nome) }}" class="podium-name text-decoration-none" title="{{ top2.nome }}">
+                            {{ top2.nome }}
+                        </a>
+                        <div class="podium-points">{{ top2.pontos }} pts &bull; {{ '%.1f'|format(top2.win_rate) }}% WR</div>
+                        <div class="podium-pillar">
+                            <span class="podium-rank-badge text-muted">2º</span>
+                        </div>
+                    </div>
+
+                    <!-- 1º Colocado (Campeão) -->
+                    <div class="podium-slot podium-slot-1">
+                        <div class="podium-avatar">🥇</div>
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top1.nome) }}" class="podium-name text-decoration-none" title="{{ top1.nome }}">
+                            {{ top1.nome }}
+                        </a>
+                        <div class="podium-points">{{ top1.pontos }} pts &bull; {{ '%.1f'|format(top1.win_rate) }}% WR</div>
+                        <div class="podium-pillar">
+                            <span class="podium-rank-badge text-warning"><i class="fas fa-crown me-1"></i>1º</span>
+                        </div>
+                    </div>
+
+                    <!-- 3º Colocado -->
+                    <div class="podium-slot podium-slot-3">
+                        <div class="podium-avatar">🥉</div>
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top3.nome) }}" class="podium-name text-decoration-none" title="{{ top3.nome }}">
+                            {{ top3.nome }}
+                        </a>
+                        <div class="podium-points">{{ top3.pontos }} pts &bull; {{ '%.1f'|format(top3.win_rate) }}% WR</div>
+                        <div class="podium-pillar">
+                            <span class="podium-rank-badge text-danger">3º</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Desktop View -->
                 <div class="d-none d-lg-block">
                     <div class="table-responsive">
@@ -331,6 +375,16 @@
                     {% endfor %}
                 </div>
 
+                <!-- Empty State quando o filtro em tempo real não encontrar nada -->
+                <div id="empty-state-filtro" class="text-center py-5 d-none">
+                    <i class="fas fa-search-minus fa-3x text-muted mb-3 opacity-50"></i>
+                    <h6 class="text-muted fw-bold">Nenhum duelista encontrado com os filtros atuais</h6>
+                    <p class="text-muted small mb-3">Tente buscar por outro termo ou reduza a quantidade mínima de partidas.</p>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="limparFiltrosDashboard()">
+                        <i class="fas fa-rotate-left me-1"></i> Redefinir Busca
+                    </button>
+                </div>
+
                 {% else %}
                 <div class="text-center py-5">
                     <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
@@ -356,11 +410,14 @@
         const inputNome = document.getElementById('filtro-nome-dashboard');
         const inputMinPartidas = document.getElementById('filtro-min-partidas');
         const contador = document.getElementById('contador-visivel-dashboard');
+        const emptyState = document.getElementById('empty-state-filtro');
 
         if (!inputNome || !inputMinPartidas || !contador) return;
 
         const termo = (inputNome.value || '').trim().toLowerCase();
         const minPartidas = Number(inputMinPartidas.value || 0);
+
+        let visiveisTotais = 0;
 
         document.querySelectorAll('.js-linha-duelista').forEach((elemento) => {
             const nome = (elemento.dataset.nome || '');
@@ -373,7 +430,6 @@
             elemento.style.display = mostrar ? '' : 'none';
         });
 
-        let visiveisTotais;
         if (window.innerWidth < 992) {
             visiveisTotais = document.querySelectorAll('.mobile-card.js-linha-duelista:not([style*="display: none"])').length;
         } else {
@@ -381,6 +437,14 @@
         }
 
         contador.textContent = `${visiveisTotais} visíveis`;
+
+        if (emptyState) {
+            if (visiveisTotais === 0) {
+                emptyState.classList.remove('d-none');
+            } else {
+                emptyState.classList.add('d-none');
+            }
+        }
     }
 
     function limparFiltrosDashboard() {
