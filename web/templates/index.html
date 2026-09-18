@@ -1,108 +1,191 @@
 {% extends "base.html" %}
 
-{% block title %}Liga YGO Marabá - Página Inicial{% endblock %}
+{% block title %}Liga YGO Marabá - Hub Oficial de Torneios{% endblock %}
 
 {% block content %}
-<div class="row">
+<!-- Hero Section -->
+<div class="row mb-4">
     <div class="col-12">
-        <div class="hero-section bg-primary text-white rounded p-5 mb-4">
-            <div class="text-center">
-                <h1 class="display-4">
-                    <i class="fas fa-trophy"></i> Liga YGO Marabá
+        <div class="hero-section p-4 p-md-5">
+            <div class="text-center position-relative" style="z-index: 1;">
+                <div class="hero-pill-badge">
+                    <span class="status-dot"></span>
+                    <span>Liga Competitiva Oficial</span>
+                </div>
+                <h1 class="hero-title">
+                    <i class="fas fa-trophy text-warning me-2"></i>Liga YGO Marabá
                 </h1>
-                <p class="lead">Sistema de Gerenciamento de Torneios Yu-Gi-Oh!</p>
+                <p class="hero-subtitle mb-4">
+                    Plataforma oficial de gerenciamento de torneios, ranking geral, métricas de duelistas e histórico de etapas.
+                </p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-warning fw-bold px-4">
+                        <i class="fas fa-medal"></i> Ver Ranking Geral
+                    </a>
+                    <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-outline-primary text-white border-white px-4">
+                        <i class="fas fa-calendar-days"></i> Ver Torneios
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    {% if is_admin %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-calendar-plus fa-3x text-primary"></i></div>
-                <h5 class="card-title">Cadastrar Torneio</h5>
-                <p class="card-text">Cadastre novos torneios com informações como nome, rodadas e participantes.</p>
-                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Cadastrar Torneio
+<!-- Destaque da Temporada Ativa -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+            <div class="card-body p-3 p-md-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                <i class="fas fa-circle-dot me-1"></i>Temporada Atual
+                            </span>
+                            {% if temporada_ativa %}
+                            <span class="text-muted small">
+                                {% if temporada_ativa.data_inicio or temporada_ativa.data_fim %}
+                                    {{ temporada_ativa.data_inicio.strftime('%d/%m/%Y') if temporada_ativa.data_inicio else '?' }} &ndash; {{ temporada_ativa.data_fim.strftime('%d/%m/%Y') if temporada_ativa.data_fim else '?' }}
+                                {% else %}
+                                    Período Aberto
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if temporada_ativa %}
+                        <h3 class="fw-bold mb-1 text-dark">{{ temporada_ativa.nome }}</h3>
+                        <p class="text-muted small mb-0">
+                            Acompanhe a corrida pelo título e a classificação atualizada desta temporada.
+                        </p>
+                        {% else %}
+                        <h4 class="fw-bold mb-1 text-muted">Nenhuma temporada ativa no momento</h4>
+                        <p class="text-muted small mb-0">
+                            As etapas realizadas serão computadas no ranking geral da liga.
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if temporada_ativa %}
+                        <a href="{{ url_for('public.dashboard_estatisticas', temporada=temporada_ativa.id) }}" class="btn btn-primary w-100 w-md-auto">
+                            <i class="fas fa-chart-line"></i> Ranking da Temporada
+                        </a>
+                        {% elif is_admin %}
+                        <a href="{{ url_for('admin.gerenciar_temporadas') }}" class="btn btn-outline-success w-100 w-md-auto">
+                            <i class="fas fa-plus"></i> Criar Temporada
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acesso Rápido / Hub Cards -->
+<div class="row g-3 g-md-4">
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-warning">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <h5 class="card-title fw-bold">Ranking & Estatísticas</h5>
+                <p class="card-text text-muted small">
+                    Classificação completa com pontuação, Win Rate detalhado, quantidade de Top Cuts e títulos conquistados.
+                </p>
+                <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-warning w-100">
+                    <i class="fas fa-trophy"></i> Acessar Ranking
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-search fa-3x text-info"></i></div>
-                <h5 class="card-title">Encontrar Duelista</h5>
-                <p class="card-text">Busque informações específicas de qualquer duelista cadastrado no sistema.</p>
-                <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-info text-white">
-                    <i class="fas fa-search"></i> Buscar Duelista
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-primary">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h5 class="card-title fw-bold">Histórico de Torneios</h5>
+                <p class="card-text text-muted small">
+                    Consulte todos os torneios realizados, veja tabelas de etapas, participantes e pontuações finais.
+                </p>
+                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-primary w-100">
+                    <i class="fas fa-list"></i> Visualizar Torneios
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if is_admin %}
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-success">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h5 class="card-title fw-bold">Cadastrar Torneio</h5>
+                <p class="card-text text-muted small">
+                    Crie novas etapas de torneio com número de rodadas suíças e vincule à temporada ativa.
+                </p>
+                <a href="{{ url_for('admin.cadastrar_torneio') }}" class="btn btn-success w-100">
+                    <i class="fas fa-plus"></i> Novo Torneio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-info">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h5 class="card-title fw-bold">Gerenciar Duelistas</h5>
+                <p class="card-text text-muted small">
+                    Localize duelistas cadastrados, faça alterações de estatísticas, ative ou desative participantes.
+                </p>
+                <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-info text-white w-100">
+                    <i class="fas fa-user-gear"></i> Buscar Duelista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-secondary">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h5 class="card-title fw-bold">Gerenciar Temporadas</h5>
+                <p class="card-text text-muted small">
+                    Configure os períodos competitivos da liga, ative a temporada do momento e organize as etapas.
+                </p>
+                <a href="{{ url_for('admin.gerenciar_temporadas') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-sliders"></i> Configurar Temporadas
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-md-4">
+        <div class="card h-100 hub-card shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="hub-icon-wrapper hub-icon-secondary">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5 class="card-title fw-bold">Área Administrativa</h5>
+                <p class="card-text text-muted small">
+                    Acesso exclusivo para juízes e organizadores inserirem resultados e gerenciarem eventos.
+                </p>
+                <a href="{{ url_for('admin.admin_login') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-lock"></i> Entrar como Admin
                 </a>
             </div>
         </div>
     </div>
     {% endif %}
-
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-medal fa-3x text-warning"></i></div>
-                <h5 class="card-title">Ranking & Estatísticas</h5>
-                <p class="card-text">Veja a classificação completa por pontos, Win Rate, Top Cuts e títulos de cada duelista.</p>
-                <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-warning">
-                    <i class="fas fa-trophy"></i> Ver Ranking
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-layer-group fa-3x text-success"></i></div>
-                <h5 class="card-title">Temporada Atual</h5>
-                {% if temporada_ativa %}
-                <p class="card-text">
-                    <strong>{{ temporada_ativa.nome }}</strong><br>
-                    {% if temporada_ativa.data_inicio or temporada_ativa.data_fim %}
-                    <small class="text-muted">
-                        {{ temporada_ativa.data_inicio.strftime('%d/%m/%Y') if temporada_ativa.data_inicio else '?' }}
-                        &ndash;
-                        {{ temporada_ativa.data_fim.strftime('%d/%m/%Y') if temporada_ativa.data_fim else '?' }}
-                    </small>
-                    {% else %}
-                    <small class="text-muted">Período não definido</small>
-                    {% endif %}
-                </p>
-                <a href="{{ url_for('public.dashboard_estatisticas', temporada=temporada_ativa.id) }}" class="btn btn-success">
-                    <i class="fas fa-chart-bar"></i> Ver Ranking da Temporada
-                </a>
-                {% else %}
-                <p class="card-text text-muted">Nenhuma temporada ativa no momento.</p>
-                {% if is_admin %}
-                <a href="{{ url_for('admin.gerenciar_temporadas') }}" class="btn btn-outline-success">
-                    <i class="fas fa-plus"></i> Criar Temporada
-                </a>
-                {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="mb-3"><i class="fas fa-eye fa-3x text-secondary"></i></div>
-                <h5 class="card-title">Visualizar Torneios</h5>
-                <p class="card-text">Consulte informações sobre torneios já realizados e seus participantes.</p>
-                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-secondary">
-                    <i class="fas fa-list"></i> Ver Torneios
-                </a>
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
 

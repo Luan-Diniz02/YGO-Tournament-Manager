@@ -4,119 +4,111 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-dark text-white">
-                <h4 class="mb-0">
-                    <i class="fas fa-edit"></i> Alterar Dados do Duelista
-                </h4>
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-user-edit text-primary me-2"></i> Alterar Dados do Duelista
+                </h5>
+                <span class="badge bg-secondary">Admin</span>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="POST">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">
-                            <i class="fas fa-user"></i> Nome do Duelista
+                    <div class="mb-4">
+                        <label for="nome" class="form-label fw-semibold">
+                            <i class="fas fa-user text-muted me-1"></i> Nome do Duelista
                         </label>
-                        <input type="text" class="form-control" id="nome" name="nome" 
-                               value="{{ duelista.nome }}" required>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-id-badge text-muted"></i></span>
+                            <input type="text" class="form-control" id="nome" name="nome" 
+                                   value="{{ duelista.nome }}" required>
+                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="vitorias" class="form-label">
-                                <i class="fas fa-trophy text-warning"></i> Vitórias
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="vitorias" class="form-label fw-semibold">
+                                <i class="fas fa-trophy text-warning me-1"></i> Vitórias
                             </label>
                             <input type="number" class="form-control" id="vitorias" name="vitorias" 
                                    min="0" value="{{ duelista.vitorias }}" required>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="derrotas" class="form-label">
-                                <i class="fas fa-times text-danger"></i> Derrotas
+                        <div class="col-md-4">
+                            <label for="derrotas" class="form-label fw-semibold">
+                                <i class="fas fa-times text-danger me-1"></i> Derrotas
                             </label>
                             <input type="number" class="form-control" id="derrotas" name="derrotas" 
                                    min="0" value="{{ duelista.derrotas }}" required>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="empates" class="form-label">
-                                <i class="fas fa-handshake text-info"></i> Empates
+                        <div class="col-md-4">
+                            <label for="empates" class="form-label fw-semibold">
+                                <i class="fas fa-handshake text-info me-1"></i> Empates
                             </label>
                             <input type="number" class="form-control" id="empates" name="empates" 
                                    min="0" value="{{ duelista.empates }}" required>
                         </div>
                     </div>
 
-                    <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Dados Atuais:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li><strong>Participações:</strong> {{ duelista.participacao }}</li>
-                            <li><strong>Pontos Totais:</strong> {{ duelista.pontos }}</li>
-                        </ul>
-                        <small class="text-muted">
-                            * Os pontos serão recalculados automaticamente após a alteração
-                        </small>
+                    <div class="card bg-light border-0 p-3 mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                <strong>Estatísticas Atuais:</strong>
+                                <span class="ms-2 text-muted">Participações: <strong>{{ duelista.participacao }}</strong></span>
+                                <span class="ms-3 text-muted">Pontos Totais: <strong class="text-primary">{{ duelista.pontos }}</strong></span>
+                            </div>
+                            <small class="text-muted fst-italic">
+                                * Os pontos e win rate serão recalculados automaticamente.
+                            </small>
+                        </div>
                     </div>
 
-                    <div class="alert alert-warning" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Atenção:</strong> Esta ação irá alterar permanentemente os dados do duelista no banco de dados.
-                    </div>
-
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-secondary me-md-2">
-                            <i class="fas fa-arrow-left"></i> Cancelar
+                    <div class="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-center gap-2">
+                        <a href="{{ url_for('admin.buscar_duelista') }}" class="btn btn-outline-secondary w-100 w-sm-auto">
+                            <i class="fas fa-arrow-left me-1"></i> Cancelar
                         </a>
-                        <!-- Botão de alterar -->
                         <button
                             type="submit"
-                            class="btn btn-warning me-md-2"
+                            class="btn btn-warning w-100 w-sm-auto px-4 py-2 text-dark fw-semibold"
                             data-confirm="Tem certeza que deseja alterar os dados deste duelista?"
                             data-confirm-title="Confirmar alteração"
                             data-confirm-icon="question"
                             data-confirm-confirm-text="Sim, salvar"
                             data-confirm-cancel-text="Cancelar"
                         >
-                            <i class="fas fa-save"></i> Salvar Alterações
+                            <i class="fas fa-save me-1"></i> Salvar Alterações
                         </button>
                     </div>
                 </form>
-                
-                <hr class="mt-4 mb-4">
-                
-                <!-- Formulário separado para exclusão com botão vermelho -->
-                <form method="POST" action="{{ url_for('admin.desativar_duelista', nome=duelista.nome) }}" class="d-flex justify-content-end">
+            </div>
+        </div>
+
+        <!-- Zona de Perigo / Desativação -->
+        <div class="card border border-danger-subtle bg-danger-subtle bg-opacity-10 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h6 class="text-danger fw-bold mb-1">
+                        <i class="fas fa-exclamation-triangle me-1"></i> Desativar Duelista
+                    </h6>
+                    <small class="text-muted">
+                        Oculta o duelista do ranking da liga sem excluir o histórico de torneios anteriores.
+                    </small>
+                </div>
+                <form method="POST" action="{{ url_for('admin.desativar_duelista', nome=duelista.nome) }}" class="m-0">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <button
                         type="submit"
-                        class="btn btn-danger"
+                        class="btn btn-outline-danger w-100"
                         data-confirm="Deseja realmente DESATIVAR o duelista {{ duelista.nome }}? Ele não aparecerá mais no ranking atual, mas seu histórico nos torneios passados será mantido."
                         data-confirm-title="Atenção"
                         data-confirm-icon="warning"
                         data-confirm-confirm-text="Sim, desativar"
                         data-confirm-cancel-text="Cancelar"
                     >
-                        <i class="fas fa-user-times"></i> Desativar Duelista
+                        <i class="fas fa-user-slash me-1"></i> Desativar
                     </button>
                 </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row justify-content-center mt-4">
-    <div class="col-md-8">
-        <div class="card bg-light">
-            <div class="card-body">
-                <h6 class="card-title">
-                    <i class="fas fa-lightbulb text-warning"></i> Dicas importantes:
-                </h6>
-                <ul class="list-unstyled mb-0">
-                    <li><i class="fas fa-check-circle text-success"></i> Verifique os dados antes de salvar</li>
-                    <li><i class="fas fa-check-circle text-success"></i> Os pontos são calculados automaticamente</li>
-                    <li><i class="fas fa-check-circle text-success"></i> As participações não podem ser alteradas diretamente</li>
-                    <li><i class="fas fa-check-circle text-success"></i> Use esta função apenas para correções necessárias</li>
-                </ul>
             </div>
         </div>
     </div>

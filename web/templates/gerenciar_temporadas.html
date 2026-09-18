@@ -14,72 +14,128 @@
             </div>
             <div class="card-body">
                 {% if temporadas %}
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Período</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for temporada in temporadas %}
-                            <tr>
-                                <td>{{ temporada.id }}</td>
-                                <td>{{ temporada.nome }}</td>
-                                <td>
-                                    {% if temporada.data_inicio or temporada.data_fim %}
-                                        {{ temporada.data_inicio.strftime('%d/%m/%Y') if temporada.data_inicio else '?' }}
-                                        &ndash;
-                                        {{ temporada.data_fim.strftime('%d/%m/%Y') if temporada.data_fim else '?' }}
-                                    {% else %}
-                                        Não definido
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if temporada.ativa %}
-                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Ativa (Atual)</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">Inativa</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button" class="btn btn-sm btn-outline-primary btn-editar-temporada"
-                                            data-id="{{ temporada.id }}"
-                                            data-nome="{{ temporada.nome }}"
-                                            data-inicio="{{ temporada.data_inicio.isoformat() if temporada.data_inicio else '' }}"
-                                            data-fim="{{ temporada.data_fim.isoformat() if temporada.data_fim else '' }}"
-                                            data-ativa="{{ '1' if temporada.ativa else '0' }}"
-                                            data-bs-toggle="modal" data-bs-target="#editarTemporadaModal">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
-
-                                        {% if not temporada.ativa %}
-                                        <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Tornar esta temporada ativa? Isso alterará a visão padrão do Dashboard.')">
-                                                <i class="fas fa-check"></i> Definir Ativa
-                                            </button>
-                                        </form>
+                <!-- Desktop View -->
+                <div class="d-none d-lg-block">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Nome da Temporada</th>
+                                    <th>Período</th>
+                                    <th>Status</th>
+                                    <th style="width: 250px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for temporada in temporadas %}
+                                <tr>
+                                    <td><span class="badge bg-secondary">{{ temporada.id }}</span></td>
+                                    <td><strong class="text-dark">{{ temporada.nome }}</strong></td>
+                                    <td class="text-muted small">
+                                        {% if temporada.data_inicio or temporada.data_fim %}
+                                            {{ temporada.data_inicio.strftime('%d/%m/%Y') if temporada.data_inicio else '?' }}
+                                            &ndash;
+                                            {{ temporada.data_fim.strftime('%d/%m/%Y') if temporada.data_fim else '?' }}
+                                        {% else %}
+                                            Não definido
                                         {% endif %}
-
-                                        <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?\n\nOs torneios vinculados NÃO serão excluídos — apenas ficarão sem temporada associada.')">
-                                                <i class="fas fa-trash-alt"></i> Excluir
+                                    </td>
+                                    <td>
+                                        {% if temporada.ativa %}
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Ativa (Atual)</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inativa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-editar-temporada"
+                                                data-id="{{ temporada.id }}"
+                                                data-nome="{{ temporada.nome }}"
+                                                data-inicio="{{ temporada.data_inicio.isoformat() if temporada.data_inicio else '' }}"
+                                                data-fim="{{ temporada.data_fim.isoformat() if temporada.data_fim else '' }}"
+                                                data-ativa="{{ '1' if temporada.ativa else '0' }}"
+                                                data-bs-toggle="modal" data-bs-target="#editarTemporadaModal">
+                                                <i class="fas fa-edit"></i> Editar
                                             </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+
+                                            {% if not temporada.ativa %}
+                                            <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Tornar esta temporada ativa? Isso alterará a visão padrão do Dashboard.')">
+                                                    <i class="fas fa-check"></i> Ativar
+                                                </button>
+                                            </form>
+                                            {% endif %}
+
+                                            <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?\n\nOs torneios vinculados NÃO serão excluídos — apenas ficarão sem temporada associada.')">
+                                                    <i class="fas fa-trash-alt"></i> Excluir
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="d-lg-none mobile-cards-container p-2 p-sm-3">
+                    {% for temporada in temporadas %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ temporada.nome }}</h6>
+                                <small class="text-muted">
+                                    {% if temporada.data_inicio or temporada.data_fim %}
+                                        {{ temporada.data_inicio.strftime('%d/%m/%Y') if temporada.data_inicio else '?' }} &ndash; {{ temporada.data_fim.strftime('%d/%m/%Y') if temporada.data_fim else '?' }}
+                                    {% else %}
+                                        Período não definido
+                                    {% endif %}
+                                </small>
+                            </div>
+                            {% if temporada.ativa %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Ativa</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inativa</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex gap-1 flex-wrap pt-2 border-top">
+                            <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1 btn-editar-temporada"
+                                data-id="{{ temporada.id }}"
+                                data-nome="{{ temporada.nome }}"
+                                data-inicio="{{ temporada.data_inicio.isoformat() if temporada.data_inicio else '' }}"
+                                data-fim="{{ temporada.data_fim.isoformat() if temporada.data_fim else '' }}"
+                                data-ativa="{{ '1' if temporada.ativa else '0' }}"
+                                data-bs-toggle="modal" data-bs-target="#editarTemporadaModal">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+
+                            {% if not temporada.ativa %}
+                            <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline flex-grow-1">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success w-100" onclick="return confirm('Tornar esta temporada ativa?')">
+                                    <i class="fas fa-check"></i> Ativar
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
                 {% else %}
                 <div class="alert alert-info">

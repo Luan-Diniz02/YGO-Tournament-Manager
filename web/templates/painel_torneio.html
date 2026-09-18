@@ -5,28 +5,29 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card shadow-sm border-primary">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
-                    <i class="fas fa-trophy"></i> {{ torneio.nome }}
-                </h4>
-                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-light btn-sm text-primary">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-trophy text-warning"></i>
+                    <h4 class="mb-0">{{ torneio.nome }}</h4>
+                </div>
+                <a href="{{ url_for('public.visualizar_torneios') }}" class="btn btn-outline-secondary btn-sm text-white">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-2">
-                        <h6 class="text-muted">Data</h6>
-                        <strong><i class="fas fa-calendar-alt"></i> {{ torneio.data.strftime('%d/%m/%Y') if torneio.data else 'N/A' }}</strong>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <h6 class="text-muted">Rodadas (Suíço)</h6>
-                        <strong><i class="fas fa-layer-group"></i> {{ torneio.rodadas }}</strong>
+            <div class="card-body bg-light rounded-bottom">
+                <div class="row text-center g-3">
+                    <div class="col-md-4">
+                        <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.72rem;">Data da Etapa</small>
+                        <strong class="fs-5 text-dark"><i class="fas fa-calendar-alt text-primary me-1"></i> {{ torneio.data.strftime('%d/%m/%Y') if torneio.data else 'N/A' }}</strong>
                     </div>
                     <div class="col-md-4">
-                        <h6 class="text-muted">Meta Inicial de Jogadores</h6>
-                        <strong><i class="fas fa-users"></i> {{ torneio.quant_duelistas }}</strong>
+                        <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.72rem;">Rodadas (Suíço)</small>
+                        <strong class="fs-5 text-dark"><i class="fas fa-layer-group text-info me-1"></i> {{ torneio.rodadas }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.72rem;">Meta de Jogadores</small>
+                        <strong class="fs-5 text-dark"><i class="fas fa-users text-success me-1"></i> {{ torneio.quant_duelistas }}</strong>
                     </div>
                 </div>
             </div>
@@ -39,11 +40,12 @@
     {% if is_admin %}
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="fas fa-user-plus"></i> Inserir Resultado</h5>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-user-plus text-success me-1"></i> Inserir Resultado</h5>
+                <span class="badge bg-secondary">Etapa</span>
             </div>
             <div class="card-body">
-                <p class="small text-muted mb-4">Adicione o placar final do participante nesta etapa (incluindo as vitórias/derrotas do Top Cut). <b>Isso também computará no Ranking Global</b> da Liga.</p>
+                <p class="small text-muted mb-3">Adicione o placar final do participante nesta etapa (incluindo Suíço e Top Cut). O resultado atualizará o ranking global automaticamente.</p>
 
                 <form method="POST" action="{{ url_for('admin.adicionar_jogador_torneio', id=torneio.id) }}">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
@@ -108,47 +110,68 @@
                 <div class="d-none d-lg-block">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                            <thead class="table-dark">
                                 <tr>
-                                    <th class="text-center">Posição</th>
+                                    <th class="text-center" style="width: 70px;">Posição</th>
                                     <th>Nome</th>
                                     <th class="text-center">V</th>
                                     <th class="text-center">D</th>
                                     <th class="text-center">E</th>
                                     <th class="text-center">Pts</th>
                                     <th class="text-center">Top Cut</th>
-                                    {% if is_admin %}<th class="text-center">Ação</th>{% endif %}
+                                    <th class="text-center" style="width: 60px;">Perfil</th>
+                                    {% if is_admin %}<th class="text-center" style="width: 60px;">Editar</th>{% endif %}
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for p in participantes %}
                                 <tr>
-                                    <td class="text-center"><span class="badge bg-primary">{{ loop.index }}º</span></td>
-                                    <td><strong>{{ p.nome }}</strong></td>
-                                    <td class="text-center"><span class="badge rounded-pill bg-success">{{ p.vitorias }}</span></td>
-                                    <td class="text-center"><span class="badge rounded-pill bg-danger">{{ p.derrotas }}</span></td>
-                                    <td class="text-center"><span class="badge rounded-pill bg-info text-dark">{{ p.empates }}</span></td>
                                     <td class="text-center">
-                                        <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold">{{ p.pontos_obtidos }} pts</span>
+                                        {% if loop.index == 1 %}
+                                        <span class="badge badge-podium-1">🥇 1º</span>
+                                        {% elif loop.index == 2 %}
+                                        <span class="badge badge-podium-2">🥈 2º</span>
+                                        {% elif loop.index == 3 %}
+                                        <span class="badge badge-podium-3">🥉 3º</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">{{ loop.index }}º</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="text-decoration-none text-dark fw-bold">
+                                            {{ p.nome }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center"><span class="text-success fw-bold">{{ p.vitorias }}</span></td>
+                                    <td class="text-center"><span class="text-danger fw-bold">{{ p.derrotas }}</span></td>
+                                    <td class="text-center"><span class="text-info fw-bold">{{ p.empates }}</span></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning text-dark fw-bold">{{ p.pontos_obtidos }} pts</span>
                                     </td>
                                     <td class="text-center">
                                         {% if p.topou_torneio %}
-                                            <span class="badge bg-warning text-dark">TOP {{ p.colocacao_top if p.colocacao_top else '' }}</span>
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i>TOP {{ p.colocacao_top if p.colocacao_top else '' }}</span>
                                         {% else %}
-                                            <span class="badge bg-secondary">Não</span>
+                                            <span class="text-muted small">&mdash;</span>
                                         {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="btn btn-outline-primary btn-sm" title="Ver Perfil" aria-label="Perfil de {{ p.nome }}">
+                                            <i class="fas fa-user"></i>
+                                        </a>
                                     </td>
                                     {% if is_admin %}
                                     <td class="text-center">
                                         <button 
                                             type="button" 
-                                            class="btn btn-outline-warning btn-sm js-editar-resultado"
+                                            class="btn btn-outline-secondary btn-sm js-editar-resultado"
                                             data-nome="{{ p.nome }}"
                                             data-vitorias="{{ p.vitorias }}"
                                             data-derrotas="{{ p.derrotas }}"
                                             data-empates="{{ p.empates }}"
                                             data-topou="{{ 1 if p.topou_torneio else 0 }}"
                                             data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
+                                            title="Editar Placar"
                                         >
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -162,45 +185,69 @@
                 </div>
 
                 <!-- Mobile View -->
-                <div class="d-lg-none mobile-cards-container p-3">
+                <div class="d-lg-none mobile-cards-container p-2 p-sm-3">
                     {% for p in participantes %}
-                    <div class="mobile-card shadow-sm border-0">
-                        <div class="mobile-card-header mb-2 d-flex justify-content-between align-items-center">
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.9rem;">{{ loop.index }}º</span>
-                                <div class="mobile-card-title fw-bold">{{ p.nome }}</div>
-                            </div>
-                            <span class="badge rounded-pill bg-warning text-dark shadow-sm fw-bold">{{ p.pontos_obtidos }} pts</span>
-                        </div>
-                        <div class="mobile-card-body pb-1">
-                            <div class="d-flex justify-content-between align-items-center w-100 mobile-card-full mt-2">
-                                <div class="d-flex align-items-center flex-nowrap gap-1">
-                                    <span class="badge rounded-pill bg-success">{{ p.vitorias }} V</span>
-                                    <span class="badge rounded-pill bg-danger">{{ p.derrotas }} D</span>
-                                    <span class="badge rounded-pill bg-info text-dark">{{ p.empates }} E</span>
-                                </div>
-                                <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="btn btn-sm btn-light text-primary rounded-circle shadow-none p-2" title="Ver Perfil" aria-label="Perfil de {{ p.nome }}">
-                                    <i class="fas fa-user"></i>
+                                {% if loop.index == 1 %}
+                                <span class="badge badge-podium-1">🥇 1º</span>
+                                {% elif loop.index == 2 %}
+                                <span class="badge badge-podium-2">🥈 2º</span>
+                                {% elif loop.index == 3 %}
+                                <span class="badge badge-podium-3">🥉 3º</span>
+                                {% else %}
+                                <span class="badge bg-dark">{{ loop.index }}º</span>
+                                {% endif %}
+                                <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="mobile-card-title text-decoration-none">
+                                    {{ p.nome }}
                                 </a>
                             </div>
+                            <span class="badge bg-warning text-dark fw-bold">{{ p.pontos_obtidos }} pts</span>
                         </div>
-                        {% if is_admin %}
-                        <div class="mobile-card-footer d-flex justify-content-end pt-2 border-0">
-                            <button 
-                                type="button" 
-                                class="btn btn-sm btn-light text-warning border-0 shadow-none js-editar-resultado fw-bold"
-                                data-nome="{{ p.nome }}"
-                                data-vitorias="{{ p.vitorias }}"
-                                data-derrotas="{{ p.derrotas }}"
-                                data-empates="{{ p.empates }}"
-                                data-topou="{{ 1 if p.topou_torneio else 0 }}"
-                                data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
-                                title="Editar Resultado"
-                            >
-                                <i class="fas fa-edit me-1"></i> Editar
-                            </button>
+                        <div class="mobile-stats-grid mb-2">
+                            <div class="mobile-stat-item">
+                                <span class="mobile-stat-label">Vitórias</span>
+                                <span class="mobile-stat-value value-success">{{ p.vitorias }}</span>
+                            </div>
+                            <div class="mobile-stat-item">
+                                <span class="mobile-stat-label">Derrotas</span>
+                                <span class="mobile-stat-value value-danger">{{ p.derrotas }}</span>
+                            </div>
+                            <div class="mobile-stat-item">
+                                <span class="mobile-stat-label">Empates</span>
+                                <span class="mobile-stat-value">{{ p.empates }}</span>
+                            </div>
                         </div>
-                        {% endif %}
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                {% if p.topou_torneio %}
+                                <span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i>TOP {{ p.colocacao_top if p.colocacao_top else '' }}</span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border">Sem Top Cut</span>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ url_for('public.dashboard_duelista', nome=p.nome) }}" class="btn-mobile-action" title="Ver Perfil" aria-label="Perfil de {{ p.nome }}">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                {% if is_admin %}
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-secondary js-editar-resultado"
+                                    data-nome="{{ p.nome }}"
+                                    data-vitorias="{{ p.vitorias }}"
+                                    data-derrotas="{{ p.derrotas }}"
+                                    data-empates="{{ p.empates }}"
+                                    data-topou="{{ 1 if p.topou_torneio else 0 }}"
+                                    data-colocacao="{{ p.colocacao_top if p.colocacao_top is not none else '' }}"
+                                    title="Editar Resultado"
+                                >
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>

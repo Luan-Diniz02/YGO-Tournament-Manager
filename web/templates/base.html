@@ -2,27 +2,41 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Liga YGO Marabá{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     {% set endpoint = request.endpoint or '' %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('public.index') }}">
                 <i class="fas fa-trophy"></i> Liga YGO Marabá
+                <span class="brand-badge d-none d-sm-inline-block">TCG League</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menu de navegação">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menu de navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item">
                         <a class="nav-link {% if endpoint == 'public.index' %}active{% endif %}" href="{{ url_for('public.index') }}" {% if endpoint == 'public.index' %}aria-current="page"{% endif %}>
                             <i class="fas fa-home"></i> Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" href="{{ url_for('public.dashboard_estatisticas') }}" {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
+                            <i class="fas fa-medal"></i> Ranking
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}active{% endif %}" href="{{ url_for('public.visualizar_torneios') }}" {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}aria-current="page"{% endif %}>
+                            <i class="fas fa-eye"></i> Torneios
                         </a>
                     </li>
                     {% if is_admin %}
@@ -33,38 +47,26 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if endpoint == 'admin.cadastrar_torneio' %}active{% endif %}" href="{{ url_for('admin.cadastrar_torneio') }}" {% if endpoint == 'admin.cadastrar_torneio' %}aria-current="page"{% endif %}>
-                            <i class="fas fa-calendar-plus"></i> Cadastrar Torneio
+                            <i class="fas fa-calendar-plus"></i> Novo Torneio
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if endpoint == 'admin.buscar_duelista' %}active{% endif %}" href="{{ url_for('admin.buscar_duelista') }}" {% if endpoint == 'admin.buscar_duelista' %}aria-current="page"{% endif %}>
-                            <i class="fas fa-search"></i> Buscar Duelista
+                            <i class="fas fa-search"></i> Duelistas
                         </a>
                     </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" href="{{ url_for('public.dashboard_estatisticas') }}" {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
-                            <i class="fas fa-medal"></i> Ranking
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}active{% endif %}" href="{{ url_for('public.visualizar_torneios') }}" {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}aria-current="page"{% endif %}>
-                            <i class="fas fa-eye"></i> Visualizar Torneios
-                        </a>
-                    </li>
-                    {% if is_admin %}
-                    <li class="nav-item">
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                         <form method="POST" action="{{ url_for('admin.admin_logout') }}" class="d-inline">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="nav-link btn btn-link text-decoration-none" aria-label="Sair da área administrativa">
-                                <i class="fas fa-right-from-bracket"></i> Sair (Admin)
+                            <button type="submit" class="btn btn-logout w-100" aria-label="Sair da área administrativa">
+                                <i class="fas fa-right-from-bracket"></i> Sair
                             </button>
                         </form>
                     </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if endpoint == 'admin.admin_login' %}active{% endif %}" href="{{ url_for('admin.admin_login') }}" {% if endpoint == 'admin.admin_login' %}aria-current="page"{% endif %}>
-                            <i class="fas fa-user-shield"></i> Entrar (Admin)
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="nav-link btn btn-outline-secondary btn-sm text-white px-3 {% if endpoint == 'admin.admin_login' %}active{% endif %}" href="{{ url_for('admin.admin_login') }}" {% if endpoint == 'admin.admin_login' %}aria-current="page"{% endif %}>
+                            <i class="fas fa-user-shield"></i> Entrar
                         </a>
                     </li>
                     {% endif %}
@@ -73,7 +75,7 @@
         </div>
     </nav>
 
-    <main class="container mt-4">
+    <main class="container mt-4 main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="row">
@@ -92,9 +94,36 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-white text-center py-3 mt-5">
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav d-lg-none" aria-label="Navegação móvel principal">
+        <a href="{{ url_for('public.index') }}" class="mobile-nav-item {% if endpoint == 'public.index' %}active{% endif %}" {% if endpoint == 'public.index' %}aria-current="page"{% endif %}>
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+        </a>
+        <a href="{{ url_for('public.dashboard_estatisticas') }}" class="mobile-nav-item {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}active{% endif %}" {% if endpoint in ['public.ranking', 'public.dashboard_estatisticas', 'public.dashboard_duelista'] %}aria-current="page"{% endif %}>
+            <i class="fas fa-medal"></i>
+            <span>Ranking</span>
+        </a>
+        <a href="{{ url_for('public.visualizar_torneios') }}" class="mobile-nav-item {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}active{% endif %}" {% if endpoint in ['public.visualizar_torneios', 'public.painel_torneio'] %}aria-current="page"{% endif %}>
+            <i class="fas fa-trophy"></i>
+            <span>Torneios</span>
+        </a>
+        {% if is_admin %}
+        <a href="{{ url_for('admin.gerenciar_temporadas') }}" class="mobile-nav-item {% if endpoint.startswith('admin.') %}active{% endif %}" {% if endpoint.startswith('admin.') %}aria-current="page"{% endif %}>
+            <i class="fas fa-shield-halved"></i>
+            <span>Admin</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('admin.admin_login') }}" class="mobile-nav-item {% if endpoint == 'admin.admin_login' %}active{% endif %}" {% if endpoint == 'admin.admin_login' %}aria-current="page"{% endif %}>
+            <i class="fas fa-user-shield"></i>
+            <span>Entrar</span>
+        </a>
+        {% endif %}
+    </nav>
+
+    <footer class="text-center py-4 mt-5 d-none d-lg-block">
         <div class="container">
-            <p>&copy; 2024 Liga YGO Marabá - Sistema de Gerenciamento de Torneios</p>
+            <p>&copy; 2026 Liga YGO Marabá &bull; Sistema Competitivo de Yu-Gi-Oh!</p>
         </div>
     </footer>
 

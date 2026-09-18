@@ -164,7 +164,7 @@ def test_cadastrar_torneio_autenticado_sucesso_com_service_mockado(client, monke
     login_resp = _login_admin(client)
     assert login_resp.status_code == 302
 
-    def _mock_cadastrar(self, nome, rodadas_raw, duelistas_raw, data):
+    def _mock_cadastrar(self, nome, rodadas_raw, duelistas_raw, data, temporada_id=None):
         return True, 777, 'Torneio cadastrado com sucesso!'
 
     monkeypatch.setattr(AdminService, 'cadastrar_torneio', _mock_cadastrar)
@@ -192,7 +192,7 @@ def test_cadastrar_torneio_autenticado_falha_com_service_mockado(client, monkeyp
     login_resp = _login_admin(client)
     assert login_resp.status_code == 302
 
-    def _mock_cadastrar(self, nome, rodadas_raw, duelistas_raw, data):
+    def _mock_cadastrar(self, nome, rodadas_raw, duelistas_raw, data, temporada_id=None):
         return False, None, 'Os valores de rodadas e duelistas devem ser positivos.'
 
     monkeypatch.setattr(AdminService, 'cadastrar_torneio', _mock_cadastrar)
