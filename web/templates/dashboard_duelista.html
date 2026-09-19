@@ -139,9 +139,16 @@
     </div>
     <div class="col-md-7">
         <div class="chart-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-line text-success me-2"></i>Evolução de Pontos por Etapa</h6>
-                <small class="text-muted">Histórico cronológico</small>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Filtro de visualização do gráfico">
+                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-0 active" id="btn-chart-range-recent" style="min-height: 28px; font-size: 0.75rem;">
+                        Últimos 4
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" id="btn-chart-range-all" style="min-height: 28px; font-size: 0.75rem;">
+                        Todos
+                    </button>
+                </div>
             </div>
             <div class="chart-wrapper">
                 <canvas id="chart-pontos-historico"></canvas>
@@ -375,35 +382,80 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctxLine = document.getElementById('chart-pontos-historico');
     if (ctxLine) {
         {% if dados.historico %}
-        const labels = [{% for ev in dados.historico|reverse %}"{{ ev.torneio_nome|truncate(12) }}",{% endfor %}];
-        const dataPontos = [{% for ev in dados.historico|reverse %}{{ ev.pontos_obtidos }},{% endfor %}];
+        const allEvents = [
+            {% for ev in dados.historico|reverse %}
+            {
+                dataStr: "{{ ev.torneio_data.strftime('%d/%m/%y') if ev.torneio_data else 'S/D' }}",
+                nome: "{{ ev.torneio_nome }}",
+                pontos: {{ ev.pontos_obtidos }}
+            },
+            {% endfor %}
+        ];
         {% else %}
-        const labels = [];
-        const dataPontos = [];
+        const allEvents = [];
         {% endif %}
 
-        if (labels.length > 0) {
-            new Chart(ctxLine, {
+        if (allEvents.length > 0) {
+            let currentMode = allEvents.length > 4 ? 'recent' : 'all';
+
+            const btnRecent = document.getElementById('btn-chart-range-recent');
+            const btnAll = document.getElementById('btn-chart-range-all');
+
+            if (allEvents.length <= 4 && btnRecent && btnAll) {
+                btnRecent.parentElement.style.display = 'none';
+            }
+
+            function getSliceData(mode) {
+                const slice = (mode === 'recent' && allEvents.length > 4) 
+                    ? allEvents.slice(-4) 
+                    : allEvents;
+                return {
+                    labels: slice.map(e => e.dataStr),
+                    pontos: slice.map(e => e.pontos),
+                    nomes: slice.map(e => e.nome)
+                };
+            }
+
+            const initialSlice = getSliceData(currentMode);
+
+            const chartPontos = new Chart(ctxLine, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: initialSlice.labels,
                     datasets: [{
-                        label: 'Pontos Conquistados',
-                        data: dataPontos,
+                        label: 'Pontos',
+                        data: initialSlice.pontos,
+                        nomes: initialSlice.nomes,
                         borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.12)',
                         fill: true,
                         tension: 0.35,
                         pointBackgroundColor: '#2563eb',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const dataset = context[0].dataset;
+                                    const nomeTorneio = dataset.nomes ? dataset.nomes[index] : '';
+                                    const dataLabel = context[0].label;
+                                    return nomeTorneio ? `${nomeTorneio} (${dataLabel})` : dataLabel;
+                                },
+                                label: function(context) {
+                                    return ` Pontos: ${context.parsed.y} pts`;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: {
@@ -416,6 +468,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
+
+            if (btnRecent && btnAll) {
+                btnRecent.addEventListener('click', function() {
+                    if (currentMode === 'recent') return;
+                    currentMode = 'recent';
+                    btnRecent.classList.add('active', 'btn-outline-primary');
+                    btnRecent.classList.remove('btn-outline-secondary');
+                    btnAll.classList.remove('active', 'btn-outline-primary');
+                    btnAll.classList.add('btn-outline-secondary');
+
+                    const slice = getSliceData('recent');
+                    chartPontos.data.labels = slice.labels;
+                    chartPontos.data.datasets[0].data = slice.pontos;
+                    chartPontos.data.datasets[0].nomes = slice.nomes;
+                    chartPontos.update();
+                });
+
+                btnAll.addEventListener('click', function() {
+                    if (currentMode === 'all') return;
+                    currentMode = 'all';
+                    btnAll.classList.add('active', 'btn-outline-primary');
+                    btnAll.classList.remove('btn-outline-secondary');
+                    btnRecent.classList.remove('active', 'btn-outline-primary');
+                    btnRecent.classList.add('btn-outline-secondary');
+
+                    const slice = getSliceData('all');
+                    chartPontos.data.labels = slice.labels;
+                    chartPontos.data.datasets[0].data = slice.pontos;
+                    chartPontos.data.datasets[0].nomes = slice.nomes;
+                    chartPontos.update();
+                });
+            }
         }
     }
 
