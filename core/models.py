@@ -11,7 +11,7 @@ class Duelistas:
     def pontos(self) -> int:
         return (self.vitorias * 3) + self.empates + self.participacao
 
-    def adicionar_pontos(self, vitorias: int, derrotas: int, empates: int):
+    def adicionar_pontos(self, vitorias: int, derrotas: int, empates: int = 0):
         self.vitorias += vitorias
         self.derrotas += derrotas
         self.empates += empates

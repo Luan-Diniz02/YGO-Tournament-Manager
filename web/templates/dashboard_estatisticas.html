@@ -295,6 +295,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
+                                        {% if duelista.tops > 0 %}
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <div class="conversion-indicator">
                                                 <div class="conversion-track">
@@ -305,6 +306,9 @@
                                                 {{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%
                                             </span>
                                         </div>
+                                        {% else %}
+                                        <span class="text-muted">&mdash;</span>
+                                        {% endif %}
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}"
@@ -375,7 +379,11 @@
                             </div>
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Conv. Top</span>
+                                {% if duelista.tops > 0 %}
                                 <span class="mobile-stat-value">{{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%</span>
+                                {% else %}
+                                <span class="mobile-stat-value text-muted">&mdash;</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -406,8 +414,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <small class="text-muted">
-            Fórmulas: Pontos = (Vitórias × 3) + Empates + Participações. Win Rate = Vitórias / Partidas. Conv. Top→Tít.
-            = Títulos / Top Cuts.
+            Fórmulas: Pontos = (Vitórias × 3) + Participações (Double Loss equivale a 0 pts). Win Rate = Vitórias / Partidas. Conv. Top→Tít. = Títulos / Top Cuts.
         </small>
     </div>
 </div>

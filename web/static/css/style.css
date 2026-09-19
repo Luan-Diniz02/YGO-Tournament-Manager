@@ -35,10 +35,10 @@
     --ygo-cyan-border: #a5f3fc;
 
     /* Neutrals & Surfaces */
-    --ygo-bg: #f8fafc;
+    --ygo-bg: #f1f5f9;
     --ygo-surface: #ffffff;
     --ygo-surface-card: #ffffff;
-    --ygo-surface-muted: #f1f5f9;
+    --ygo-surface-muted: #f8fafc;
     --ygo-border: #e2e8f0;
     --ygo-border-subtle: #edf2f7;
 
@@ -397,6 +397,108 @@
     opacity: 0.75;
 }
 
+/* Dark Mode Card Headers (preservação integral de contraste no modo escuro) */
+[data-bs-theme="dark"] .card-header.bg-dark {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3,
+[data-bs-theme="dark"] .card-header.bg-dark h4,
+[data-bs-theme="dark"] .card-header.bg-dark h5,
+[data-bs-theme="dark"] .card-header.bg-dark .text-white {
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3 i,
+[data-bs-theme="dark"] .card-header.bg-dark h4 i,
+[data-bs-theme="dark"] .card-header.bg-dark h5 i {
+    color: inherit;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3 i.text-primary,
+[data-bs-theme="dark"] .card-header.bg-dark h4 i.text-primary,
+[data-bs-theme="dark"] .card-header.bg-dark h5 i.text-primary {
+    color: #3b82f6 !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3 i.text-warning,
+[data-bs-theme="dark"] .card-header.bg-dark h4 i.text-warning,
+[data-bs-theme="dark"] .card-header.bg-dark h5 i.text-warning {
+    color: #f59e0b !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3 i.text-success,
+[data-bs-theme="dark"] .card-header.bg-dark h4 i.text-success,
+[data-bs-theme="dark"] .card-header.bg-dark h5 i.text-success {
+    color: #10b981 !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark h3 i.text-info,
+[data-bs-theme="dark"] .card-header.bg-dark h4 i.text-info,
+[data-bs-theme="dark"] .card-header.bg-dark h5 i.text-info {
+    color: #06b6d4 !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-dark .badge.bg-light {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] .card-header .btn-outline-secondary {
+    color: #cbd5e1 !important;
+    border-color: #475569 !important;
+    background-color: transparent !important;
+}
+
+[data-bs-theme="dark"] .card-header .btn-outline-secondary:hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .card-header .btn-light {
+    background-color: #f8fafc !important;
+    border-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+/* Dark Mode Table Headers & Badges */
+[data-bs-theme="dark"] .table thead.table-dark,
+[data-bs-theme="dark"] .table thead.table-dark tr,
+[data-bs-theme="dark"] .table thead.table-dark th {
+    background-color: #0f172a !important;
+    color: #94a3b8 !important;
+    border-bottom: 2px solid var(--ygo-border) !important;
+}
+
+[data-bs-theme="dark"] .badge.bg-dark {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-bs-theme="dark"] #modalShareDuelista .modal-body {
+    background-color: #131d2e !important;
+}
+
+[data-bs-theme="dark"] #btn-whatsapp-share-card {
+    background-color: transparent !important;
+    color: #4ade80 !important;
+    border: 1.5px solid #22c55e !important;
+}
+
+[data-bs-theme="dark"] #btn-whatsapp-share-card:hover {
+    background-color: #22c55e !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .wrapper-transparent-mobile > .card-header {
+    border-color: var(--ygo-border) !important;
+}
+
 /* --------------------------------------------------------------------------
    Global Reset & Base
    -------------------------------------------------------------------------- */
@@ -650,20 +752,103 @@ body {
     border-color: #cbd5e1;
 }
 
-.card-header.bg-dark {
-    background-color: var(--ygo-dark) !important;
-    border-bottom: 1px solid var(--ygo-dark-border);
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--ygo-border);
     border-top-left-radius: var(--bs-border-radius-lg) !important;
     border-top-right-radius: var(--bs-border-radius-lg) !important;
-    padding: 0.95rem 1.25rem;
-    font-weight: 700;
-    color: #ffffff !important;
+    padding: 1rem 1.25rem;
 }
 
+/* Modo Claro: .card-header.bg-dark refinado com harmonia esportiva e moderna */
+.card-header.bg-dark {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid var(--ygo-border) !important;
+    border-top-left-radius: var(--bs-border-radius-lg) !important;
+    border-top-right-radius: var(--bs-border-radius-lg) !important;
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    color: var(--ygo-text-main) !important;
+}
+
+.card-header.bg-dark.text-white,
+.card-header.text-white {
+    color: var(--ygo-text-main) !important;
+}
+
+.card-header h3,
 .card-header h4,
-.card-header h5 {
+.card-header h5,
+.card-header.bg-dark h3,
+.card-header.bg-dark h4,
+.card-header.bg-dark h5 {
+    color: var(--ygo-text-main) !important;
     font-weight: 700;
     letter-spacing: -0.01em;
+    margin-bottom: 0;
+}
+
+/* Ícones nos títulos com destaque e personalidade */
+.card-header h3 i,
+.card-header h4 i,
+.card-header h5 i {
+    color: var(--ygo-primary);
+    margin-right: 0.4rem;
+}
+
+.card-header h3 i.text-warning,
+.card-header h4 i.text-warning,
+.card-header h5 i.text-warning {
+    color: #d97706 !important;
+}
+
+.card-header h3 i.text-success,
+.card-header h4 i.text-success,
+.card-header h5 i.text-success {
+    color: var(--ygo-emerald) !important;
+}
+
+.card-header h3 i.text-info,
+.card-header h4 i.text-info,
+.card-header h5 i.text-info {
+    color: var(--ygo-cyan) !important;
+}
+
+/* Badges e contadores dentro do card-header no modo claro */
+.card-header .badge.bg-light {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.65rem;
+}
+
+/* Botões no card-header no modo claro */
+.card-header .btn-outline-secondary {
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+    background-color: #ffffff;
+}
+
+.card-header .btn-outline-secondary:hover {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+.card-header .btn-light {
+    background-color: var(--ygo-primary) !important;
+    border-color: var(--ygo-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.card-header .btn-light:hover {
+    background-color: var(--ygo-primary-hover) !important;
+    border-color: var(--ygo-primary-hover) !important;
+    color: #ffffff !important;
 }
 
 /* Hub Action Cards */
@@ -842,6 +1027,14 @@ body {
     padding-right: 0.75em;
 }
 
+/* Badges de posições comuns (4º em diante) e IDs em tabelas no Modo Claro */
+.badge.bg-dark {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 700;
+}
+
 .badge-podium-1 {
     background: linear-gradient(135deg, #fef3c7, #fde68a);
     color: #92400e;
@@ -1010,15 +1203,19 @@ body {
     vertical-align: middle;
 }
 
+/* Table Header — Modo Claro (Clean, Moderno, Esportivo) */
+.table thead.table-dark,
+.table thead.table-dark tr,
 .table thead.table-dark th {
-    background-color: var(--ygo-dark);
-    color: #94a3b8;
-    font-size: 0.74rem;
-    font-weight: 700;
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 0.72rem;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0.85rem 1rem;
-    border-bottom: 2px solid var(--ygo-border);
+    border-top: none;
+    border-bottom: 2px solid #e2e8f0 !important;
 }
 
 .table tbody td {
@@ -1084,22 +1281,23 @@ body {
 .modal-content {
     background-color: var(--ygo-surface);
     color: var(--ygo-text-main);
-    border: 1px solid var(--ygo-border);
-    border-radius: var(--bs-border-radius-lg);
-    box-shadow: var(--ygo-shadow-lg);
+    border: 1px solid var(--ygo-border) !important;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.06) !important;
     overflow: hidden;
 }
 
 .modal-header {
-    background-color: var(--ygo-surface-muted);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     border-bottom: 1px solid var(--ygo-border);
-    padding: 1rem 1.25rem;
+    padding: 1.1rem 1.4rem;
 }
 
 .modal-header .modal-title {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--ygo-text-main);
+    letter-spacing: -0.01em;
 }
 
 .modal-header.bg-primary,
@@ -1123,7 +1321,7 @@ body {
 .modal-body {
     background-color: var(--ygo-surface);
     color: var(--ygo-text-main);
-    padding: 1.25rem;
+    padding: 1.35rem;
 }
 
 .modal-body .form-label {
@@ -1136,7 +1334,29 @@ body {
 .modal-footer {
     background-color: var(--ygo-surface-muted);
     border-top: 1px solid var(--ygo-border);
-    padding: 0.85rem 1.25rem;
+    padding: 0.95rem 1.4rem;
+}
+
+/* Modal Compartilhar Card de Duelista */
+#modalShareDuelista .modal-body {
+    background-color: #f8fafc;
+}
+
+#btn-download-share-card {
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+#btn-whatsapp-share-card {
+    background-color: #ffffff;
+    color: #16a34a;
+    border: 1.5px solid #22c55e;
+    font-weight: 600;
+}
+
+#btn-whatsapp-share-card:hover {
+    background-color: #22c55e;
+    border-color: #22c55e;
+    color: #ffffff;
 }
 
 /* --------------------------------------------------------------------------
@@ -1396,6 +1616,7 @@ footer p {
         border-radius: 14px !important;
         margin-bottom: 0.5rem;
         box-shadow: var(--ygo-shadow-xs);
+        border: 1px solid var(--ygo-border) !important;
     }
 
     .wrapper-transparent-mobile > .card-footer {

@@ -77,11 +77,11 @@ class AdminService:
                 return duelista
         return None
 
-    def atualizar_duelista(self, duelista, novo_nome, vitorias_raw, derrotas_raw, empates_raw):
+    def atualizar_duelista(self, duelista, novo_nome, vitorias_raw, derrotas_raw, empates_raw=0):
         try:
             vitorias = int(vitorias_raw)
             derrotas = int(derrotas_raw)
-            empates = int(empates_raw)
+            empates = int(empates_raw) if empates_raw is not None and str(empates_raw).strip() != '' else 0
         except (TypeError, ValueError):
             return False, 'Vitorias, derrotas e empates devem ser numeros inteiros validos.'
 
@@ -107,11 +107,11 @@ class AdminService:
         )
         return True, 'Dados do duelista atualizados com sucesso!'
 
-    def validar_payload_participacao(self, nome, vitorias_raw, derrotas_raw, empates_raw, topou_torneio, colocacao_top_raw):
+    def validar_payload_participacao(self, nome, vitorias_raw, derrotas_raw, empates_raw=0, topou_torneio=False, colocacao_top_raw=''):
         try:
             vitorias = int(vitorias_raw)
             derrotas = int(derrotas_raw)
-            empates = int(empates_raw)
+            empates = int(empates_raw) if empates_raw is not None and str(empates_raw).strip() != '' else 0
         except (TypeError, ValueError):
             return False, None, 'Vitorias, derrotas e empates devem ser numeros inteiros validos.'
 

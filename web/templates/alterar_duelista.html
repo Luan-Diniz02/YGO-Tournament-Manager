@@ -27,27 +27,21 @@
                     </div>
 
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="vitorias" class="form-label fw-semibold">
                                 <i class="fas fa-trophy text-warning me-1"></i> Vitórias
                             </label>
                             <input type="number" class="form-control" id="vitorias" name="vitorias" 
                                    min="0" value="{{ duelista.vitorias }}" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="derrotas" class="form-label fw-semibold">
                                 <i class="fas fa-times text-danger me-1"></i> Derrotas
                             </label>
                             <input type="number" class="form-control" id="derrotas" name="derrotas" 
                                    min="0" value="{{ duelista.derrotas }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label for="empates" class="form-label fw-semibold">
-                                <i class="fas fa-handshake text-info me-1"></i> Empates
-                            </label>
-                            <input type="number" class="form-control" id="empates" name="empates" 
-                                   min="0" value="{{ duelista.empates }}" required>
-                        </div>
+                        <input type="hidden" id="empates" name="empates" value="{{ duelista.empates|default(0) }}">
                     </div>
 
                     <div class="card bg-light border-0 p-3 mb-4">
@@ -59,7 +53,7 @@
                                 <span class="ms-3 text-muted">Pontos Totais: <strong class="text-primary">{{ duelista.pontos }}</strong></span>
                             </div>
                             <small class="text-muted fst-italic">
-                                * Os pontos e win rate serão recalculados automaticamente.
+                                * No YGO moderno não há empates (Double Loss conta como derrota para ambos). Os pontos e win rate serão recalculados automaticamente.
                             </small>
                         </div>
                     </div>

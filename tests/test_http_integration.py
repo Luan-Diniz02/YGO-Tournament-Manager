@@ -4,6 +4,7 @@ import re
 import pytest
 
 from web.services.admin_service import AdminService
+from web.services.public_service import PublicService
 
 
 def _extrair_csrf(html):
@@ -340,3 +341,155 @@ def test_adicionar_jogador_payload_invalido_nao_registra(client, monkeypatch):
     assert resp.status_code == 302
     assert resp.headers['Location'].endswith('/torneio/7')
     assert registrar_chamado['valor'] is False
+
+
+def test_dashboard_estatisticas_conversao_travessao_quando_zero_tops(client, monkeypatch):
+    mock_dashboard = {
+        'resumo': {
+            'total_duelistas': 2,
+            'total_partidas': 10,
+            'total_vitorias': 5,
+            'total_derrotas': 5,
+            'total_empates': 0,
+            'total_tops': 2,
+            'total_campeonatos': 1,
+            'win_rate_geral': 50.0,
+            'taxa_conversao_top_titulo_geral': 50.0,
+            'min_participacoes_win_rate': 1,
+        },
+        'lideres': {
+            'maior_win_rate': None,
+            'mais_tops': None,
+            'mais_campeonatos': None,
+        },
+        'duelistas': [
+            {
+                'posicao_ranking': 1,
+                'nome': 'Yugi',
+                'pontos': 20,
+                'vitorias': 8,
+                'derrotas': 2,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 80.0,
+                'participacao': 2,
+                'tops': 2,
+                'campeonatos': 1,
+                'taxa_conversao_top_titulo': 50.0,
+            },
+            {
+                'posicao_ranking': 2,
+                'nome': 'Joey',
+                'pontos': 5,
+                'vitorias': 2,
+                'derrotas': 8,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 20.0,
+                'participacao': 2,
+                'tops': 0,
+                'campeonatos': 0,
+                'taxa_conversao_top_titulo': 0.0,
+            },
+            {
+                'posicao_ranking': 3,
+                'nome': 'Kaiba',
+                'pontos': 10,
+                'vitorias': 5,
+                'derrotas': 5,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 50.0,
+                'participacao': 2,
+                'tops': 1,
+                'campeonatos': 0,
+                'taxa_conversao_top_titulo': 0.0,
+            },
+        ],
+    }
+
+    monkeypatch.setattr(PublicService, 'carregar_dashboard', lambda self, *args, **kwargs: mock_dashboard)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: [])
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: None)
+
+    resp = client.get('/dashboard')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # Joey (tops=0): não deve exibir a barra de conversão nem 0.0% na tabela desktop
+    # Yugi (tops=2): deve exibir 50.0% e a barra de conversão
+    # Kaiba (tops=1, titulos=0): deve exibir 0.0% e a barra de conversão, pois topou
+    assert '50.0%' in html
+    assert 'title="1 título(s) em 2 Top Cut(s)"' in html
+    assert 'title="0 título(s) em 1 Top Cut(s)"' in html
+    assert 'title="0 título(s) em 0 Top Cut(s)"' not in html
+
+
+def test_dashboard_duelista_conversao_travessao_quando_zero_tops(client, monkeypatch):
+    def mock_carregar_duelista(self, nome, *args, **kwargs):
+        if nome == 'SemTops':
+            return {
+                'duelista': {'nome': 'SemTops', 'ativo': 1, 'pontos': 5, 'vitorias': 2, 'derrotas': 4, 'empates': 0, 'participacao': 2},
+                'resumo': {'partidas_total': 6, 'win_rate_geral': 33.3, 'tops': 0, 'campeonatos': 0, 'taxa_conversao_top_titulo': 0.0, 'qtd_torneios_historico': 2},
+                'conquistas': [],
+                'historico': [],
+            }
+        return {
+            'duelista': {'nome': 'ComTops', 'ativo': 1, 'pontos': 20, 'vitorias': 8, 'derrotas': 2, 'empates': 0, 'participacao': 2},
+            'resumo': {'partidas_total': 10, 'win_rate_geral': 80.0, 'tops': 2, 'campeonatos': 1, 'taxa_conversao_top_titulo': 50.0, 'qtd_torneios_historico': 2},
+            'conquistas': [],
+            'historico': [],
+        }
+
+    monkeypatch.setattr(PublicService, 'carregar_dashboard_duelista', mock_carregar_duelista)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: [])
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: None)
+
+    # Duelista com 0 tops: conversão deve ser &mdash; e não '0.0%'
+    resp_sem_tops = client.get('/dashboard/duelista/SemTops')
+    assert resp_sem_tops.status_code == 200
+    html_sem = resp_sem_tops.get_data(as_text=True)
+    assert '0.0%' not in html_sem
+    assert '<div class="fs-4 fw-bold text-muted mt-1">&mdash;</div>' in html_sem
+
+    # Duelista com tops > 0: conversão deve ser exibida com %
+    resp_com_tops = client.get('/dashboard/duelista/ComTops')
+    assert resp_com_tops.status_code == 200
+    html_com = resp_com_tops.get_data(as_text=True)
+    assert '<div class="fs-4 fw-bold text-dark mt-1">50.0%</div>' in html_com
+
+
+def test_telas_modernizadas_sem_coluna_empates(client, monkeypatch):
+    # 1. Testar que /dashboard não exibe "+ Empates +" na fórmula
+    mock_dashboard = {
+        'resumo': {'total_duelistas': 0, 'total_partidas': 0, 'total_vitorias': 0, 'total_derrotas': 0, 'total_empates': 0, 'total_tops': 0, 'total_campeonatos': 0, 'win_rate_geral': 0.0, 'taxa_conversao_top_titulo_geral': 0.0, 'min_participacoes_win_rate': 1},
+        'lideres': {'maior_win_rate': None, 'mais_tops': None, 'mais_campeonatos': None},
+        'duelistas': [],
+    }
+    monkeypatch.setattr(PublicService, 'carregar_dashboard', lambda self, *args, **kwargs: mock_dashboard)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: [])
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: None)
+
+    resp_dash = client.get('/dashboard')
+    assert resp_dash.status_code == 200
+    html_dash = resp_dash.get_data(as_text=True)
+    assert '+ Empates +' not in html_dash
+    assert 'Pontos = (Vitórias × 3) + Participações' in html_dash
+
+    # 2. Testar que /painel_torneio não exibe coluna 'E' na tabela desktop e formulário admin tem empates hidden
+    _login_admin(client)
+    mock_painel = {
+        'torneio': {'id': 1, 'nome': 'Etapa 1', 'rodadas': 4, 'quant_duelistas': 8, 'data': None},
+        'participantes': [],
+        'todos_duelistas': [],
+    }
+    monkeypatch.setattr(PublicService, 'carregar_painel_torneio', lambda self, id: mock_painel)
+
+    resp_torneio = client.get('/torneio/1')
+    assert resp_torneio.status_code == 200
+    html_torneio = resp_torneio.get_data(as_text=True)
+    assert '<th class="text-center">E</th>' not in html_torneio
+    assert '<input type="hidden" id="empates" name="empates" value="0">' in html_torneio
+
+
+

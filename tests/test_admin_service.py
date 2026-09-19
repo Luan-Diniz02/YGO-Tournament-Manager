@@ -147,3 +147,30 @@ def test_excluir_duelista_definitivo_retorna_mensagem_historico():
 
     assert ok is False
     assert 'participacoes' in mensagem
+
+
+def test_validar_payload_participacao_sem_empates_moderno():
+    service = AdminService(ConexaoFakeAdmin(), ordenar_duelistas)
+
+    # Modern YGO: empates_raw is not passed or None
+    ok, payload, mensagem = service.validar_payload_participacao('Yugi', '3', '1')
+
+    assert ok is True
+    assert payload['vitorias'] == 3
+    assert payload['derrotas'] == 1
+    assert payload['empates'] == 0
+
+
+def test_atualizar_duelista_sem_empates_moderno():
+    conexao = ConexaoFakeAdmin()
+    service = AdminService(conexao, ordenar_duelistas)
+    duelista = conexao.duelistas[0]
+
+    # Modern YGO: empates omitted or None
+    ok, mensagem = service.atualizar_duelista(duelista, 'Yugi Muto', '4', '2')
+
+    assert ok is True
+    assert duelista.vitorias == 4
+    assert duelista.derrotas == 2
+    assert duelista.empates == 0
+
