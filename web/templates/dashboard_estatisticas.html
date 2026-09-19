@@ -685,19 +685,7 @@
                         {% endfor %}
                     {% endif %}
                     const seasonName = {{ ns_temp_script.nome|tojson }};
-                    let msg = `🏆 *Ranking - Liga YGO Marabá*\nTemporada: ${seasonName}\n\n`;
-                    {% if dashboard.duelistas and dashboard.duelistas|length > 0 %}
-                        {% for d in dashboard.duelistas[:3] %}
-                            {% if loop.index == 1 %}
-                                msg += `🥇 *1º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                            {% elif loop.index == 2 %}
-                                msg += `🥈 *2º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                            {% elif loop.index == 3 %}
-                                msg += `🥉 *3º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                    msg += `\nConfira o ranking completo em:\n${url}`;
+                    const msg = `Confira o ranking completo em:\n${url}`;
 
                     const canvas = await html2canvas(rankingCard, {
                         scale: 2,
