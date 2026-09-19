@@ -485,13 +485,19 @@
     background-color: #131d2e !important;
 }
 
-[data-bs-theme="dark"] #btn-whatsapp-share-card {
+[data-bs-theme="dark"] #btn-whatsapp-share-card,
+[data-bs-theme="dark"] #btn-share-card-action,
+[data-bs-theme="dark"] #btn-share-ranking-action,
+[data-bs-theme="dark"] .btn-share-action {
     background-color: transparent !important;
     color: #4ade80 !important;
     border: 1.5px solid #22c55e !important;
 }
 
-[data-bs-theme="dark"] #btn-whatsapp-share-card:hover {
+[data-bs-theme="dark"] #btn-whatsapp-share-card:hover,
+[data-bs-theme="dark"] #btn-share-card-action:hover,
+[data-bs-theme="dark"] #btn-share-ranking-action:hover,
+[data-bs-theme="dark"] .btn-share-action:hover {
     background-color: #22c55e !important;
     border-color: #22c55e !important;
     color: #ffffff !important;
@@ -1357,14 +1363,20 @@ body {
     box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 }
 
-#btn-whatsapp-share-card {
+#btn-whatsapp-share-card,
+#btn-share-card-action,
+#btn-share-ranking-action,
+.btn-share-action {
     background-color: #ffffff;
     color: #16a34a;
     border: 1.5px solid #22c55e;
     font-weight: 600;
 }
 
-#btn-whatsapp-share-card:hover {
+#btn-whatsapp-share-card:hover,
+#btn-share-card-action:hover,
+#btn-share-ranking-action:hover,
+.btn-share-action:hover {
     background-color: #22c55e;
     border-color: #22c55e;
     color: #ffffff;

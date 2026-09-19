@@ -590,12 +590,13 @@ def test_dashboard_compartilhar_ranking(client, monkeypatch):
     # 4. Botões de ação no modal
     assert 'id="btn-download-share-ranking"' in html
     assert 'Baixar Imagem do Ranking' in html
-    assert 'id="btn-whatsapp-share-ranking"' in html
-    assert 'Compartilhar Link no WhatsApp' in html
+    assert 'id="btn-share-ranking-action"' in html
+    assert 'Compartilhar Imagem' in html
 
-    # 5. Dependência html2canvas e lógica de download/whatsapp
+    # 5. Dependência html2canvas e lógica de download/share
     assert 'html2canvas@1.4.1/dist/html2canvas.min.js' in html
     assert 'ranking-liga-ygo.png' in html
+    assert 'navigator.share' in html
     assert 'api.whatsapp.com/send?text=' in html
 
 

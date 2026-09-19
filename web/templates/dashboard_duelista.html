@@ -348,8 +348,8 @@
                     <button type="button" class="btn btn-primary" id="btn-download-share-card">
                         <i class="fas fa-download me-1"></i> Baixar Imagem do Card
                     </button>
-                    <button type="button" class="btn btn-outline-success" id="btn-whatsapp-share-card">
-                        <i class="fab fa-whatsapp me-1"></i> Compartilhar Link no WhatsApp
+                    <button type="button" class="btn btn-outline-success btn-share-action" id="btn-share-card-action">
+                        <i class="fas fa-share-nodes me-1"></i> Compartilhar Imagem
                     </button>
                 </div>
             </div>
@@ -558,12 +558,83 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        const btnWhatsapp = document.getElementById('btn-whatsapp-share-card');
-        if (btnWhatsapp) {
-            btnWhatsapp.addEventListener('click', function() {
-                const url = window.location.href;
-                const text = encodeURIComponent(`Confira as estatísticas de {{ dados.duelista.nome }} na Liga YGO Marabá: ${url}`);
-                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        const btnShareAction = document.getElementById('btn-share-card-action');
+        if (btnShareAction) {
+            btnShareAction.addEventListener('click', async function() {
+                const cardEl = document.getElementById('duelista-share-card');
+                if (!cardEl) return;
+
+                btnShareAction.disabled = true;
+                const originalHtml = btnShareAction.innerHTML;
+                btnShareAction.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Preparando imagem...';
+
+                try {
+                    const cleanName = ("{{ dados.duelista.nome }}".toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) || 'duelista';
+                    const filename = `card-duelista-${cleanName}.png`;
+                    const url = window.location.href;
+                    const text = `Confira o Card Oficial e as estatísticas de {{ dados.duelista.nome }} na Liga YGO Marabá!`;
+
+                    const canvas = await html2canvas(cardEl, { scale: 2, useCORS: true, backgroundColor: null });
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                    if (!blob) throw new Error('Não foi possível gerar a imagem.');
+
+                    const file = new File([blob], filename, { type: 'image/png' });
+                    const fullText = `${text}\n${url}`;
+
+                    // 1. Tenta compartilhar via Web Share API com anexo de arquivo
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'Card de Duelista - {{ dados.duelista.nome }}',
+                                text: fullText,
+                                files: [file]
+                            });
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr.name === 'AbortError') return;
+                            console.warn('Web Share com arquivos falhou:', shareErr);
+                        }
+                    }
+
+                    // 2. Se não puder compartilhar arquivos, mas suportar Web Share de texto/link
+                    if (navigator.share) {
+                        try {
+                            const link = document.createElement('a');
+                            link.download = filename;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+
+                            await navigator.share({
+                                title: 'Card de Duelista - {{ dados.duelista.nome }}',
+                                text: `${fullText}\n(A imagem do card foi salva em seus downloads!)`,
+                                url: url
+                            });
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr.name === 'AbortError') return;
+                        }
+                    }
+
+                    // 3. Fallback para navegador sem Web Share (ex: desktop sem suporte)
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    if (navigator.clipboard && window.ClipboardItem) {
+                        try {
+                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                        } catch (e) {}
+                    }
+
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`, '_blank');
+                } catch (err) {
+                    console.error('Erro ao compartilhar:', err);
+                    alert('Não foi possível gerar a imagem para compartilhamento.');
+                } finally {
+                    btnShareAction.disabled = false;
+                    btnShareAction.innerHTML = originalHtml;
+                }
             });
         }
     }

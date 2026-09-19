@@ -548,8 +548,8 @@
                     <button type="button" class="btn btn-primary px-4" id="btn-download-share-ranking">
                         <i class="fas fa-download me-1"></i> Baixar Imagem do Ranking
                     </button>
-                    <button type="button" class="btn btn-outline-success px-4" id="btn-whatsapp-share-ranking">
-                        <i class="fab fa-whatsapp me-1"></i> Compartilhar Link no WhatsApp
+                    <button type="button" class="btn btn-outline-success px-4 btn-share-action" id="btn-share-ranking-action">
+                        <i class="fas fa-share-nodes me-1"></i> Compartilhar Imagem
                     </button>
                 </div>
             </div>
@@ -664,33 +664,117 @@
             });
         }
 
-        const btnWhatsappRanking = document.getElementById('btn-whatsapp-share-ranking');
-        if (btnWhatsappRanking) {
-            btnWhatsappRanking.addEventListener('click', function() {
-                const url = window.location.href;
-                {% set ns_temp_script = namespace(nome='Geral (All-time)') %}
-                {% if temporada_atual != 'geral' %}
-                    {% for temp in temporadas %}
-                        {% if temporada_atual == temp.id|string %}
-                            {% set ns_temp_script.nome = temp.nome %}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                const seasonName = {{ ns_temp_script.nome|tojson }};
-                let msg = `🏆 *Ranking - Liga YGO Marabá*\nTemporada: ${seasonName}\n\n`;
-                {% if dashboard.duelistas and dashboard.duelistas|length > 0 %}
-                    {% for d in dashboard.duelistas[:3] %}
-                        {% if loop.index == 1 %}
-                            msg += `🥇 *1º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                        {% elif loop.index == 2 %}
-                            msg += `🥈 *2º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                        {% elif loop.index == 3 %}
-                            msg += `🥉 *3º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                msg += `\nConfira o ranking completo em:\n${url}`;
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        const btnShareRankingAction = document.getElementById('btn-share-ranking-action');
+        if (btnShareRankingAction) {
+            btnShareRankingAction.addEventListener('click', async function() {
+                const rankingCard = document.getElementById('ranking-share-card');
+                if (!rankingCard) return;
+
+                btnShareRankingAction.disabled = true;
+                const originalHtml = btnShareRankingAction.innerHTML;
+                btnShareRankingAction.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Preparando imagem...';
+
+                try {
+                    const url = window.location.href;
+                    {% set ns_temp_script = namespace(nome='Geral (All-time)') %}
+                    {% if temporada_atual != 'geral' %}
+                        {% for temp in temporadas %}
+                            {% if temporada_atual == temp.id|string %}
+                                {% set ns_temp_script.nome = temp.nome %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    const seasonName = {{ ns_temp_script.nome|tojson }};
+                    let msg = `🏆 *Ranking - Liga YGO Marabá*\nTemporada: ${seasonName}\n\n`;
+                    {% if dashboard.duelistas and dashboard.duelistas|length > 0 %}
+                        {% for d in dashboard.duelistas[:3] %}
+                            {% if loop.index == 1 %}
+                                msg += `🥇 *1º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                            {% elif loop.index == 2 %}
+                                msg += `🥈 *2º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                            {% elif loop.index == 3 %}
+                                msg += `🥉 *3º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    msg += `\nConfira o ranking completo em:\n${url}`;
+
+                    const canvas = await html2canvas(rankingCard, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#111827',
+                        onclone: (clonedDoc) => {
+                            const modalEl = clonedDoc.getElementById('modalShareRanking');
+                            if (modalEl) {
+                                modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
+                                    el.style.maxHeight = 'none';
+                                    el.style.overflow = 'visible';
+                                    el.style.height = 'auto';
+                                });
+                            }
+                        }
+                    });
+
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                    if (!blob) throw new Error('Não foi possível gerar a imagem.');
+
+                    const filename = 'ranking-liga-ygo.png';
+                    const file = new File([blob], filename, { type: 'image/png' });
+
+                    // 1. Tenta compartilhar via Web Share API com anexo de arquivo
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
+                                text: msg,
+                                files: [file]
+                            });
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr.name === 'AbortError') return;
+                            console.warn('Web Share com arquivos falhou:', shareErr);
+                        }
+                    }
+
+                    // 2. Se não puder compartilhar arquivos, mas suportar Web Share de texto/link
+                    if (navigator.share) {
+                        try {
+                            const link = document.createElement('a');
+                            link.download = filename;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+
+                            await navigator.share({
+                                title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
+                                text: `${msg}\n(A imagem do ranking foi salva em seus downloads!)`,
+                                url: url
+                            });
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr.name === 'AbortError') return;
+                        }
+                    }
+
+                    // 3. Fallback para navegador sem Web Share (ex: desktop sem suporte)
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    if (navigator.clipboard && window.ClipboardItem) {
+                        try {
+                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                        } catch (e) {}
+                    }
+
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                } catch (err) {
+                    console.error('Erro ao compartilhar:', err);
+                    alert('Não foi possível gerar a imagem para compartilhamento.');
+                } finally {
+                    btnShareRankingAction.disabled = false;
+                    btnShareRankingAction.innerHTML = originalHtml;
+                }
             });
         }
     }
