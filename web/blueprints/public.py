@@ -8,8 +8,12 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
 
     @public_bp.route('/')
     def index():
-        temp_ativa = public_service.obter_temporada_ativa()
-        return render_template('index.html', temporada_ativa=temp_ativa)
+        resumo_home = public_service.obter_resumo_home()
+        return render_template(
+            'index.html',
+            temporada_ativa=resumo_home['temporada_ativa'],
+            resumo_home=resumo_home
+        )
 
     @public_bp.route('/health')
     def healthcheck():

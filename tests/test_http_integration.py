@@ -503,6 +503,68 @@ def test_dashboard_duelista_graficos_e_posicao_mobile(client, monkeypatch):
     assert '<div class="mobile-stat-item text-center">' in html
 
 
+def test_index_home_resumo_vivo_da_liga(client, monkeypatch):
+    mock_resumo = {
+        'temporada_ativa': {'id': 2, 'nome': 'Temporada 2 - 2026', 'data_inicio': None, 'data_fim': None},
+        'metricas': {'total_torneios': 5, 'total_duelistas': 16, 'total_partidas': 60},
+        'lider': {'nome': 'Seto Kaiba', 'pontos': 45, 'win_rate': 85.0, 'campeonatos': 2, 'tops': 3},
+        'ultimo_torneio': {
+            'id': 10,
+            'nome': 'Torneio Mensal - Agosto',
+            'data': None,
+            'qtd_participantes': 8,
+            'campeao_nome': 'Seto Kaiba',
+            'campeao_vitorias': 4,
+            'campeao_derrotas': 0,
+        },
+    }
+    monkeypatch.setattr(PublicService, 'obter_resumo_home', lambda self: mock_resumo)
+
+    resp = client.get('/')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # Métricas
+    assert '5</div>' in html
+    assert '16</div>' in html
+    assert '60</div>' in html
+
+    # Destaque Líder
+    assert 'Líder da Liga' in html
+    assert 'Seto Kaiba' in html
+    assert '45 pts' in html
+    assert '85.0% WR' in html
+
+    # Destaque Último Torneio
+    assert 'Último Torneio' in html
+    assert 'Torneio Mensal - Agosto' in html
+    assert 'Seto Kaiba' in html
+    assert '4V / 0D' in html
+
+    # CTA focado na temporada ativa sem botões redundantes no Hero
+    assert 'Ranking da Temporada' in html
+    assert 'Ver Torneios' not in html
+
+
+def test_index_home_sem_temporada_ativa(client, monkeypatch):
+    mock_resumo = {
+        'temporada_ativa': None,
+        'metricas': {'total_torneios': 0, 'total_duelistas': 0, 'total_partidas': 0},
+        'lider': None,
+        'ultimo_torneio': None,
+    }
+    monkeypatch.setattr(PublicService, 'obter_resumo_home', lambda self: mock_resumo)
+
+    resp = client.get('/')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    assert 'Nenhuma temporada ativa no momento' in html
+    assert 'Ver Ranking Geral' in html
+    assert 'Temporada em aberto' in html
+    assert 'Nenhum torneio recente' in html
+
+
 def test_telas_modernizadas_sem_coluna_empates(client, monkeypatch):
     # 1. Testar que /dashboard não exibe "+ Empates +" na fórmula
     mock_dashboard = {

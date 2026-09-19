@@ -27,10 +27,7 @@
                 <i class="fas fa-trophy"></i> Liga YGO Marabá
                 <span class="brand-badge d-none d-sm-inline-block">TCG League</span>
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menu de navegação">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item">
                         <a class="nav-link {% if endpoint == 'public.index' %}active{% endif %}" href="{{ url_for('public.index') }}" {% if endpoint == 'public.index' %}aria-current="page"{% endif %}>

@@ -242,6 +242,49 @@
     color: #94a3b8 !important;
 }
 
+/* Home Dashboard: Stat Cards & Live Highlight Cards */
+.home-stat-card {
+    background: #ffffff;
+    border: 1px solid var(--ygo-border) !important;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-highlight-card {
+    background: #ffffff;
+    border: 1px solid var(--ygo-border) !important;
+    border-radius: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-highlight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ygo-shadow-md);
+}
+
+[data-bs-theme="dark"] .home-stat-card {
+    background-color: #131d2e !important;
+    border-color: #243044 !important;
+}
+
+[data-bs-theme="dark"] .home-stat-card .fs-3 {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .home-highlight-card {
+    background-color: #131d2e !important;
+    border-color: #243044 !important;
+}
+
+[data-bs-theme="dark"] .home-highlight-card h4,
+[data-bs-theme="dark"] .home-highlight-card h5 {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .home-highlight-card .border-top {
+    border-color: #243044 !important;
+}
+
 [data-bs-theme="dark"] .badge-podium-2 {
     background: linear-gradient(135deg, #1e293b, #334155);
     color: #f1f5f9;

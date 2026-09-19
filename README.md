@@ -12,6 +12,7 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 ## Principais Recursos
 
 ### 🏆 Experiência Competitiva & Métricas
+- **Hub Vivo da Liga na Tela Inicial:** Tela inicial dinâmica e sem redundâncias, com contadores em tempo real (Torneios, Duelistas, Partidas), cards de destaque com o Líder Atual da Liga e o Último Torneio realizado (com campeão consagrado e link direto).
 - **Ranking Unificado:** Classificação atualizada por pontos, Vitórias/Derrotas, Win Rate, participações em Top Cut e número de títulos.
 - **Pódio Visual Interativo:** Destaque para o Top 3 com avatares estilizados, pilares comemorativos e insígnias metálicas (🥇 1º Ouro, 🥈 2º Prata e 🥉 3º Bronze).
 - **Indicadores Visuais de Desempenho:** Mini barras horizontais de progresso integradas para **Win Rate** e **Taxa de Conversão Top Cut → Título** (com exibição limpa em travessão `—` para duelistas sem participações em Top Cut).

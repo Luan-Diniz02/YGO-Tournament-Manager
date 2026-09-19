@@ -172,6 +172,14 @@ com os gradientes já definidos no CSS.
 - **Contraste no Dark Mode**: Os alertas (`.alert`, `.alert-success`, `.alert-danger`, `.alert-info`, `.alert-warning`) utilizam fonte branca (`#ffffff`) sobre os fundos temáticos, ícones em destaque vibrante e botão de fechar (`.btn-close`) com filtro invertido, eliminando conflitos de cor e garantindo legibilidade imediata (WCAG AAA).
 - **Permanência de Avisos**: Alertas de confirmação crítica (como avisos de exclusão de torneios/temporadas e ativação de temporadas em modais) e estados informativos são permanentes e **não somem automaticamente**, assegurando tempo adequado de leitura e prevenção contra erros acidentais. Mensagens flash contam com botão de fechar (`.btn-close`) para dispensa manual.
 
+### Tela Inicial (Hub Vivo da Liga)
+
+- **Hero sem Redundâncias**: Apresentação visual limpa da liga sem replicar botões que já existem na barra de navegação superior.
+- **Chamada Focal da Temporada**: Card da temporada ativa com atalho direto e único para a classificação da corrida atual (`Ranking da Temporada`).
+- **Métricas Rápidas**: Painel consolidado com contadores de `Torneios Realizados`, `Duelistas Registrados` e `Partidas Disputadas`.
+- **Destaques Vivos**: Cards dinâmicos exibindo o **Líder Atual da Liga** (com pontos, Win Rate, títulos e link para perfil) e o **Último Torneio Realizado** (com data, participantes, campeão consagrado e link direto).
+- **Ações Administrativas**: Exibidas exclusivamente para administradores logados, mantendo a tela pública livre de botões de login duplicados.
+
 ### Pódio Top 3 (Showcase)
 
 - Exibido no topo da página de ranking (`/dashboard`) quando existirem ao menos 3 duelistas.
