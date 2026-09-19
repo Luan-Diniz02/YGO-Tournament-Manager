@@ -18,7 +18,7 @@
             <div class="card-body bg-light rounded-bottom">
                 <div class="row text-center g-3">
                     <div class="col-md-4">
-                        <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.72rem;">Data da Etapa</small>
+                        <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.72rem;">Data do Torneio</small>
                         <strong class="fs-5 text-dark"><i class="fas fa-calendar-alt text-primary me-1"></i> {{ torneio.data.strftime('%d/%m/%Y') if torneio.data else 'N/A' }}</strong>
                     </div>
                     <div class="col-md-4">
@@ -42,10 +42,10 @@
         <div class="card shadow-sm h-100">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-user-plus text-success me-1"></i> Inserir Resultado</h5>
-                <span class="badge bg-secondary">Etapa</span>
+                <span class="badge bg-secondary">Torneio</span>
             </div>
             <div class="card-body">
-                <p class="small text-muted mb-3">Adicione o placar final do participante nesta etapa (incluindo Suíço e Top Cut). No YGO moderno não há empates; Double Loss conta como derrota para ambos os duelistas.</p>
+                <p class="small text-muted mb-3">Adicione o placar final do participante neste torneio (incluindo Suíço e Top Cut). No YGO moderno não há empates; Double Loss conta como derrota para ambos os duelistas.</p>
 
                 <form method="POST" action="{{ url_for('admin.adicionar_jogador_torneio', id=torneio.id) }}">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
@@ -98,7 +98,7 @@
     <div class="col-md-{% if is_admin %}8{% else %}12{% endif %} mb-4">
         <div class="card shadow-sm h-100 wrapper-transparent-mobile">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-list-ol"></i> Classificação da Etapa</h5>
+                <h5 class="mb-0"><i class="fas fa-list-ol"></i> Classificação do Torneio</h5>
                 <span class="badge bg-light text-dark"><i class="fas fa-user-check"></i> {{ participantes|length }} Registrados</span>
             </div>
             <div class="card-body p-0">
@@ -245,7 +245,7 @@
                 {% else %}
                 <div class="text-center py-5">
                     <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
-                    <h6 class="text-muted">Nenhum duelista registrado nesta etapa ainda.</h6>
+                    <h6 class="text-muted">Nenhum duelista registrado neste torneio ainda.</h6>
                     {% if is_admin %}
                     <p class="text-muted small">Adicione o resultado final do jogador no formulário ao lado (Suíço + Top Cut).</p>
                     {% else %}

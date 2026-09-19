@@ -15,8 +15,8 @@ Este documento deve ser consultado antes de qualquer nova implementação.
 | `/dashboard` | `dashboard_estatisticas.html` | Ranking unificado + estatísticas comparativas (filtrável por temporada) |
 | `/ranking` | — | **Redireciona para `/dashboard`** (não tem template próprio) |
 | `/dashboard/duelista/<nome>` | `dashboard_duelista.html` | Perfil individual — drill-down exclusivo |
-| `/visualizar_torneios` | `visualizar_torneios.html` | Lista de todas as etapas cadastradas (com coluna de temporada) |
-| `/torneio/<id>` | `painel_torneio.html` | Resultados de uma etapa específica |
+| `/visualizar_torneios` | `visualizar_torneios.html` | Lista de todos os torneios cadastrados (com coluna de temporada) |
+| `/torneio/<id>` | `painel_torneio.html` | Resultados de um torneio específico |
 
 ### Mapa de rotas administrativas (`/admin/*` — protegidas por sessão)
 
@@ -40,7 +40,7 @@ Este documento deve ser consultado antes de qualquer nova implementação.
 - **`/ranking`** não tem template — existe apenas para compatibilidade de links externos,
   redirecionando imediatamente para `/dashboard`.
 - **`/dashboard/duelista/<nome>`** é o destino de drill-down. Deve conter **apenas**
-  informações exclusivas do contexto individual: histórico etapa a etapa, conquistas
+  informações exclusivas do contexto individual: histórico torneio a torneio, conquistas
   contextuais, win rate por torneio. Não duplicar dados já visíveis no ranking.
 
 ---
@@ -213,7 +213,7 @@ São calculadas comparando o duelista com todos os outros ativos na liga.
 ## Regras para Dados do Perfil Individual
 
 O `dados.historico` já carrega `win_rate_evento` para cada torneio — **usar esse campo**
-ao exibir performance por etapa (não recalcular no template).
+ao exibir performance por torneio (não recalcular no template).
 
 Campos disponíveis por evento no histórico:
 

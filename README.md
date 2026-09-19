@@ -1,6 +1,6 @@
 # Liga YGO Marabá — Tournament Manager
 
-Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de torneios competitivos de Yu-Gi-Oh!, incluindo ranking unificado com pódio, métricas avançadas de desempenho, perfis individuais de duelistas, histórico detalhado de etapas, sistema de temporadas e painel administrativo protegido.
+Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de torneios competitivos de Yu-Gi-Oh!, incluindo ranking unificado com pódio, métricas avançadas de desempenho, perfis individuais de duelistas, histórico detalhado de torneios, sistema de temporadas e painel administrativo protegido.
 
 ## Demo
 
@@ -16,9 +16,9 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 - **Pódio Visual Interativo:** Destaque para o Top 3 com avatares estilizados, pilares comemorativos e insígnias metálicas (🥇 1º Ouro, 🥈 2º Prata e 🥉 3º Bronze).
 - **Indicadores Visuais de Desempenho:** Mini barras horizontais de progresso integradas para **Win Rate** e **Taxa de Conversão Top Cut → Título**.
 - **Perfil Individual do Duelista:**
-  - Histórico completo etapa a etapa (placar, rodadas, colocação no torneio e indicador de Top Cut).
+  - Histórico completo torneio a torneio (placar, rodadas, colocação no torneio e indicador de Top Cut).
   - Gráfico em rosca de distribuição de partidas (Vitórias vs Derrotas).
-  - Gráfico de linha interativo da evolução cronológica de pontos por etapa, com datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
+  - Gráfico de linha interativo da evolução cronológica de pontos por torneio, com datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
   - Conquistas automáticas contextuais (*Líder do Ranking*, *Rei do Top Cut*, *Maior Campeão*, *Elite Win Rate*).
 - **Card Oficial do Duelista (Duelist Identity Card):** Cartão de identidade compartilhável com dados da temporada, métricas principais e insígnias, com exportação em imagem PNG em alta resolução (`html2canvas`) e botão direto para compartilhamento via WhatsApp.
 
