@@ -387,32 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartData = empates > 0 ? [vitorias, derrotas, empates] : [vitorias, derrotas];
         const chartColors = empates > 0 ? ['#10b981', '#ef4444', '#64748b'] : ['#10b981', '#ef4444'];
 
-        const doughnutCenterPlugin = {
-            id: 'doughnutCenterText',
-            beforeDraw: function(chart) {
-                if (!totalPartidas) return;
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return;
-                const centerX = (chartArea.left + chartArea.right) / 2;
-                const centerY = (chartArea.top + chartArea.bottom) / 2;
-
-                ctx.save();
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
-                ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
-                ctx.fillText(pctV, centerX, centerY - 8);
-
-                ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
-                ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
-                ctx.fillText('Vitórias', centerX, centerY + 14);
-                ctx.restore();
-            }
-        };
-
-        const chartWinLoss = new Chart(ctxDoughnut, {
+        new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
                 labels: chartLabels,
@@ -446,12 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 },
                 cutout: '70%'
-            },
-            plugins: [doughnutCenterPlugin]
-        });
-
-        window.addEventListener('themeChanged', function() {
-            if (chartWinLoss) chartWinLoss.update();
+            }
         });
     }
 

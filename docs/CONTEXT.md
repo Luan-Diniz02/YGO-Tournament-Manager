@@ -174,13 +174,19 @@ com os gradientes já definidos no CSS.
 
 ### Visualização de Dados e Cartões Compartilháveis
 
-- **Chart.js**: Utilizado no perfil individual (`dashboard_duelista.html`) para gráfico de rosca (proporção de Vitórias vs Derrotas) e gráfico de linha (evolução cronológica de pontos por torneio com filtro amostragem).
-- **Card Oficial do Duelista (PNG / WhatsApp)**: Permite ao jogador exportar seu Card de Identidade individual em formato PNG via `html2canvas` (escala 2x) ou compartilhar no WhatsApp.
-- **Card de Compartilhamento do Ranking da Liga**: Modal dedicado (`#modalShareRanking`) que renderiza a classificação completa da temporada ou All-Time em alta definição, permitindo download direto em PNG e compartilhamento formatado via WhatsApp do Top 3.
+- **Chart.js no perfil individual (`dashboard_duelista.html`)**:
+  - **Gráfico de Rosca (Distribuição de Partidas)**: Exibe a proporção de Vitórias vs Derrotas com as porcentagens correspondentes nas legendas (`Vitórias (X%)`, `Derrotas (Y%)`) e tooltips, preservando o centro do anel desobstruído para evitar duplicação cognitiva com o cartão superior de Win Rate.
+  - **Gráfico de Linha (Evolução de Pontos por Torneio)**: Escala do eixo Y com graduação em intervalos de 3 pontos (`stepSize: 3`), alinhado aos múltiplos de pontuação de rodadas oficiais.
+  - **Histórico de Torneios**: Na coluna de Posição (desktop e mobile), a colocação numérica geral precede o selo de Top Cut (ex: `1º TOP`, `2º TOP`).
+- **Compartilhamento Genérico Nativo (`Web Share API Level 2`)**:
+  - Tanto o **Card Oficial do Duelista** quanto o **Ranking Oficial da Liga** utilizam compartilhamento nativo com **anexo do arquivo PNG gerado** via `navigator.share({ files: [file] })`, permitindo enviar a imagem diretamente para WhatsApp, Instagram, Telegram, Twitter/X, Discord, salvar em arquivos, etc.
+  - **Legenda limpa no Ranking**: O texto que acompanha a imagem do ranking inclui exclusivamente a chamada e o link da aplicação (`Confira o ranking completo em: ...`), evitando repetição textual de dados já presentes no cartão.
+  - **Fallback gracioso**: Em dispositivos sem suporte ao anexo de arquivos via Web Share (ex.: desktops), o sistema faz o download automático do PNG, copia a imagem para a área de transferência (`ClipboardItem`) e abre o WhatsApp Web com o texto e o link.
 
 ### Grid e Centralização Mobile
 
 - Cards mobile de torneios utilizam `.mobile-stats-grid.mobile-stats-grid-2` (duas colunas simétricas) com itens centralizados (`align-items: center; text-align: center;`) para **Vitórias** e **Derrotas**.
+- No perfil individual do duelista (`dashboard_duelista.html`), o histórico mobile centraliza harmonicamente as métricas de **Placar**, **Rodadas** e **Posição** (`.mobile-stat-item.text-center`).
 - A tela de busca/gerenciamento de duelistas no mobile utiliza o mesmo grid de 2 colunas (`.mobile-stats-grid-2`), distribuindo em 2x2 com conteúdo centralizado:
   - Linha 1: Vitórias (50%) e Derrotas (50%)
   - Linha 2: Participações (50%) e Status (50%)

@@ -17,12 +17,12 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 - **Indicadores Visuais de Desempenho:** Mini barras horizontais de progresso integradas para **Win Rate** e **Taxa de Conversão Top Cut → Título** (com exibição limpa em travessão `—` para duelistas sem participações em Top Cut).
 - **Regras Oficiais Konami (Double Loss):** Alinhado à Tournament Policy moderna de Yu-Gi-Oh!, sem empates — partidas não resolvidas resultam em Double Loss (0 pontos e contabilizado em Derrotas).
 - **Perfil Individual do Duelista:**
-  - Histórico completo torneio a torneio (placar, rodadas, colocação no torneio e indicador de Top Cut).
-  - Gráfico em rosca de distribuição de partidas (Vitórias vs Derrotas).
-  - Gráfico de linha interativo da evolução cronológica de pontos por torneio, com datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
+  - Histórico completo torneio a torneio (placar, rodadas, colocação no torneio e indicador de Top Cut, com colocação à esquerda do Top Cut).
+  - Gráfico em rosca de distribuição de partidas (Vitórias vs Derrotas) com porcentagens dinâmicas na legenda e nos tooltips, mantendo o centro limpo para evitar redundâncias com o KPI card superior.
+  - Gráfico de linha interativo da evolução cronológica de pontos por torneio com intervalos de 3 pontos no eixo Y, datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
   - Conquistas automáticas contextuais (*Líder do Ranking*, *Rei do Top Cut*, *Maior Campeão*, *Elite Win Rate*).
-- **Card Oficial do Duelista (Duelist Identity Card):** Cartão de identidade compartilhável com dados da temporada, métricas principais e insígnias, com exportação em imagem PNG em alta resolução (`html2canvas`) e botão direto para compartilhamento via WhatsApp.
-- **Card de Compartilhamento do Ranking da Liga:** Modal exclusivo para exportação da classificação completa da temporada ou All-Time em imagem PNG de alta resolução (`html2canvas`) e compartilhamento do Top 3 formatado via WhatsApp.
+- **Card Oficial do Duelista (Duelist Identity Card):** Cartão de identidade compartilhável com dados da temporada, métricas principais e insígnias, com exportação em imagem PNG em alta resolução (`html2canvas`) e compartilhamento genérico nativo via Web Share API com anexo direto da imagem e fallback inteligente.
+- **Card de Compartilhamento do Ranking da Liga:** Modal exclusivo para exportação da classificação completa da temporada ou All-Time em imagem PNG de alta resolução (`html2canvas`) e compartilhamento nativo via Web Share API anexando a imagem gerada e link direto.
 
 ### 📅 Temporadas & Torneios
 - **Gerenciamento de Temporadas:** Agrupamento de torneios em períodos competitivos com data de início e fim.
@@ -33,7 +33,7 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 ### 🎨 Design System & Mobile First
 - **Suporte Nativo a Temas (Dark Mode & Light Mode):** Alternância instantânea com detecção automática da preferência do sistema operacional (`prefers-color-scheme`), contraste elevado no modo claro e persistência em `localStorage`.
 - **Navegação Otimizada para Mobile:** Barra de navegação inferior (*bottom navigation bar*) com acesso rápido a Início, Ranking, Torneios, Menu Admin e Alternador de Tema.
-- **Grids e Centralização Simétrica Mobile:** Visualização mobile de torneios e busca de duelistas em grades balanceadas (50%/50% e 2x2) com estatísticas perfeitamente centralizadas.
+- **Grids e Centralização Simétrica Mobile:** Visualização mobile de torneios, perfil de duelista (placar, rodadas, posição) e busca de duelistas em grades balanceadas com estatísticas perfeitamente centralizadas.
 - **Admin Action Sheet (Offcanvas):** Menu flutuante moderno para administradores em smartphones, centralizando cadastros e gestão do sistema.
 - **Modais Harmonizados:** Janelas de criação, edição e compartilhamento com suporte a rolagem interna (`modal-dialog-scrollable`) e botões de ação fixos no rodapé, totalmente adaptadas aos temas claro e escuro, sem quebra de contraste ou estilos padrão de navegador.
 

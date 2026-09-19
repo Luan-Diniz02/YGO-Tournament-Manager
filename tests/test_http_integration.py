@@ -487,8 +487,8 @@ def test_dashboard_duelista_graficos_e_posicao_mobile(client, monkeypatch):
     assert resp.status_code == 200
     html = resp.get_data(as_text=True)
 
-    # 1. Porcentagem no gráfico de distribuição
-    assert 'doughnutCenterText' in html
+    # 1. Porcentagem no gráfico de distribuição (legenda e tooltip, centro limpo)
+    assert 'doughnutCenterText' not in html
     assert 'formatPct' in html
 
     # 2. Intervalo de 3 no gráfico de evolução
