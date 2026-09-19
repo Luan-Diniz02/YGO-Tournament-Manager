@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Erro Interno - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 py-md-5">
+    <div class="col-12 col-md-10 col-lg-7 text-center">
+        <div class="card error-card p-4 p-md-5">
+            <div class="card-body p-0">
+                <!-- Badge Temático Trap Card / Efeito Inesperado -->
+                <div class="mb-3">
+                    <span class="error-trap-badge">
+                        <i class="fas fa-bolt"></i>
+                        <span>500 &bull; Trap Card Ativada</span>
+                    </span>
+                </div>
+
+                <!-- Ícone Temático de Trap / Efeito Inesperado -->
+                <div class="error-hero-icon error-hero-icon-500 mx-auto">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+
+                <!-- Destaque Numérico 500 -->
+                <div class="error-code-display error-code-500 mb-2">
+                    500
+                </div>
+
+                <!-- Título -->
+                <h1 class="h2 fw-bold mb-3">Efeito Inesperado no Duelo!</h1>
+
+                <!-- Texto Amigável sem Stacktrace -->
+                <p class="text-muted mb-4 mx-auto" style="max-width: 480px; font-size: 1.05rem; line-height: 1.6;">
+                    Uma armadilha imprevista interrompeu a corrente do duelo no servidor. A equipe de juízes já foi acionada para resolver essa anomalia e normalizar o campo.
+                </p>
+
+                <!-- Ações de Navegação -->
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-2">
+                    <a href="{{ url_for('public.index') }}" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-home me-2"></i>Voltar ao Início
+                    </a>
+                    <button type="button" onclick="window.location.reload();" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="fas fa-rotate-right me-2"></i>Recarregar Página
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

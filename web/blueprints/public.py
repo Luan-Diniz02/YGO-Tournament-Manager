@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, url_for, request
+from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
 from web.services.public_service import PublicService
 
 
@@ -50,6 +50,13 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     def healthcheck():
         payload, status_code = public_service.health_status()
         return jsonify(payload), status_code
+
+    @public_bp.route('/sw.js')
+    def service_worker():
+        response = send_from_directory(current_app.static_folder, 'sw.js')
+        response.headers['Content-Type'] = 'application/javascript'
+        response.headers['Service-Worker-Allowed'] = '/'
+        return response
 
     @public_bp.route('/ranking')
     def ranking():

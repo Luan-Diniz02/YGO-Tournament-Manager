@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Página Não Encontrada - Liga YGO Marabá{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 py-md-5">
+    <div class="col-12 col-md-10 col-lg-7 text-center">
+        <div class="card error-card p-4 p-md-5">
+            <div class="card-body p-0">
+                <!-- Badge Temático 404 -->
+                <div class="mb-3">
+                    <span class="error-search-badge">
+                        <i class="fas fa-search"></i>
+                        <span>404 &bull; Carta Não Encontrada</span>
+                    </span>
+                </div>
+
+                <!-- Ícone Temático de Carta / Busca -->
+                <div class="error-hero-icon error-hero-icon-404 mx-auto">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+
+                <!-- Destaque Numérico 404 -->
+                <div class="error-code-display error-code-404 mb-2">
+                    404
+                </div>
+
+                <!-- Título -->
+                <h1 class="h2 fw-bold mb-3">Carta Não Encontrada!</h1>
+
+                <!-- Texto Amigável -->
+                <p class="text-muted mb-4 mx-auto" style="max-width: 480px; font-size: 1.05rem; line-height: 1.6;">
+                    Parece que a carta ou página que você tentou invocar não existe neste Deck ou foi banida para a Dimensão das Sombras. Verifique o endereço digitado ou navegue de volta à arena.
+                </p>
+
+                <!-- Ações de Navegação -->
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-2">
+                    <a href="{{ url_for('public.index') }}" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-home me-2"></i>Voltar ao Início
+                    </a>
+                    <a href="{{ url_for('public.dashboard_estatisticas') }}" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="fas fa-medal me-2"></i>Ver Ranking
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

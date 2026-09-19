@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="30%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+
+    <!-- Shield Border Gradient -->
+    <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- Shield Inner Fill Gradient -->
+    <linearGradient id="shieldInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </linearGradient>
+
+    <!-- Gold Gradient Primary -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="25%" stop-color="#f59e0b"/>
+      <stop offset="70%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- Gold Accent Gradient -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#fef3c7" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="104" fill="url(#bgGrad)"/>
+
+  <!-- Outer Shield -->
+  <path d="M 256,44 
+           C 346,44 424,80 424,142 
+           C 424,286 352,398 256,458 
+           C 160,398 88,286 88,142 
+           C 88,80 166,44 256,44 Z"
+        fill="url(#shieldInner)" 
+        stroke="url(#shieldBorder)" 
+        stroke-width="12"
+        stroke-linejoin="round"/>
+
+  <!-- Inner Shield Accent Line -->
+  <path d="M 256,66 
+           C 332,66 398,96 398,150 
+           C 398,272 336,370 256,424 
+           C 176,370 114,272 114,150 
+           C 114,96 180,66 256,66 Z"
+        fill="none" 
+        stroke="#38bdf8" 
+        stroke-width="3" 
+        stroke-opacity="0.4"/>
+
+  <!-- TCG Cards Motif Behind Trophy -->
+  <g transform="translate(256, 210) rotate(-14) translate(-256, -210)">
+    <rect x="180" y="145" width="60" height="92" rx="6" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3" opacity="0.8"/>
+    <rect x="188" y="153" width="44" height="58" rx="3" fill="#2563eb" opacity="0.6"/>
+  </g>
+  <g transform="translate(256, 210) rotate(14) translate(-256, -210)">
+    <rect x="272" y="145" width="60" height="92" rx="6" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3" opacity="0.8"/>
+    <rect x="280" y="153" width="44" height="58" rx="3" fill="#2563eb" opacity="0.6"/>
+  </g>
+
+  <!-- Golden Trophy Handles -->
+  <path d="M 175,190 C 130,190 120,250 160,282 C 172,292 188,296 200,296" 
+        fill="none" stroke="url(#goldGrad)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M 337,190 C 382,190 392,250 352,282 C 340,292 324,296 312,296" 
+        fill="none" stroke="url(#goldGrad)" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- Trophy Cup Body -->
+  <path d="M 184,160 
+           L 328,160 
+           C 328,245 295,302 256,312 
+           C 217,302 184,245 184,160 Z" 
+        fill="url(#goldGrad)" 
+        stroke="#fef08a" 
+        stroke-width="4"/>
+
+  <!-- Cup Lip / Rim -->
+  <ellipse cx="256" cy="160" rx="74" ry="14" fill="#fef08a" stroke="#d97706" stroke-width="3"/>
+  <ellipse cx="256" cy="160" rx="66" ry="10" fill="#f59e0b"/>
+
+  <!-- Cup Highlight -->
+  <path d="M 198,172 
+           C 202,230 220,270 244,286 
+           C 230,270 216,230 214,172 Z" 
+        fill="url(#goldLight)"/>
+
+  <!-- Trophy Stem -->
+  <path d="M 244,310 L 268,310 L 264,354 L 248,354 Z" fill="url(#goldGrad)" stroke="#b45309" stroke-width="2"/>
+  <ellipse cx="256" cy="354" rx="22" ry="6" fill="#fef08a"/>
+
+  <!-- Trophy Base / Pedestal -->
+  <path d="M 224,356 L 288,356 L 302,390 L 210,390 Z" fill="url(#goldGrad)" stroke="#b45309" stroke-width="2"/>
+  <rect x="200" y="390" width="112" height="18" rx="4" fill="#b45309" stroke="#f59e0b" stroke-width="2"/>
+  <rect x="206" y="394" width="100" height="10" rx="2" fill="#fef08a" opacity="0.3"/>
+
+  <!-- Center Star Motif on Trophy -->
+  <polygon points="256,204 263,222 282,222 267,233 273,251 256,240 239,251 245,233 230,222 249,222" 
+           fill="#ffffff" opacity="0.95" filter="url(#goldGlow)"/>
+
+  <!-- Decorative Stars Above Trophy -->
+  <polygon points="256,92 260,104 272,104 262,112 266,124 256,116 246,124 250,112 240,104 252,104" fill="#fef08a"/>
+  <polygon points="204,112 207,121 216,121 209,127 212,136 204,130 196,136 199,127 192,121 201,121" fill="#f59e0b"/>
+  <polygon points="308,112 311,121 320,121 313,127 316,136 308,130 300,136 303,127 296,121 305,121" fill="#f59e0b"/>
+</svg>

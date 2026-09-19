@@ -918,3 +918,81 @@ def test_dashboard_duelista_renderiza_nome_temporada_atual(client, monkeypatch):
     assert 'id="duelista-share-card"' in html
     assert 'Temporada 2026 &bull; Duelist Card' in html
 
+
+def test_handler_404_rota_inexistente(client):
+    resp = client.get('/rota_que_definitivamente_nao_existe_12345')
+
+    assert resp.status_code == 404
+    html = resp.get_data(as_text=True)
+    assert 'Página Não Encontrada - Liga YGO Marabá' in html
+    assert 'Carta Não Encontrada!' in html
+    assert '404' in html
+    assert 'Voltar ao Início' in html
+    assert 'Ver Ranking' in html
+
+
+def test_handler_500_simulando_falha(client, monkeypatch):
+    def _mock_falha(*args, **kwargs):
+        raise RuntimeError('Falha interna simulada no servidor!')
+
+    monkeypatch.setattr(PublicService, 'obter_resumo_home', _mock_falha)
+    client.application.config['PROPAGATE_EXCEPTIONS'] = False
+
+    resp = client.get('/')
+
+    assert resp.status_code == 500
+    html = resp.get_data(as_text=True)
+    assert 'Erro Interno - Liga YGO Marabá' in html
+    assert 'Efeito Inesperado no Duelo!' in html
+    assert '500' in html
+    assert 'Voltar ao Início' in html
+    assert 'Recarregar Página' in html
+    # Garante que detalhes internos e stacktrace não são expostos
+    assert 'Falha interna simulada' not in html
+    assert 'Traceback' not in html
+
+
+def test_sw_js_endpoint_serves_service_worker(client):
+    resp = client.get('/sw.js')
+
+    assert resp.status_code == 200
+    assert 'application/javascript' in resp.headers.get('Content-Type', '')
+    assert resp.headers.get('Service-Worker-Allowed') == '/'
+    content = resp.get_data(as_text=True)
+    assert 'ygo-cache-v1' in content
+    assert 'self.addEventListener' in content
+
+
+def test_manifest_json_servido_com_sucesso(client):
+    resp = client.get('/static/manifest.json')
+
+    assert resp.status_code == 200
+    data = resp.json
+    assert data['name'] == 'Liga YGO Marabá - TCG League'
+    assert data['short_name'] == 'Liga YGO'
+    assert data['start_url'] == '/'
+    assert data['display'] == 'standalone'
+    assert data['theme_color'] == '#2563eb'
+    assert len(data['icons']) >= 3
+
+
+def test_home_contem_tags_pwa(client):
+    resp = client.get('/')
+
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    assert 'rel="manifest"' in html
+    assert 'manifest.json' in html
+    assert 'name="theme-color" content="#2563eb"' in html
+    assert 'apple-mobile-web-app-capable' in html
+    assert 'apple-touch-icon' in html
+
+
+def test_icones_pwa_acessiveis(client):
+    for icon_path in ['/static/icons/icon.svg', '/static/icons/icon-192.png', '/static/icons/icon-512.png']:
+        resp = client.get(icon_path)
+        assert resp.status_code == 200
+        assert len(resp.data) > 0
+
+
+

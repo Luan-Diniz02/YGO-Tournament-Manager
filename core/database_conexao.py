@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import errorcode
+from mysql.connector.pooling import MySQLConnectionPool
 from core.models import Duelistas
 
 # Carrega as variáveis de ambiente do arquivo .env
@@ -25,20 +26,9 @@ class Conexao:
         self.ssl_ca = os.getenv("DB_SSL_CA", "").strip()
         self.ssl_verify_cert = self._parse_bool(os.getenv("DB_SSL_VERIFY_CERT"), default=False)
         self.ssl_verify_identity = self._parse_bool(os.getenv("DB_SSL_VERIFY_IDENTITY"), default=False)
+        self._pool = None
 
-    def _coluna_existe(self, cursor, tabela, coluna):
-        cursor.execute(
-            """
-            SELECT 1
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s
-            LIMIT 1
-            """,
-            (self.database, tabela, coluna),
-        )
-        return cursor.fetchone() is not None
-
-    def conectar_bd(self):
+    def _obter_conn_kwargs(self):
         conn_kwargs = dict(
             host=self.host,
             port=self.port,
@@ -57,6 +47,45 @@ class Conexao:
                 conn_kwargs["ssl_verify_cert"] = self.ssl_verify_cert
             if "DB_SSL_VERIFY_IDENTITY" in os.environ:
                 conn_kwargs["ssl_verify_identity"] = self.ssl_verify_identity
+
+        return conn_kwargs
+
+    def _obter_pool(self):
+        if self._pool is None:
+            conn_kwargs = self._obter_conn_kwargs()
+            try:
+                pool_size = int(os.getenv("DB_POOL_SIZE", "5"))
+            except (ValueError, TypeError):
+                pool_size = 5
+
+            self._pool = MySQLConnectionPool(
+                pool_name="ygo_pool",
+                pool_size=pool_size,
+                pool_reset_session=True,
+                **conn_kwargs
+            )
+        return self._pool
+
+    def _coluna_existe(self, cursor, tabela, coluna):
+        cursor.execute(
+            """
+            SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s
+            LIMIT 1
+            """,
+            (self.database, tabela, coluna),
+        )
+        return cursor.fetchone() is not None
+
+    def conectar_bd(self):
+        conn_kwargs = self._obter_conn_kwargs()
+        try:
+            pool = self._obter_pool()
+            if pool is not None:
+                return pool.get_connection()
+        except Exception:
+            pass
 
         return mysql.connector.connect(**conn_kwargs)
 
