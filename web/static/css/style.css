@@ -128,8 +128,14 @@
     background-color: var(--ygo-surface-card) !important;
 }
 
-[data-bs-theme="dark"] .text-dark {
+[data-bs-theme="dark"] .text-dark:not(.badge-warning):not(.bg-warning):not(.badge-podium-1) {
     color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .bg-warning.text-dark,
+[data-bs-theme="dark"] .badge.bg-warning,
+[data-bs-theme="dark"] .badge-podium-1 {
+    color: #1a1a1a !important;
 }
 
 [data-bs-theme="dark"] .table {
