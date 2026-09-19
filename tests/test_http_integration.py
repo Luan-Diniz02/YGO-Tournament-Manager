@@ -459,6 +459,50 @@ def test_dashboard_duelista_conversao_travessao_quando_zero_tops(client, monkeyp
     assert '<div class="fs-4 fw-bold text-dark mt-1">50.0%</div>' in html_com
 
 
+def test_dashboard_duelista_graficos_e_posicao_mobile(client, monkeypatch):
+    mock_dados = {
+        'duelista': {'nome': 'Yugi Muto', 'ativo': 1, 'pontos': 25, 'vitorias': 9, 'derrotas': 3, 'empates': 0, 'participacao': 2},
+        'resumo': {'partidas_total': 12, 'win_rate_geral': 75.0, 'tops': 2, 'campeonatos': 1, 'taxa_conversao_top_titulo': 50.0, 'qtd_torneios_historico': 2},
+        'conquistas': [],
+        'historico': [
+            {
+                'torneio_id': 1,
+                'torneio_nome': 'Torneio Mensal - Agosto',
+                'torneio_data': None,
+                'vitorias': 5,
+                'derrotas': 1,
+                'empates': 0,
+                'rodadas': 4,
+                'posicao_geral': 1,
+                'topou_torneio': True,
+                'pontos_obtidos': 16,
+            }
+        ],
+    }
+    monkeypatch.setattr(PublicService, 'carregar_dashboard_duelista', lambda self, *args, **kwargs: mock_dados)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: [])
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: None)
+
+    resp = client.get('/dashboard/duelista/Yugi%20Muto')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 1. Porcentagem no gráfico de distribuição
+    assert 'doughnutCenterText' in html
+    assert 'formatPct' in html
+
+    # 2. Intervalo de 3 no gráfico de evolução
+    assert 'stepSize: 3' in html
+
+    # 3. Número da posição à esquerda de TOP no histórico
+    pos_num = html.find('1º')
+    pos_top = html.find('>TOP</span>', pos_num)
+    assert pos_num != -1 and pos_top != -1 and pos_num < pos_top
+
+    # 4. Modo mobile centralizado
+    assert '<div class="mobile-stat-item text-center">' in html
+
+
 def test_telas_modernizadas_sem_coluna_empates(client, monkeypatch):
     # 1. Testar que /dashboard não exibe "+ Empates +" na fórmula
     mock_dashboard = {
