@@ -151,9 +151,9 @@
 <div class="modal fade" id="novaTemporadaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Criar Nova Temporada</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus-circle text-primary me-2"></i>Criar Nova Temporada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <form action="{{ url_for('admin.cadastrar_temporada') }}" method="POST">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
@@ -178,8 +178,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Criar Temporada</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Criar Temporada</button>
                 </div>
             </form>
         </div>
@@ -190,9 +190,9 @@
 <div class="modal fade" id="editarTemporadaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Temporada</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit text-primary me-2"></i>Editar Temporada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <form id="formEditarTemporada" action="" method="POST">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
@@ -217,8 +217,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Alterações</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Salvar Alterações</button>
                 </div>
             </form>
         </div>

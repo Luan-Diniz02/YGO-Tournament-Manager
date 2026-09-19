@@ -320,6 +320,83 @@
     filter: invert(1) grayscale(100%) brightness(200%);
 }
 
+/* Dark Mode Modal Theming */
+[data-bs-theme="dark"] .modal-content {
+    background-color: #131d2e !important;
+    border-color: #243044 !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-bs-theme="dark"] .modal-header {
+    background-color: #0b1322 !important;
+    border-bottom-color: #243044 !important;
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .modal-header .modal-title {
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .modal-header.bg-primary,
+[data-bs-theme="dark"] .modal-header.bg-dark {
+    background-color: #0b1322 !important;
+    color: #f1f5f9 !important;
+    border-bottom: 1px solid #243044 !important;
+}
+
+[data-bs-theme="dark"] .modal-body {
+    background-color: #131d2e !important;
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .modal-body .form-label {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .modal-footer {
+    background-color: #0b1322 !important;
+    border-top-color: #243044 !important;
+}
+
+[data-bs-theme="dark"] .modal .btn-close,
+[data-bs-theme="dark"] .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.75;
+}
+
+[data-bs-theme="dark"] .modal .btn-close:hover,
+[data-bs-theme="dark"] .btn-close-white:hover {
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.85);
+    cursor: pointer;
+}
+
+[data-bs-theme="dark"] .form-check-label {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .form-check-input {
+    background-color: #1a2638;
+    border-color: #334155;
+}
+
+[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: var(--ygo-primary);
+    border-color: var(--ygo-primary);
+}
+
+[data-bs-theme="dark"] .conversion-track {
+    background-color: #243044;
+}
+
+[data-bs-theme="dark"] .modal-backdrop.show {
+    opacity: 0.75;
+}
+
 /* --------------------------------------------------------------------------
    Global Reset & Base
    -------------------------------------------------------------------------- */
@@ -976,6 +1053,90 @@ body {
     background: linear-gradient(90deg, #10b981, #059669);
     border-radius: 999px;
     transition: width 0.4s ease;
+}
+
+/* Mini Barra Visual de Conversão Top -> Título */
+.conversion-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 80px;
+}
+
+.conversion-track {
+    flex: 1;
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.conversion-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Modals Theming (Light Mode / Base)
+   -------------------------------------------------------------------------- */
+.modal-content {
+    background-color: var(--ygo-surface);
+    color: var(--ygo-text-main);
+    border: 1px solid var(--ygo-border);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--ygo-shadow-lg);
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: var(--ygo-surface-muted);
+    border-bottom: 1px solid var(--ygo-border);
+    padding: 1rem 1.25rem;
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ygo-text-main);
+}
+
+.modal-header.bg-primary,
+.modal-header.bg-dark {
+    background-color: var(--ygo-surface-muted) !important;
+    color: var(--ygo-text-main) !important;
+    border-bottom: 1px solid var(--ygo-border) !important;
+}
+
+.modal-header.bg-primary .modal-title,
+.modal-header.bg-dark .modal-title {
+    color: var(--ygo-text-main) !important;
+}
+
+.modal-header.bg-primary .btn-close-white,
+.modal-header.bg-dark .btn-close-white {
+    filter: none !important;
+    opacity: 0.6;
+}
+
+.modal-body {
+    background-color: var(--ygo-surface);
+    color: var(--ygo-text-main);
+    padding: 1.25rem;
+}
+
+.modal-body .form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ygo-text-main);
+    margin-bottom: 0.4rem;
+}
+
+.modal-footer {
+    background-color: var(--ygo-surface-muted);
+    border-top: 1px solid var(--ygo-border);
+    padding: 0.85rem 1.25rem;
 }
 
 /* --------------------------------------------------------------------------

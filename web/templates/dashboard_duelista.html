@@ -233,7 +233,7 @@
                             </div>
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Rodadas</span>
-                                <span class="mobile-stat-value">{{ evento.rodadas }} R</span>
+                                <span class="mobile-stat-value">{{ evento.rodadas }}</span>
                             </div>
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Posição</span>
@@ -260,14 +260,22 @@
 <!-- Modal Compartilhar Card de Duelista -->
 <div class="modal fade" id="modalShareDuelista" tabindex="-1" aria-labelledby="modalShareDuelistaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="background-color: var(--ygo-surface-card);">
-            <div class="modal-header bg-dark text-white">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalShareDuelistaLabel">
                     <i class="fas fa-id-card text-warning me-2"></i>Card Oficial do Duelista
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-4 text-center">
+                {% set ns_temp = namespace(nome='Geral (All-time)') %}
+                {% if temporada_atual != 'geral' %}
+                    {% for temp in temporadas %}
+                        {% if temporada_atual == temp.id|string %}
+                            {% set ns_temp.nome = temp.nome %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 <!-- Cartão que será renderizado como Imagem -->
                 <div id="duelista-share-card" class="share-card-preview text-start mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -275,12 +283,22 @@
                             <i class="fas fa-trophy text-warning fs-4"></i>
                             <div>
                                 <h6 class="mb-0 fw-bold text-white">Liga YGO Marabá</h6>
-                                <small class="text-warning text-uppercase fw-semibold" style="font-size: 0.65rem;">Duelist Identity Card</small>
+                                <small class="text-warning text-uppercase fw-semibold" style="font-size: 0.65rem;">
+                                    {{ ns_temp.nome }} &bull; Duelist Card
+                                </small>
                             </div>
                         </div>
-                        <span class="badge bg-warning text-dark fw-bold">
-                            {% if dados.posicao_ranking %}{{ dados.posicao_ranking }}º Lugar{% else %}Ativo{% endif %}
-                        </span>
+                        <div class="text-end">
+                            {% if dados.resumo.posicao_ranking %}
+                            <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.75rem;">
+                                <i class="fas fa-medal me-1"></i>{{ dados.resumo.posicao_ranking }}º no Ranking
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary fw-bold px-2 py-1" style="font-size: 0.75rem;">
+                                {% if dados.duelista.ativo == 1 %}Ativo{% else %}Inativo{% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <h4 class="fw-bold text-white mb-2">{{ dados.duelista.nome }}</h4>

@@ -295,9 +295,16 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
-                                        <span class="small text-muted" title="{{ duelista.campeonatos }} título(s) em {{ duelista.tops }} Top Cut(s)">
-                                            {{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%
-                                        </span>
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <div class="conversion-indicator">
+                                                <div class="conversion-track">
+                                                    <div class="conversion-fill" style="width: {{ duelista.taxa_conversao_top_titulo }}%;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="fw-bold small {% if duelista.taxa_conversao_top_titulo > 0 %}text-warning{% else %}text-muted{% endif %}" title="{{ duelista.campeonatos }} título(s) em {{ duelista.tops }} Top Cut(s)">
+                                                {{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}"
