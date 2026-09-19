@@ -68,12 +68,15 @@
                                                 data-bs-toggle="modal" data-bs-target="#editarTorneioModal">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" class="d-inline">
-                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm js-confirm-delete" data-type="torneio" title="Excluir Torneio" aria-label="Excluir Torneio {{ t.nome }}">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-outline-danger btn-sm btn-excluir-torneio"
+                                                data-id="{{ t.id }}"
+                                                data-nome="{{ t.nome }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmarExcluirTorneioModal"
+                                                title="Excluir Torneio"
+                                                aria-label="Excluir Torneio {{ t.nome }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
                                             {% endif %}
                                         </div>
                                     </td>
@@ -128,12 +131,15 @@
                                 title="Editar" aria-label="Editar {{ t.nome }}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form method="POST" action="{{ url_for('admin.excluir_torneio', id=t.id) }}" class="d-inline">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger js-confirm-delete" data-type="torneio" title="Excluir" aria-label="Excluir {{ t.nome }}">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-excluir-torneio"
+                                data-id="{{ t.id }}"
+                                data-nome="{{ t.nome }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarExcluirTorneioModal"
+                                title="Excluir"
+                                aria-label="Excluir {{ t.nome }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                             {% endif %}
                         </div>
                     </div>
@@ -203,6 +209,35 @@
     </div>
 </div>
 
+<!-- Modal Confirmar Exclusão de Torneio -->
+<div class="modal fade" id="confirmarExcluirTorneioModal" tabindex="-1" aria-labelledby="confirmarExcluirTorneioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="confirmarExcluirTorneioLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Excluir Torneio
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form id="formExcluirTorneio" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="mb-2">Tem certeza que deseja excluir o torneio <strong id="nomeTorneioExcluir"></strong>?</p>
+                    <div class="alert alert-danger py-2 px-3 small mb-0">
+                        <i class="fas fa-exclamation-circle me-1"></i> Esta ação removerá permanentemente o torneio e todos os resultados e pontuações dos duelistas registrados nele. Essa ação <strong>não</strong> pode ser desfeita.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Excluir Torneio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 document.querySelectorAll('.btn-editar-torneio').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -224,6 +259,15 @@ document.querySelectorAll('.btn-editar-torneio').forEach(function(btn) {
         if (sel) {
             sel.value = temporada || '';
         }
+    });
+});
+
+document.querySelectorAll('.btn-excluir-torneio').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id   = this.dataset.id;
+        var nome = this.dataset.nome;
+        document.getElementById('formExcluirTorneio').action = '/excluir_torneio/' + id;
+        document.getElementById('nomeTorneioExcluir').textContent = '"' + nome + '"';
     });
 });
 </script>

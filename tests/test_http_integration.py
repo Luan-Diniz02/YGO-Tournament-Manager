@@ -663,8 +663,69 @@ def test_dashboard_compartilhar_ranking_com_mais_de_dez_duelistas(client, monkey
             assert '🥉 3º' in card_html
         else:
             assert f'{i}º' in card_html
+def test_modais_confirmacao_admin(client, monkeypatch):
+    login_resp = _login_admin(client)
+    assert login_resp.status_code == 302
 
+    # Mock de torneios para visualizar_torneios
+    torneios_mock = [{
+        'id': 10,
+        'nome': 'Torneio Teste Modal',
+        'rodadas': 4,
+        'quant_duelistas': 8,
+        'data': None,
+        'temporada_id': None,
+        'temporada_nome': None,
+        'qtd_participantes': 8,
+    }]
+    monkeypatch.setattr(PublicService, 'listar_torneios', lambda self: torneios_mock)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: [])
 
+    # 1. Visualizar Torneios - Modal de exclusão
+    resp_t = client.get('/visualizar_torneios')
+    assert resp_t.status_code == 200
+    html_t = resp_t.get_data(as_text=True)
+    assert 'id="confirmarExcluirTorneioModal"' in html_t
+    assert 'btn-excluir-torneio' in html_t
 
+    # 2. Gerenciar Temporadas - Modais de ativar e excluir (sem onclick confirm)
+    temporadas_mock = [{
+        'id': 1,
+        'nome': 'Temporada 1',
+        'data_inicio': None,
+        'data_fim': None,
+        'ativa': 0,
+    }]
+    monkeypatch.setattr(AdminService, 'listar_temporadas', lambda self: temporadas_mock)
+    resp_temp = client.get('/temporadas')
+    assert resp_temp.status_code == 200
+    html_temp = resp_temp.get_data(as_text=True)
+    assert 'id="confirmarAtivarTemporadaModal"' in html_temp
+    assert 'id="confirmarExcluirTemporadaModal"' in html_temp
+    assert 'btn-ativar-temporada' in html_temp
+    assert 'btn-excluir-temporada' in html_temp
+    assert 'onclick="return confirm(' not in html_temp
 
-
+    # 3. Buscar Duelistas - Modal de exclusão
+    duelistas_mock = [{
+        'id': 1,
+        'nome': 'Duelista Inativo',
+        'pontos': 0,
+        'vitorias': 0,
+        'derrotas': 0,
+        'empates': 0,
+        'participacao': 0,
+        'ativo': 0,
+    }]
+    monkeypatch.setattr(AdminService, 'buscar_duelistas', lambda self, **kwargs: {
+        'duelistas': duelistas_mock,
+        'duelista_encontrado': False,
+        'posicao_encontrada': None,
+        'status_filtro': 'todos',
+        'nome_busca': ''
+    })
+    resp_d = client.get('/buscar_duelista')
+    assert resp_d.status_code == 200
+    html_d = resp_d.get_data(as_text=True)
+    assert 'id="confirmarExcluirDuelistaModal"' in html_d
+    assert 'btn-excluir-duelista' in html_d

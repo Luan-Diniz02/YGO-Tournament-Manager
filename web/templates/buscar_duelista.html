@@ -90,12 +90,16 @@
                                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                                 <button type="submit" class="btn btn-outline-success btn-sm" title="Reativar" aria-label="Reativar {{ duelista.nome }}"><i class="fas fa-user-check"></i></button>
                                             </form>
-                                            <form method="POST" action="{{ url_for('admin.excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
-                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm js-confirm-delete" data-type="duelista" title="Excluir Definitivo" aria-label="Excluir Definitivo {{ duelista.nome }}"><i class="fas fa-trash-alt"></i></button>
-                                            </form>
-                                            {% endif %}
-                                        </div>
+                                             <button type="button" class="btn btn-outline-danger btn-sm btn-excluir-duelista"
+                                                 data-nome="{{ duelista.nome }}"
+                                                 data-bs-toggle="modal"
+                                                 data-bs-target="#confirmarExcluirDuelistaModal"
+                                                 title="Excluir Definitivo"
+                                                 aria-label="Excluir Definitivo {{ duelista.nome }}">
+                                                 <i class="fas fa-trash-alt"></i>
+                                             </button>
+                                             {% endif %}
+                                         </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -158,12 +162,14 @@
                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="btn btn-sm btn-outline-success fw-semibold"><i class="fas fa-user-check me-1"></i> Reativar</button>
                                 </form>
-                                <form method="POST" action="{{ url_for('admin.excluir_duelista_definitivo', nome=duelista.nome) }}" class="d-inline">
-                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger js-confirm-delete" data-type="duelista" title="Excluir Definitivo">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-excluir-duelista"
+                                    data-nome="{{ duelista.nome }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmarExcluirDuelistaModal"
+                                    title="Excluir Definitivo"
+                                    aria-label="Excluir Definitivo {{ duelista.nome }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                                 {% endif %}
                             </div>
                         </div>
@@ -179,6 +185,35 @@
     </div>
 </div>
 
+<!-- Modal Confirmar Exclusão Definitiva de Duelista -->
+<div class="modal fade" id="confirmarExcluirDuelistaModal" tabindex="-1" aria-labelledby="confirmarExcluirDuelistaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="confirmarExcluirDuelistaLabel">
+                    <i class="fas fa-trash-alt me-2"></i>Excluir Duelista Definitivo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form id="formExcluirDuelista" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="mb-2">Tem certeza que deseja excluir definitivamente o duelista <strong id="nomeDuelistaExcluir"></strong>?</p>
+                    <div class="alert alert-warning py-2 px-3 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Apenas duelistas <strong>sem histórico de participações em torneios</strong> podem ser excluídos definitivamente. Caso já tenha jogado, mantenha-o desativado.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Excluir Definitivo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function filtrarConteudo() {
     const input = document.getElementById('nome_busca');
@@ -190,6 +225,13 @@ function filtrarConteudo() {
         elemento.style.display = mostrar ? '' : 'none';
     });
 }
+
+document.querySelectorAll('.btn-excluir-duelista').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var nome = this.dataset.nome;
+        document.getElementById('formExcluirDuelista').action = '/excluir_duelista_definitivo/' + encodeURIComponent(nome);
+        document.getElementById('nomeDuelistaExcluir').textContent = '"' + nome + '"';
+    });
+});
 </script>
 {% endblock %}
-

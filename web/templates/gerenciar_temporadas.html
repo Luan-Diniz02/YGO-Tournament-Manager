@@ -61,21 +61,22 @@
                                             </button>
 
                                             {% if not temporada.ativa %}
-                                            <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Tornar esta temporada ativa? Isso alterará a visão padrão do Dashboard.')">
-                                                    <i class="fas fa-check"></i> Ativar
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-success btn-ativar-temporada"
+                                                data-id="{{ temporada.id }}"
+                                                data-nome="{{ temporada.nome }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmarAtivarTemporadaModal">
+                                                <i class="fas fa-check"></i> Ativar
+                                            </button>
                                             {% endif %}
 
-                                            <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?\n\nOs torneios vinculados NÃO serão excluídos — apenas ficarão sem temporada associada.')">
-                                                    <i class="fas fa-trash-alt"></i> Excluir
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-excluir-temporada"
+                                                data-id="{{ temporada.id }}"
+                                                data-nome="{{ temporada.nome }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmarExcluirTemporadaModal">
+                                                <i class="fas fa-trash-alt"></i> Excluir
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -118,21 +119,24 @@
                             </button>
 
                             {% if not temporada.ativa %}
-                            <form action="{{ url_for('admin.ativar_temporada', id=temporada.id) }}" method="POST" class="d-inline flex-grow-1">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-outline-success w-100" onclick="return confirm('Tornar esta temporada ativa?')">
-                                    <i class="fas fa-check"></i> Ativar
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-success flex-grow-1 btn-ativar-temporada"
+                                data-id="{{ temporada.id }}"
+                                data-nome="{{ temporada.nome }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarAtivarTemporadaModal">
+                                <i class="fas fa-check"></i> Ativar
+                            </button>
                             {% endif %}
 
-                            <form action="{{ url_for('admin.excluir_temporada', id=temporada.id) }}" method="POST" class="d-inline">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Excluir a temporada \'{{ temporada.nome }}\'?')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-excluir-temporada"
+                                data-id="{{ temporada.id }}"
+                                data-nome="{{ temporada.nome }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarExcluirTemporadaModal"
+                                title="Excluir Temporada"
+                                aria-label="Excluir Temporada {{ temporada.nome }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -225,6 +229,64 @@
     </div>
 </div>
 
+<!-- Modal Confirmar Ativação de Temporada -->
+<div class="modal fade" id="confirmarAtivarTemporadaModal" tabindex="-1" aria-labelledby="confirmarAtivarTemporadaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="confirmarAtivarTemporadaLabel">
+                    <i class="fas fa-check-circle me-2"></i>Ativar Temporada
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form id="formAtivarTemporada" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="mb-2">Deseja definir a temporada <strong id="nomeTemporadaAtivar"></strong> como a temporada ativa?</p>
+                    <div class="alert alert-info py-2 px-3 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Ela passará a ser a temporada padrão para o Dashboard e para novos torneios cadastrados.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-1"></i> Ativar Temporada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmar Exclusão de Temporada -->
+<div class="modal fade" id="confirmarExcluirTemporadaModal" tabindex="-1" aria-labelledby="confirmarExcluirTemporadaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="confirmarExcluirTemporadaLabel">
+                    <i class="fas fa-trash-alt me-2"></i>Excluir Temporada
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form id="formExcluirTemporada" action="" method="POST">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="mb-2">Tem certeza que deseja excluir a temporada <strong id="nomeTemporadaExcluir"></strong>?</p>
+                    <div class="alert alert-warning py-2 px-3 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Os torneios vinculados a esta temporada <strong>NÃO</strong> serão excluídos — eles apenas ficarão sem temporada associada ("Geral / Sem Temporada").
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Excluir Temporada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 document.querySelectorAll('.btn-editar-temporada').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -240,6 +302,24 @@ document.querySelectorAll('.btn-editar-temporada').forEach(function(btn) {
         document.getElementById('edit_data_inicio').value = ini;
         document.getElementById('edit_data_fim').value    = fim;
         document.getElementById('edit_ativa').checked     = ativa;
+    });
+});
+
+document.querySelectorAll('.btn-ativar-temporada').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id   = this.dataset.id;
+        var nome = this.dataset.nome;
+        document.getElementById('formAtivarTemporada').action = '/temporadas/' + id + '/ativar';
+        document.getElementById('nomeTemporadaAtivar').textContent = '"' + nome + '"';
+    });
+});
+
+document.querySelectorAll('.btn-excluir-temporada').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id   = this.dataset.id;
+        var nome = this.dataset.nome;
+        document.getElementById('formExcluirTemporada').action = '/temporadas/' + id + '/excluir';
+        document.getElementById('nomeTemporadaExcluir').textContent = '"' + nome + '"';
     });
 });
 </script>
