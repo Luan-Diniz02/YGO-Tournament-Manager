@@ -55,20 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Auto-hide alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        if (!alert.querySelector('.btn-close')) {
-            setTimeout(() => {
-                alert.style.transition = 'all 0.5s ease';
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    alert.remove();
-                }, 500);
-            }, 5000);
-        }
-    });
+
 
     // Add hover effects to table rows
     const tableRows = document.querySelectorAll('.table tbody tr');

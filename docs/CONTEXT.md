@@ -167,6 +167,11 @@ com os gradientes já definidos no CSS.
 - Persistência das preferências do usuário no `localStorage` sob a chave `'ygo-theme'`, com fallback para `prefers-color-scheme`.
 - O Dark Mode preserva as identidades visuais de marca e as regras de contraste (ex: `.card-header.bg-dark.text-white`).
 
+### Alertas e Mensagens de Confirmação
+
+- **Contraste no Dark Mode**: Os alertas (`.alert`, `.alert-success`, `.alert-danger`, `.alert-info`, `.alert-warning`) utilizam fonte branca (`#ffffff`) sobre os fundos temáticos, ícones em destaque vibrante e botão de fechar (`.btn-close`) com filtro invertido, eliminando conflitos de cor e garantindo legibilidade imediata (WCAG AAA).
+- **Permanência de Avisos**: Alertas de confirmação crítica (como avisos de exclusão de torneios/temporadas e ativação de temporadas em modais) e estados informativos são permanentes e **não somem automaticamente**, assegurando tempo adequado de leitura e prevenção contra erros acidentais. Mensagens flash contam com botão de fechar (`.btn-close`) para dispensa manual.
+
 ### Pódio Top 3 (Showcase)
 
 - Exibido no topo da página de ranking (`/dashboard`) quando existirem ao menos 3 duelistas.
