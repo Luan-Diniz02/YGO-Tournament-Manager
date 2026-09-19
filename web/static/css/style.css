@@ -297,6 +297,29 @@
     color: #60a5fa !important;
 }
 
+[data-bs-theme="dark"] .offcanvas {
+    background-color: var(--ygo-surface-card) !important;
+    color: var(--ygo-text-main);
+    border-color: var(--ygo-border);
+}
+
+[data-bs-theme="dark"] .offcanvas-header {
+    border-bottom-color: var(--ygo-border) !important;
+}
+
+[data-bs-theme="dark"] .offcanvas .list-group-item {
+    background-color: transparent;
+    color: var(--ygo-text-main);
+}
+
+[data-bs-theme="dark"] .offcanvas .list-group-item:not(.active):hover {
+    background-color: var(--ygo-surface-muted);
+}
+
+[data-bs-theme="dark"] .offcanvas .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
 /* --------------------------------------------------------------------------
    Global Reset & Base
    -------------------------------------------------------------------------- */
