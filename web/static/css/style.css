@@ -1421,9 +1421,19 @@ body {
     border: 1px solid #f1f5f9;
 }
 
+.mobile-stats-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .mobile-stat-item {
     display: flex;
     flex-direction: column;
+}
+
+.mobile-stats-grid-2 .mobile-stat-item,
+.mobile-stat-item.text-center {
+    align-items: center;
+    text-align: center;
 }
 
 .mobile-stat-label {
@@ -1488,6 +1498,209 @@ body {
     height: 100%;
     background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
     pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Ranking Shareable Card (Leaderboard)
+   -------------------------------------------------------------------------- */
+#ranking-share-card {
+    background: linear-gradient(135deg, #0b1322 0%, #162032 50%, #0f172a 100%);
+    border: 2px solid rgba(245, 158, 11, 0.45);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    max-width: 680px;
+    margin: 0 auto;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#ranking-share-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, rgba(37, 99, 235, 0.06) 40%, transparent 70%);
+    pointer-events: none;
+}
+
+#ranking-share-card .ranking-card-header,
+#ranking-share-card .ranking-share-table-wrapper,
+#ranking-share-card .ranking-card-footer {
+    position: relative;
+    z-index: 1;
+}
+
+#ranking-share-card .ranking-trophy-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#ranking-share-card .ranking-share-table-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 19, 34, 0.6);
+}
+
+#ranking-share-card .ranking-share-table {
+    width: 100%;
+    margin-bottom: 0;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: transparent !important;
+    --bs-table-hover-bg: transparent !important;
+    --bs-table-color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+    font-size: 0.82rem;
+}
+
+#ranking-share-card .ranking-share-table thead {
+    background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#ranking-share-card .ranking-share-table th {
+    padding: 0.6rem 0.5rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+    background-color: transparent !important;
+}
+
+#ranking-share-card .ranking-share-table td {
+    padding: 0.55rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    vertical-align: middle;
+    color: #f1f5f9;
+    background-color: transparent !important;
+}
+
+#ranking-share-card .ranking-share-row:last-child td {
+    border-bottom: none;
+}
+
+#ranking-share-card .ranking-row-gold {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+#ranking-share-card .ranking-row-silver {
+    background-color: rgba(148, 163, 184, 0.07) !important;
+}
+
+#ranking-share-card .ranking-row-bronze {
+    background-color: rgba(217, 119, 6, 0.07) !important;
+}
+
+#ranking-share-card .ranking-pos-badge {
+    display: inline-block;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+#ranking-share-card .ranking-pos-badge.pos-1 {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+}
+
+#ranking-share-card .ranking-pos-badge.pos-2 {
+    background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+    color: #0f172a;
+}
+
+#ranking-share-card .ranking-pos-badge.pos-3 {
+    background: linear-gradient(135deg, #f97316, #c2410c);
+    color: #ffffff;
+}
+
+#ranking-share-card .ranking-pos-badge.pos-other {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+#ranking-share-card .ranking-player-name {
+    color: #f8fafc;
+    font-size: 0.85rem;
+}
+
+#ranking-share-card .ranking-pts-badge {
+    color: #fbbf24;
+    font-size: 0.85rem;
+}
+
+#ranking-share-card .ranking-pts-badge small {
+    font-size: 0.65rem;
+    opacity: 0.8;
+}
+
+#ranking-share-card .ranking-titles-badge {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(37, 99, 235, 0.2);
+    border: 1px solid rgba(37, 99, 235, 0.4);
+    color: #93c5fd;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    #ranking-share-card {
+        padding: 1rem 0.75rem;
+    }
+    #ranking-share-card .ranking-share-table {
+        font-size: 0.75rem;
+    }
+    #ranking-share-card .ranking-share-table th,
+    #ranking-share-card .ranking-share-table td {
+        padding: 0.4rem 0.25rem;
+    }
+    #ranking-share-card .ranking-trophy-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+#modalShareRanking .modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(245, 158, 11, 0.4) rgba(15, 23, 42, 0.6);
+}
+
+#modalShareRanking .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modalShareRanking .modal-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 4px;
+}
+
+#modalShareRanking .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.4);
+    border-radius: 4px;
+}
+
+#modalShareRanking .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.7);
 }
 
 .chart-card {

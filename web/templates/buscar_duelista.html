@@ -126,20 +126,20 @@
                             </div>
                             <span class="badge bg-warning text-dark fw-bold">{{ duelista.pontos }} pts</span>
                         </div>
-                        <div class="mobile-stats-grid mb-2">
-                            <div class="mobile-stat-item">
+                        <div class="mobile-stats-grid mobile-stats-grid-2 mb-2">
+                            <div class="mobile-stat-item text-center">
                                 <span class="mobile-stat-label">Vitórias</span>
                                 <span class="mobile-stat-value value-success">{{ duelista.vitorias }}</span>
                             </div>
-                            <div class="mobile-stat-item">
+                            <div class="mobile-stat-item text-center">
                                 <span class="mobile-stat-label">Derrotas</span>
                                 <span class="mobile-stat-value value-danger">{{ duelista.derrotas }}</span>
                             </div>
-                            <div class="mobile-stat-item">
+                            <div class="mobile-stat-item text-center">
                                 <span class="mobile-stat-label">Participações</span>
                                 <span class="mobile-stat-value">{{ duelista.participacao }}</span>
                             </div>
-                            <div class="mobile-stat-item">
+                            <div class="mobile-stat-item text-center">
                                 <span class="mobile-stat-label">Status</span>
                                 <span class="mobile-stat-value">{% if duelista.ativo == 1 %}<span class="text-success">Ativo</span>{% else %}<span class="text-danger">Inativo</span>{% endif %}</span>
                             </div>

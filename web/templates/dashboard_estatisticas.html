@@ -6,12 +6,15 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card shadow-sm wrapper-transparent-mobile">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-medal"></i>
+                    <i class="fas fa-medal text-warning"></i>
                     <h4 class="mb-0">Ranking & Estatísticas</h4>
                 </div>
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <button type="button" class="btn btn-warning text-dark fw-bold btn-sm shadow-sm" id="btn-share-ranking" data-bs-toggle="modal" data-bs-target="#modalShareRanking">
+                        <i class="fas fa-share-nodes me-1"></i> Compartilhar Ranking
+                    </button>
                     <span class="badge bg-light text-dark">{{ dashboard.duelistas|length }} duelistas</span>
                 </div>
             </div>
@@ -419,6 +422,144 @@
     </div>
 </div>
 
+<!-- Modal de Compartilhamento do Ranking -->
+{% set ns_temp = namespace(nome='Geral (All-time)') %}
+{% if temporada_atual != 'geral' %}
+    {% for temp in temporadas %}
+        {% if temporada_atual == temp.id|string %}
+            {% set ns_temp.nome = temp.nome %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="modal fade" id="modalShareRanking" tabindex="-1" aria-labelledby="modalShareRankingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalShareRankingLabel">
+                    <i class="fas fa-trophy text-warning me-2"></i>Ranking Oficial da Liga
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-3 p-md-4 text-center">
+                <!-- Cartão que será renderizado como Imagem -->
+                <div id="ranking-share-card" class="ranking-share-card text-start">
+                    <div class="ranking-card-header d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="ranking-trophy-icon">
+                                <i class="fas fa-trophy text-warning fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-white tracking-wide">Liga YGO Marabá</h5>
+                                <div class="text-warning text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    {{ ns_temp.nome }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-warning text-dark fw-bold px-2 py-1 mb-1 d-inline-block" style="font-size: 0.75rem;">
+                                <i class="fas fa-crown me-1"></i>Ranking Geral
+                            </span>
+                            <div class="text-white-50" style="font-size: 0.7rem;">
+                                {% if data_inicio and data_fim %}
+                                    {{ data_inicio }} a {{ data_fim }}
+                                {% elif data_inicio %}
+                                    A partir de {{ data_inicio }}
+                                {% elif data_fim %}
+                                    Até {{ data_fim }}
+                                {% else %}
+                                    Ranking Oficial
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if dashboard.duelistas %}
+                    <div class="ranking-share-table-wrapper mb-3">
+                        <table class="table ranking-share-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">#</th>
+                                    <th>Duelista</th>
+                                    <th class="text-center">Pontos</th>
+                                    <th class="text-center">V / D</th>
+                                    <th class="text-center">Win Rate</th>
+                                    <th class="text-center">Títulos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for duelista in dashboard.duelistas %}
+                                <tr class="ranking-share-row {% if duelista.posicao_ranking == 1 %}ranking-row-gold{% elif duelista.posicao_ranking == 2 %}ranking-row-silver{% elif duelista.posicao_ranking == 3 %}ranking-row-bronze{% endif %}">
+                                    <td class="text-center">
+                                        {% if duelista.posicao_ranking == 1 %}
+                                        <span class="ranking-pos-badge pos-1">🥇 1º</span>
+                                        {% elif duelista.posicao_ranking == 2 %}
+                                        <span class="ranking-pos-badge pos-2">🥈 2º</span>
+                                        {% elif duelista.posicao_ranking == 3 %}
+                                        <span class="ranking-pos-badge pos-3">🥉 3º</span>
+                                        {% else %}
+                                        <span class="ranking-pos-badge pos-other">{{ duelista.posicao_ranking }}º</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="ranking-player-name fw-bold">{{ duelista.nome }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="ranking-pts-badge fw-bold">{{ duelista.pontos }} <small>pts</small></span>
+                                    </td>
+                                    <td class="text-center ranking-record-cell">
+                                        <span class="text-success fw-bold">{{ duelista.vitorias }}</span><span class="text-white-50 mx-1">/</span><span class="text-danger fw-bold">{{ duelista.derrotas }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-success">{{ '%.1f'|format(duelista.win_rate) }}%</span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if duelista.campeonatos > 0 %}
+                                        <span class="ranking-titles-badge">
+                                            <i class="fas fa-trophy me-1 text-warning"></i>{{ duelista.campeonatos }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-white-50">&mdash;</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-white-50">
+                        <i class="fas fa-info-circle me-1"></i> Nenhum duelista pontuado para os filtros selecionados.
+                    </div>
+                    {% endif %}
+
+                    <div class="ranking-card-footer d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                        <small class="text-white-50" style="font-size: 0.75rem;">
+                            <i class="fas fa-shield-halved me-1 text-warning"></i>TCG Marabá &bull; Ranking Oficial
+                        </small>
+                        <small class="text-warning fw-semibold" style="font-size: 0.75rem;">
+                            <i class="fas fa-gamepad me-1"></i>Yu-Gi-Oh! TCG
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center w-100">
+                    <button type="button" class="btn btn-primary px-4" id="btn-download-share-ranking">
+                        <i class="fas fa-download me-1"></i> Baixar Imagem do Ranking
+                    </button>
+                    <button type="button" class="btn btn-outline-success px-4" id="btn-whatsapp-share-ranking">
+                        <i class="fab fa-whatsapp me-1"></i> Compartilhar Link no WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
     function aplicarFiltrosDashboard() {
         const inputNome = document.getElementById('filtro-nome-dashboard');
@@ -472,5 +613,86 @@
     document.getElementById('filtro-nome-dashboard')?.addEventListener('input', aplicarFiltrosDashboard);
     document.getElementById('filtro-min-partidas')?.addEventListener('input', aplicarFiltrosDashboard);
     aplicarFiltrosDashboard();
+
+    // Modal e Compartilhamento de Ranking
+    const btnShareRanking = document.getElementById('btn-share-ranking');
+    const modalShareRankingEl = document.getElementById('modalShareRanking');
+    if (btnShareRanking && modalShareRankingEl) {
+        const modalRanking = new bootstrap.Modal(modalShareRankingEl);
+        btnShareRanking.addEventListener('click', () => modalRanking.show());
+
+        const btnDownloadRanking = document.getElementById('btn-download-share-ranking');
+        if (btnDownloadRanking) {
+            btnDownloadRanking.addEventListener('click', function() {
+                const cardEl = document.getElementById('ranking-share-card');
+                if (!cardEl) return;
+                btnDownloadRanking.disabled = true;
+                btnDownloadRanking.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Gerando imagem...';
+
+                html2canvas(cardEl, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null,
+                    scrollY: 0,
+                    scrollX: 0,
+                    windowWidth: cardEl.scrollWidth,
+                    windowHeight: cardEl.scrollHeight,
+                    onclone: (clonedDoc) => {
+                        const modalEl = clonedDoc.getElementById('modalShareRanking');
+                        if (modalEl) {
+                            modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
+                                el.style.maxHeight = 'none';
+                                el.style.overflow = 'visible';
+                                el.style.height = 'auto';
+                            });
+                        }
+                    }
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'ranking-liga-ygo.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    btnDownloadRanking.disabled = false;
+                    btnDownloadRanking.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Ranking';
+                }).catch(err => {
+                    console.error(err);
+                    btnDownloadRanking.disabled = false;
+                    btnDownloadRanking.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Ranking';
+                    alert('Não foi possível gerar a imagem.');
+                });
+            });
+        }
+
+        const btnWhatsappRanking = document.getElementById('btn-whatsapp-share-ranking');
+        if (btnWhatsappRanking) {
+            btnWhatsappRanking.addEventListener('click', function() {
+                const url = window.location.href;
+                {% set ns_temp_script = namespace(nome='Geral (All-time)') %}
+                {% if temporada_atual != 'geral' %}
+                    {% for temp in temporadas %}
+                        {% if temporada_atual == temp.id|string %}
+                            {% set ns_temp_script.nome = temp.nome %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                const seasonName = {{ ns_temp_script.nome|tojson }};
+                let msg = `🏆 *Ranking - Liga YGO Marabá*\nTemporada: ${seasonName}\n\n`;
+                {% if dashboard.duelistas and dashboard.duelistas|length > 0 %}
+                    {% for d in dashboard.duelistas[:3] %}
+                        {% if loop.index == 1 %}
+                            msg += `🥇 *1º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                        {% elif loop.index == 2 %}
+                            msg += `🥈 *2º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                        {% elif loop.index == 3 %}
+                            msg += `🥉 *3º* ` + {{ d.nome|tojson }} + ` - {{ d.pontos }} pts ({{ '%.1f'|format(d.win_rate) }}% WR)\n`;
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                msg += `\nConfira o ranking completo em:\n${url}`;
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+            });
+        }
+    }
 </script>
 {% endblock %}

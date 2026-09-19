@@ -492,4 +492,179 @@ def test_telas_modernizadas_sem_coluna_empates(client, monkeypatch):
     assert '<input type="hidden" id="empates" name="empates" value="0">' in html_torneio
 
 
+def test_dashboard_compartilhar_ranking(client, monkeypatch):
+    mock_dashboard = {
+        'resumo': {
+            'total_duelistas': 3,
+            'total_partidas': 15,
+            'total_vitorias': 10,
+            'total_derrotas': 5,
+            'total_empates': 0,
+            'total_tops': 3,
+            'total_campeonatos': 1,
+            'win_rate_geral': 66.7,
+            'taxa_conversao_top_titulo_geral': 33.3,
+            'min_participacoes_win_rate': 1,
+        },
+        'lideres': {
+            'maior_win_rate': None,
+            'mais_tops': None,
+            'mais_campeonatos': None,
+        },
+        'duelistas': [
+            {
+                'posicao_ranking': 1,
+                'nome': 'Yugi Muto',
+                'pontos': 30,
+                'vitorias': 9,
+                'derrotas': 1,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 90.0,
+                'participacao': 3,
+                'tops': 3,
+                'campeonatos': 2,
+                'taxa_conversao_top_titulo': 66.7,
+            },
+            {
+                'posicao_ranking': 2,
+                'nome': 'Seto Kaiba',
+                'pontos': 25,
+                'vitorias': 7,
+                'derrotas': 3,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 70.0,
+                'participacao': 3,
+                'tops': 2,
+                'campeonatos': 1,
+                'taxa_conversao_top_titulo': 50.0,
+            },
+            {
+                'posicao_ranking': 3,
+                'nome': 'Joey Wheeler',
+                'pontos': 18,
+                'vitorias': 5,
+                'derrotas': 5,
+                'empates': 0,
+                'partidas': 10,
+                'win_rate': 50.0,
+                'participacao': 3,
+                'tops': 1,
+                'campeonatos': 0,
+                'taxa_conversao_top_titulo': 0.0,
+            },
+        ],
+    }
+    temporadas = [{'id': 1, 'nome': 'Temporada 2026', 'ativa': 1}]
+
+    monkeypatch.setattr(PublicService, 'carregar_dashboard', lambda self, *args, **kwargs: mock_dashboard)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: temporadas)
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: temporadas[0])
+
+    resp = client.get('/dashboard?temporada=1')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 1. Botão no cabeçalho
+    assert 'id="btn-share-ranking"' in html
+    assert 'Compartilhar Ranking' in html
+
+    # 2. Modal e Preview Card
+    assert 'id="modalShareRanking"' in html
+    assert 'modal-dialog-scrollable' in html
+    assert 'id="ranking-share-card"' in html
+    assert 'Ranking Geral' in html
+    assert 'Liga YGO Marabá' in html
+    assert 'Temporada 2026' in html
+    assert 'TCG Marabá &bull; Ranking Oficial' in html
+
+    # 3. Duelistas renderizados no card
+    assert 'Yugi Muto' in html
+    assert 'Seto Kaiba' in html
+    assert 'Joey Wheeler' in html
+    assert '🥇 1º' in html
+    assert '🥈 2º' in html
+    assert '🥉 3º' in html
+
+    # 4. Botões de ação no modal
+    assert 'id="btn-download-share-ranking"' in html
+    assert 'Baixar Imagem do Ranking' in html
+    assert 'id="btn-whatsapp-share-ranking"' in html
+    assert 'Compartilhar Link no WhatsApp' in html
+
+    # 5. Dependência html2canvas e lógica de download/whatsapp
+    assert 'html2canvas@1.4.1/dist/html2canvas.min.js' in html
+    assert 'ranking-liga-ygo.png' in html
+    assert 'api.whatsapp.com/send?text=' in html
+
+
+def test_dashboard_compartilhar_ranking_com_mais_de_dez_duelistas(client, monkeypatch):
+    duelistas = [
+        {
+            'posicao_ranking': i,
+            'nome': f'Duelista {i:02d}',
+            'pontos': 50 - i,
+            'vitorias': 10,
+            'derrotas': 2,
+            'empates': 0,
+            'partidas': 12,
+            'win_rate': 83.3,
+            'participacao': 3,
+            'tops': 1,
+            'campeonatos': 1 if i <= 3 else 0,
+            'taxa_conversao_top_titulo': 100.0 if i <= 3 else 0.0,
+        }
+        for i in range(1, 16)
+    ]
+    mock_dashboard = {
+        'resumo': {
+            'total_duelistas': 15,
+            'total_partidas': 180,
+            'total_vitorias': 90,
+            'total_derrotas': 90,
+            'total_empates': 0,
+            'total_tops': 15,
+            'total_campeonatos': 3,
+            'win_rate_geral': 50.0,
+            'taxa_conversao_top_titulo_geral': 20.0,
+            'min_participacoes_win_rate': 1,
+        },
+        'lideres': {
+            'maior_win_rate': None,
+            'mais_tops': None,
+            'mais_campeonatos': None,
+        },
+        'duelistas': duelistas,
+    }
+    temporadas = [{'id': 1, 'nome': 'Temporada 2026', 'ativa': 1}]
+
+    monkeypatch.setattr(PublicService, 'carregar_dashboard', lambda self, *args, **kwargs: mock_dashboard)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: temporadas)
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: temporadas[0])
+
+    resp = client.get('/dashboard?temporada=1')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # Extrai o conteúdo do card compartilhado (#ranking-share-card)
+    assert 'id="ranking-share-card"' in html
+    card_html = html.split('id="ranking-share-card"')[1].split('id="btn-download-share-ranking"')[0]
+
+    # Garante que todos os 15 duelistas (além do top 10) estão no card
+    for i in range(1, 16):
+        nome_duelista = f'Duelista {i:02d}'
+        assert nome_duelista in card_html, f'{nome_duelista} deve ser renderizado no card de ranking'
+        if i == 1:
+            assert '🥇 1º' in card_html
+        elif i == 2:
+            assert '🥈 2º' in card_html
+        elif i == 3:
+            assert '🥉 3º' in card_html
+        else:
+            assert f'{i}º' in card_html
+
+
+
+
 
