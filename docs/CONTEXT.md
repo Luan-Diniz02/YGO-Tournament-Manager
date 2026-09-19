@@ -172,21 +172,38 @@ com os gradientes já definidos no CSS.
 - Exibido no topo da página de ranking (`/dashboard`) quando existirem ao menos 3 duelistas.
 - Estrutura visual: 2º Lugar (esquerda), 1º Lugar (centro elevado em destaque dourado) e 3º Lugar (direita).
 
-### Visualização de Dados e Cartão Compartilhável
+### Visualização de Dados e Cartões Compartilháveis
 
-- **Chart.js**: Utilizado no perfil individual (`dashboard_duelista.html`) para gráfico de rosca (proporção de Vitórias, Derrotas e Empates) e gráfico de linha (evolução histórica de pontos por evento).
-- **html2canvas**: Permite ao jogador exportar seu Card de Duelista em formato PNG ou compartilhar link com resumo de pontuação no WhatsApp.
+- **Chart.js**: Utilizado no perfil individual (`dashboard_duelista.html`) para gráfico de rosca (proporção de Vitórias vs Derrotas) e gráfico de linha (evolução cronológica de pontos por torneio com filtro amostragem).
+- **Card Oficial do Duelista (PNG / WhatsApp)**: Permite ao jogador exportar seu Card de Identidade individual em formato PNG via `html2canvas` (escala 2x) ou compartilhar no WhatsApp.
+- **Card de Compartilhamento do Ranking da Liga**: Modal dedicado (`#modalShareRanking`) que renderiza a classificação completa da temporada ou All-Time em alta definição, permitindo download direto em PNG e compartilhamento formatado via WhatsApp do Top 3.
+
+### Grid e Centralização Mobile
+
+- Cards mobile de torneios utilizam `.mobile-stats-grid.mobile-stats-grid-2` (duas colunas simétricas) com itens centralizados (`align-items: center; text-align: center;`) para **Vitórias** e **Derrotas**.
+- A tela de busca/gerenciamento de duelistas no mobile utiliza o mesmo grid de 2 colunas (`.mobile-stats-grid-2`), distribuindo em 2x2 com conteúdo centralizado:
+  - Linha 1: Vitórias (50%) e Derrotas (50%)
+  - Linha 2: Participações (50%) e Status (50%)
+
+### Terminologia Padrão
+
+- **Torneio / Torneios**: Utilizado de forma unificada para identificar os eventos competitivos da liga (evitar "etapas").
+- **Participações**: Utilizado exclusivamente para identificar assiduidade/frequência de duelistas (evitar "torneios disputados" ou "assiduidade" em cards e métricas).
 
 ---
 
-## Fórmula de Pontuação
+## Fórmula de Pontuação & Regra de Double Loss
+
+Em conformidade com o regulamento oficial de torneios de Yu-Gi-Oh! (Konami Tournament Policy), empates não existem no formato competitivo moderno; partidas não resolvidas ou penalidades resultam em **Double Loss** (derrota mútua, 0 pontos para ambos e +1 derrota):
 
 ```
-Pontos por torneio = (Vitórias × 3) + Empates + 1 (participação)
+Pontos por torneio = (Vitórias × 3) + 1 (participação)
 Pontos globais     = soma dos pontos de todos os torneios
-Win Rate           = Vitórias / (Vitórias + Derrotas + Empates) × 100
-Conversão          = Títulos / Top Cuts × 100
+Win Rate           = Vitórias / (Vitórias + Derrotas) × 100
+Conversão Top Cut  = Títulos / Top Cuts × 100  (renderiza '—' se Top Cuts == 0)
 ```
+
+> **Nota de Retrocompatibilidade**: O campo `empates` permanece no banco de dados com valor padrão `0`, garantindo suporte a registros legados sem quebrar o esquema da base.
 
 ### Critério de desempate no ranking
 
