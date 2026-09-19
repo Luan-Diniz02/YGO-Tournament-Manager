@@ -6,13 +6,15 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card shadow-sm wrapper-transparent-mobile">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div
+                class="card-header bg-dark text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fas fa-medal text-warning"></i>
                     <h4 class="mb-0">Ranking & Estatísticas</h4>
                 </div>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <button type="button" class="btn btn-warning text-dark fw-bold btn-sm shadow-sm" id="btn-share-ranking" data-bs-toggle="modal" data-bs-target="#modalShareRanking">
+                    <button type="button" class="btn btn-warning text-dark fw-bold btn-sm shadow-sm"
+                        id="btn-share-ranking" data-bs-toggle="modal" data-bs-target="#modalShareRanking">
                         <i class="fas fa-share-nodes me-1"></i> Compartilhar Ranking
                     </button>
                     <span class="badge bg-light text-dark">{{ dashboard.duelistas|length }} duelistas</span>
@@ -107,7 +109,8 @@
         <div class="card shadow-sm dashboard-leader-mini border-warning">
             <div class="card-body d-flex align-items-center justify-content-between gap-2">
                 <div>
-                    <small class="text-uppercase text-muted d-block fw-bold"><i class="fas fa-layer-group text-warning"></i>
+                    <small class="text-uppercase text-muted d-block fw-bold"><i
+                            class="fas fa-layer-group text-warning"></i>
                         Mais Top Cut</small>
                     {% if dashboard.lideres.mais_tops %}
                     <strong class="text-dark">{{ dashboard.lideres.mais_tops.nome }}</strong>
@@ -133,7 +136,8 @@
         <div class="card shadow-sm dashboard-leader-mini border-primary">
             <div class="card-body d-flex align-items-center justify-content-between gap-2">
                 <div>
-                    <small class="text-uppercase text-muted d-block fw-bold"><i class="fas fa-crown text-primary"></i> Mais
+                    <small class="text-uppercase text-muted d-block fw-bold"><i class="fas fa-crown text-primary"></i>
+                        Mais
                         Títulos</small>
                     {% if dashboard.lideres.mais_campeonatos %}
                     <strong class="text-dark">{{ dashboard.lideres.mais_campeonatos.nome }}</strong>
@@ -185,10 +189,12 @@
                     <!-- 2º Colocado -->
                     <div class="podium-slot podium-slot-2">
                         <div class="podium-avatar">🥈</div>
-                        <a href="{{ url_for('public.dashboard_duelista', nome=top2.nome) }}" class="podium-name text-decoration-none" title="{{ top2.nome }}">
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top2.nome) }}"
+                            class="podium-name text-decoration-none" title="{{ top2.nome }}">
                             {{ top2.nome }}
                         </a>
-                        <div class="podium-points">{{ top2.pontos }} pts &bull; {{ '%.1f'|format(top2.win_rate) }}% WR</div>
+                        <div class="podium-points">{{ top2.pontos }} pts &bull; {{ '%.1f'|format(top2.win_rate) }}% WR
+                        </div>
                         <div class="podium-pillar">
                             <span class="podium-rank-badge text-muted">2º</span>
                         </div>
@@ -197,10 +203,12 @@
                     <!-- 1º Colocado (Campeão) -->
                     <div class="podium-slot podium-slot-1">
                         <div class="podium-avatar">🥇</div>
-                        <a href="{{ url_for('public.dashboard_duelista', nome=top1.nome) }}" class="podium-name text-decoration-none" title="{{ top1.nome }}">
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top1.nome) }}"
+                            class="podium-name text-decoration-none" title="{{ top1.nome }}">
                             {{ top1.nome }}
                         </a>
-                        <div class="podium-points">{{ top1.pontos }} pts &bull; {{ '%.1f'|format(top1.win_rate) }}% WR</div>
+                        <div class="podium-points">{{ top1.pontos }} pts &bull; {{ '%.1f'|format(top1.win_rate) }}% WR
+                        </div>
                         <div class="podium-pillar">
                             <span class="podium-rank-badge text-warning"><i class="fas fa-crown me-1"></i>1º</span>
                         </div>
@@ -209,10 +217,12 @@
                     <!-- 3º Colocado -->
                     <div class="podium-slot podium-slot-3">
                         <div class="podium-avatar">🥉</div>
-                        <a href="{{ url_for('public.dashboard_duelista', nome=top3.nome) }}" class="podium-name text-decoration-none" title="{{ top3.nome }}">
+                        <a href="{{ url_for('public.dashboard_duelista', nome=top3.nome) }}"
+                            class="podium-name text-decoration-none" title="{{ top3.nome }}">
                             {{ top3.nome }}
                         </a>
-                        <div class="podium-points">{{ top3.pontos }} pts &bull; {{ '%.1f'|format(top3.win_rate) }}% WR</div>
+                        <div class="podium-points">{{ top3.pontos }} pts &bull; {{ '%.1f'|format(top3.win_rate) }}% WR
+                        </div>
                         <div class="podium-pillar">
                             <span class="podium-rank-badge text-danger">3º</span>
                         </div>
@@ -234,7 +244,8 @@
                                     <th class="text-center" title="Número de participações">Partic.</th>
                                     <th class="text-center" title="Número de Top Cuts">Top Cut</th>
                                     <th class="text-center" title="Títulos conquistados">Títulos</th>
-                                    <th class="text-center" title="Taxa de conversão Top Cut → Título">Conv. Top→Tít.</th>
+                                    <th class="text-center" title="Taxa de conversão Top Cut → Título">Conv. Top→Tít.
+                                    </th>
                                     <th class="text-center" style="width: 50px;">Perfil</th>
                                 </tr>
                             </thead>
@@ -254,12 +265,14 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="text-decoration-none text-dark fw-bold">
+                                        <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}"
+                                            class="text-decoration-none text-dark fw-bold">
                                             {{ duelista.nome }}
                                         </a>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-warning text-dark fw-bold {% if max_pontos > 0 and duelista.pontos == max_pontos %}badge-record{% endif %}">
+                                        <span
+                                            class="badge bg-warning text-dark fw-bold {% if max_pontos > 0 and duelista.pontos == max_pontos %}badge-record{% endif %}">
                                             {{ duelista.pontos }} pts
                                         </span>
                                     </td>
@@ -272,10 +285,12 @@
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <div class="win-rate-indicator">
                                                 <div class="win-rate-track">
-                                                    <div class="win-rate-fill" style="width: {{ duelista.win_rate }}%;"></div>
+                                                    <div class="win-rate-fill" style="width: {{ duelista.win_rate }}%;">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <span class="fw-bold text-success small {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}badge-record px-1 rounded{% endif %}">
+                                            <span
+                                                class="fw-bold text-success small {% if max_win_rate > 0 and duelista.win_rate == max_win_rate %}badge-record px-1 rounded{% endif %}">
                                                 {{ '%.1f'|format(duelista.win_rate) }}%
                                             </span>
                                         </div>
@@ -284,7 +299,8 @@
                                         <span class="text-secondary fw-semibold">{{ duelista.participacao }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="fw-bold {% if duelista.tops > 0 %}text-warning{% else %}text-muted{% endif %}">
+                                        <span
+                                            class="fw-bold {% if duelista.tops > 0 %}text-warning{% else %}text-muted{% endif %}">
                                             {{ duelista.tops }}
                                         </span>
                                     </td>
@@ -302,10 +318,13 @@
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <div class="conversion-indicator">
                                                 <div class="conversion-track">
-                                                    <div class="conversion-fill" style="width: {{ duelista.taxa_conversao_top_titulo }}%;"></div>
+                                                    <div class="conversion-fill"
+                                                        style="width: {{ duelista.taxa_conversao_top_titulo }}%;"></div>
                                                 </div>
                                             </div>
-                                            <span class="fw-bold small {% if duelista.taxa_conversao_top_titulo > 0 %}text-warning{% else %}text-muted{% endif %}" title="{{ duelista.campeonatos }} título(s) em {{ duelista.tops }} Top Cut(s)">
+                                            <span
+                                                class="fw-bold small {% if duelista.taxa_conversao_top_titulo > 0 %}text-warning{% else %}text-muted{% endif %}"
+                                                title="{{ duelista.campeonatos }} título(s) em {{ duelista.tops }} Top Cut(s)">
                                                 {{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%
                                             </span>
                                         </div>
@@ -344,7 +363,8 @@
                                 {% else %}
                                 <span class="badge bg-dark">{{ duelista.posicao_ranking }}º</span>
                                 {% endif %}
-                                <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}" class="mobile-card-title text-decoration-none">
+                                <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}"
+                                    class="mobile-card-title text-decoration-none">
                                     {{ duelista.nome }}
                                 </a>
                             </div>
@@ -356,12 +376,14 @@
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">V / D</span>
                                 <span class="mobile-stat-value">
-                                    <span class="text-success">{{ duelista.vitorias }}</span>/<span class="text-danger">{{ duelista.derrotas }}</span>
+                                    <span class="text-success">{{ duelista.vitorias }}</span>/<span
+                                        class="text-danger">{{ duelista.derrotas }}</span>
                                 </span>
                             </div>
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Win Rate</span>
-                                <span class="mobile-stat-value value-success">{{ '%.1f'|format(duelista.win_rate) }}%</span>
+                                <span class="mobile-stat-value value-success">{{ '%.1f'|format(duelista.win_rate)
+                                    }}%</span>
                             </div>
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Partic.</span>
@@ -378,7 +400,8 @@
                             <div class="mobile-stat-item">
                                 <span class="mobile-stat-label">Conv. Top</span>
                                 {% if duelista.tops > 0 %}
-                                <span class="mobile-stat-value">{{ '%.1f'|format(duelista.taxa_conversao_top_titulo) }}%</span>
+                                <span class="mobile-stat-value">{{ '%.1f'|format(duelista.taxa_conversao_top_titulo)
+                                    }}%</span>
                                 {% else %}
                                 <span class="mobile-stat-value text-muted">&mdash;</span>
                                 {% endif %}
@@ -392,7 +415,8 @@
                 <div id="empty-state-filtro" class="text-center py-5 d-none">
                     <i class="fas fa-search-minus fa-3x text-muted mb-3 opacity-50"></i>
                     <h6 class="text-muted fw-bold">Nenhum duelista encontrado com os filtros atuais</h6>
-                    <p class="text-muted small mb-3">Tente buscar por outro termo ou reduza a quantidade mínima de partidas.</p>
+                    <p class="text-muted small mb-3">Tente buscar por outro termo ou reduza a quantidade mínima de
+                        partidas.</p>
                     <button type="button" class="btn btn-sm btn-outline-primary" onclick="limparFiltrosDashboard()">
                         <i class="fas fa-rotate-left me-1"></i> Redefinir Busca
                     </button>
@@ -412,13 +436,17 @@
 <div class="row mt-3">
     <div class="col-12">
         <small class="text-muted">
-            Fórmulas: Pontos = (Vitórias × 3) + Participações (Double Loss equivale a 0 pts). Win Rate = Vitórias / Partidas. Conv. Top→Tít. = Títulos / Top Cuts.
+            Fórmulas:
+            <br>• Pontos = (Vitórias × 3) + Participações.
+            <br>• Win Rate = Vitórias / Partidas.
+            <br>• Conv. Top→Tít. = Títulos / Top Cuts.
         </small>
     </div>
 </div>
 
 <!-- Modal de Compartilhamento do Ranking -->
-<div class="modal fade" id="modalShareRanking" tabindex="-1" aria-labelledby="modalShareRankingLabel" aria-hidden="true">
+<div class="modal fade" id="modalShareRanking" tabindex="-1" aria-labelledby="modalShareRankingLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header">
@@ -430,31 +458,34 @@
             <div class="modal-body p-3 p-md-4 text-center">
                 <!-- Cartão que será renderizado como Imagem -->
                 <div id="ranking-share-card" class="ranking-share-card text-start">
-                    <div class="ranking-card-header d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div
+                        class="ranking-card-header d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
                         <div class="d-flex align-items-center gap-3">
                             <div class="ranking-trophy-icon">
                                 <i class="fas fa-trophy text-warning fs-3"></i>
                             </div>
                             <div>
                                 <h5 class="mb-0 fw-bold text-white tracking-wide">Liga YGO Marabá</h5>
-                                <div class="text-warning text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                <div class="text-warning text-uppercase fw-semibold"
+                                    style="font-size: 0.75rem; letter-spacing: 0.5px;">
                                     {{ nome_temporada_atual }}
                                 </div>
                             </div>
                         </div>
                         <div class="text-end">
-                            <span class="badge bg-warning text-dark fw-bold px-2 py-1 mb-1 d-inline-block" style="font-size: 0.75rem;">
+                            <span class="badge bg-warning text-dark fw-bold px-2 py-1 mb-1 d-inline-block"
+                                style="font-size: 0.75rem;">
                                 <i class="fas fa-crown me-1"></i>Ranking Geral
                             </span>
                             <div class="text-white-50" style="font-size: 0.7rem;">
                                 {% if data_inicio and data_fim %}
-                                    {{ data_inicio }} a {{ data_fim }}
+                                {{ data_inicio }} a {{ data_fim }}
                                 {% elif data_inicio %}
-                                    A partir de {{ data_inicio }}
+                                A partir de {{ data_inicio }}
                                 {% elif data_fim %}
-                                    Até {{ data_fim }}
+                                Até {{ data_fim }}
                                 {% else %}
-                                    Ranking Oficial
+                                Ranking Oficial
                                 {% endif %}
                             </div>
                         </div>
@@ -475,7 +506,8 @@
                             </thead>
                             <tbody>
                                 {% for duelista in dashboard.duelistas %}
-                                <tr class="ranking-share-row {% if duelista.posicao_ranking == 1 %}ranking-row-gold{% elif duelista.posicao_ranking == 2 %}ranking-row-silver{% elif duelista.posicao_ranking == 3 %}ranking-row-bronze{% endif %}">
+                                <tr
+                                    class="ranking-share-row {% if duelista.posicao_ranking == 1 %}ranking-row-gold{% elif duelista.posicao_ranking == 2 %}ranking-row-silver{% elif duelista.posicao_ranking == 3 %}ranking-row-bronze{% endif %}">
                                     <td class="text-center">
                                         {% if duelista.posicao_ranking == 1 %}
                                         <span class="ranking-pos-badge pos-1">🥇 1º</span>
@@ -491,13 +523,17 @@
                                         <span class="ranking-player-name fw-bold">{{ duelista.nome }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="ranking-pts-badge fw-bold">{{ duelista.pontos }} <small>pts</small></span>
+                                        <span class="ranking-pts-badge fw-bold">{{ duelista.pontos }}
+                                            <small>pts</small></span>
                                     </td>
                                     <td class="text-center ranking-record-cell">
-                                        <span class="text-success fw-bold">{{ duelista.vitorias }}</span><span class="text-white-50 mx-1">/</span><span class="text-danger fw-bold">{{ duelista.derrotas }}</span>
+                                        <span class="text-success fw-bold">{{ duelista.vitorias }}</span><span
+                                            class="text-white-50 mx-1">/</span><span class="text-danger fw-bold">{{
+                                            duelista.derrotas }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="fw-bold text-success">{{ '%.1f'|format(duelista.win_rate) }}%</span>
+                                        <span class="fw-bold text-success">{{ '%.1f'|format(duelista.win_rate)
+                                            }}%</span>
                                     </td>
                                     <td class="text-center">
                                         {% if duelista.campeonatos > 0 %}
@@ -519,7 +555,8 @@
                     </div>
                     {% endif %}
 
-                    <div class="ranking-card-footer d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                    <div
+                        class="ranking-card-footer d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
                         <small class="text-white-50" style="font-size: 0.75rem;">
                             <i class="fas fa-shield-halved me-1 text-warning"></i>TCG Marabá &bull; Ranking Oficial
                         </small>
@@ -534,7 +571,8 @@
                     <button type="button" class="btn btn-primary px-4" id="btn-download-share-ranking">
                         <i class="fas fa-download me-1"></i> Baixar Imagem do Ranking
                     </button>
-                    <button type="button" class="btn btn-outline-success px-4 btn-share-action" id="btn-share-ranking-action">
+                    <button type="button" class="btn btn-outline-success px-4 btn-share-action"
+                        id="btn-share-ranking-action">
                         <i class="fas fa-share-nodes me-1"></i> Compartilhar Imagem
                     </button>
                 </div>
@@ -609,7 +647,7 @@
 
         const btnDownloadRanking = document.getElementById('btn-download-share-ranking');
         if (btnDownloadRanking) {
-            btnDownloadRanking.addEventListener('click', function() {
+            btnDownloadRanking.addEventListener('click', function () {
                 YGOUtils.baixarElementoComoImagem({
                     cardEl: 'ranking-share-card',
                     filename: 'ranking-liga-ygo.png',
@@ -621,19 +659,20 @@
 
         const btnShareRankingAction = document.getElementById('btn-share-ranking-action');
         if (btnShareRankingAction) {
-            btnShareRankingAction.addEventListener('click', function() {
-                const seasonName = {{ nome_temporada_atual|tojson }};
-                const url = window.location.href;
-                YGOUtils.compartilharElementoComoImagem({
-                    cardEl: 'ranking-share-card',
-                    filename: 'ranking-liga-ygo.png',
-                    title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
-                    text: `Confira o ranking completo em:\n${url}`,
-                    url: url,
-                    modalId: 'modalShareRanking',
-                    triggerBtn: this
-                });
-            });
+            btnShareRankingAction.addEventListener('click', function () {
+                const seasonName = {{ nome_temporada_atual| tojson
+            }};
+        const url = window.location.href;
+        YGOUtils.compartilharElementoComoImagem({
+            cardEl: 'ranking-share-card',
+            filename: 'ranking-liga-ygo.png',
+            title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
+            text: `Confira o ranking completo em:\n${url}`,
+            url: url,
+            modalId: 'modalShareRanking',
+            triggerBtn: this
+        });
+    });
         }
     }
 </script>
