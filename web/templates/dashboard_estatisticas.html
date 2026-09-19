@@ -350,11 +350,6 @@
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-warning text-dark fw-bold">{{ duelista.pontos }} pts</span>
-                                <a href="{{ url_for('public.dashboard_duelista', nome=duelista.nome) }}"
-                                    class="btn-mobile-action"
-                                    title="Ver Perfil" aria-label="Perfil de {{ duelista.nome }}">
-                                    <i class="fas fa-user"></i>
-                                </a>
                             </div>
                         </div>
                         <div class="mobile-stats-grid">
@@ -423,15 +418,6 @@
 </div>
 
 <!-- Modal de Compartilhamento do Ranking -->
-{% set ns_temp = namespace(nome='Geral (All-time)') %}
-{% if temporada_atual != 'geral' %}
-    {% for temp in temporadas %}
-        {% if temporada_atual == temp.id|string %}
-            {% set ns_temp.nome = temp.nome %}
-        {% endif %}
-    {% endfor %}
-{% endif %}
-
 <div class="modal fade" id="modalShareRanking" tabindex="-1" aria-labelledby="modalShareRankingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content border-0 shadow-lg">
@@ -452,7 +438,7 @@
                             <div>
                                 <h5 class="mb-0 fw-bold text-white tracking-wide">Liga YGO Marabá</h5>
                                 <div class="text-warning text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                                    {{ ns_temp.nome }}
+                                    {{ nome_temporada_atual }}
                                 </div>
                             </div>
                         </div>
@@ -624,145 +610,29 @@
         const btnDownloadRanking = document.getElementById('btn-download-share-ranking');
         if (btnDownloadRanking) {
             btnDownloadRanking.addEventListener('click', function() {
-                const cardEl = document.getElementById('ranking-share-card');
-                if (!cardEl) return;
-                btnDownloadRanking.disabled = true;
-                btnDownloadRanking.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Gerando imagem...';
-
-                html2canvas(cardEl, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: null,
-                    scrollY: 0,
-                    scrollX: 0,
-                    windowWidth: cardEl.scrollWidth,
-                    windowHeight: cardEl.scrollHeight,
-                    onclone: (clonedDoc) => {
-                        const modalEl = clonedDoc.getElementById('modalShareRanking');
-                        if (modalEl) {
-                            modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
-                                el.style.maxHeight = 'none';
-                                el.style.overflow = 'visible';
-                                el.style.height = 'auto';
-                            });
-                        }
-                    }
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'ranking-liga-ygo.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-
-                    btnDownloadRanking.disabled = false;
-                    btnDownloadRanking.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Ranking';
-                }).catch(err => {
-                    console.error(err);
-                    btnDownloadRanking.disabled = false;
-                    btnDownloadRanking.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Ranking';
-                    alert('Não foi possível gerar a imagem.');
+                YGOUtils.baixarElementoComoImagem({
+                    cardEl: 'ranking-share-card',
+                    filename: 'ranking-liga-ygo.png',
+                    modalId: 'modalShareRanking',
+                    triggerBtn: this
                 });
             });
         }
 
         const btnShareRankingAction = document.getElementById('btn-share-ranking-action');
         if (btnShareRankingAction) {
-            btnShareRankingAction.addEventListener('click', async function() {
-                const rankingCard = document.getElementById('ranking-share-card');
-                if (!rankingCard) return;
-
-                btnShareRankingAction.disabled = true;
-                const originalHtml = btnShareRankingAction.innerHTML;
-                btnShareRankingAction.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Preparando imagem...';
-
-                try {
-                    const url = window.location.href;
-                    {% set ns_temp_script = namespace(nome='Geral (All-time)') %}
-                    {% if temporada_atual != 'geral' %}
-                        {% for temp in temporadas %}
-                            {% if temporada_atual == temp.id|string %}
-                                {% set ns_temp_script.nome = temp.nome %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                    const seasonName = {{ ns_temp_script.nome|tojson }};
-                    const msg = `Confira o ranking completo em:\n${url}`;
-
-                    const canvas = await html2canvas(rankingCard, {
-                        scale: 2,
-                        useCORS: true,
-                        backgroundColor: '#111827',
-                        onclone: (clonedDoc) => {
-                            const modalEl = clonedDoc.getElementById('modalShareRanking');
-                            if (modalEl) {
-                                modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
-                                    el.style.maxHeight = 'none';
-                                    el.style.overflow = 'visible';
-                                    el.style.height = 'auto';
-                                });
-                            }
-                        }
-                    });
-
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    if (!blob) throw new Error('Não foi possível gerar a imagem.');
-
-                    const filename = 'ranking-liga-ygo.png';
-                    const file = new File([blob], filename, { type: 'image/png' });
-
-                    // 1. Tenta compartilhar via Web Share API com anexo de arquivo
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
-                                text: msg,
-                                files: [file]
-                            });
-                            return;
-                        } catch (shareErr) {
-                            if (shareErr.name === 'AbortError') return;
-                            console.warn('Web Share com arquivos falhou:', shareErr);
-                        }
-                    }
-
-                    // 2. Se não puder compartilhar arquivos, mas suportar Web Share de texto/link
-                    if (navigator.share) {
-                        try {
-                            const link = document.createElement('a');
-                            link.download = filename;
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-
-                            await navigator.share({
-                                title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
-                                text: `${msg}\n(A imagem do ranking foi salva em seus downloads!)`,
-                                url: url
-                            });
-                            return;
-                        } catch (shareErr) {
-                            if (shareErr.name === 'AbortError') return;
-                        }
-                    }
-
-                    // 3. Fallback para navegador sem Web Share (ex: desktop sem suporte)
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-
-                    if (navigator.clipboard && window.ClipboardItem) {
-                        try {
-                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                        } catch (e) {}
-                    }
-
-                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-                } catch (err) {
-                    console.error('Erro ao compartilhar:', err);
-                    alert('Não foi possível gerar a imagem para compartilhamento.');
-                } finally {
-                    btnShareRankingAction.disabled = false;
-                    btnShareRankingAction.innerHTML = originalHtml;
-                }
+            btnShareRankingAction.addEventListener('click', function() {
+                const seasonName = {{ nome_temporada_atual|tojson }};
+                const url = window.location.href;
+                YGOUtils.compartilharElementoComoImagem({
+                    cardEl: 'ranking-share-card',
+                    filename: 'ranking-liga-ygo.png',
+                    title: `Ranking Oficial - Liga YGO Marabá (${seasonName})`,
+                    text: `Confira o ranking completo em:\n${url}`,
+                    url: url,
+                    modalId: 'modalShareRanking',
+                    triggerBtn: this
+                });
             });
         }
     }

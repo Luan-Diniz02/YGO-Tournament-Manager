@@ -47,8 +47,6 @@
                     </div>
                 </form>
             </div>
-            
-            {% if dados.conquistas or true %}
             <div class="card-body py-2 pt-0">
                 {% if dados.conquistas %}
                 <div class="d-flex flex-wrap gap-2 mb-2">
@@ -68,7 +66,6 @@
                     </button>
                 </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -270,14 +267,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                {% set ns_temp = namespace(nome='Geral (All-time)') %}
-                {% if temporada_atual != 'geral' %}
-                    {% for temp in temporadas %}
-                        {% if temporada_atual == temp.id|string %}
-                            {% set ns_temp.nome = temp.nome %}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
                 <!-- Cartão que será renderizado como Imagem -->
                 <div id="duelista-share-card" class="share-card-preview text-start mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -286,7 +275,7 @@
                             <div>
                                 <h6 class="mb-0 fw-bold text-white">Liga YGO Marabá</h6>
                                 <small class="text-warning text-uppercase fw-semibold" style="font-size: 0.65rem;">
-                                    {{ ns_temp.nome }} &bull; Duelist Card
+                                    {{ nome_temporada_atual }} &bull; Duelist Card
                                 </small>
                             </div>
                         </div>
@@ -560,107 +549,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = new bootstrap.Modal(modalEl);
         btnShare.addEventListener('click', () => modal.show());
 
+        const cleanName = ("{{ dados.duelista.nome }}".toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) || 'duelista';
+        const cardFilename = `card-duelista-${cleanName}.png`;
+
         const btnDownload = document.getElementById('btn-download-share-card');
         if (btnDownload) {
             btnDownload.addEventListener('click', function() {
-                const cardEl = document.getElementById('duelista-share-card');
-                btnDownload.disabled = true;
-                btnDownload.innerHTML = '<span class="loading"></span> Gerando imagem...';
-
-                html2canvas(cardEl, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
-                    const cleanName = ("{{ dados.duelista.nome }}".toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) || 'duelista';
-                    const link = document.createElement('a');
-                    link.download = `card-duelista-${cleanName}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-
-                    btnDownload.disabled = false;
-                    btnDownload.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Card';
-                }).catch(() => {
-                    btnDownload.disabled = false;
-                    btnDownload.innerHTML = '<i class="fas fa-download me-1"></i> Baixar Imagem do Card';
-                    alert('Não foi possível gerar a imagem.');
+                YGOUtils.baixarElementoComoImagem({
+                    cardEl: 'duelista-share-card',
+                    filename: cardFilename,
+                    modalId: 'modalShareDuelista',
+                    triggerBtn: this
                 });
             });
         }
 
         const btnShareAction = document.getElementById('btn-share-card-action');
         if (btnShareAction) {
-            btnShareAction.addEventListener('click', async function() {
-                const cardEl = document.getElementById('duelista-share-card');
-                if (!cardEl) return;
-
-                btnShareAction.disabled = true;
-                const originalHtml = btnShareAction.innerHTML;
-                btnShareAction.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Preparando imagem...';
-
-                try {
-                    const cleanName = ("{{ dados.duelista.nome }}".toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) || 'duelista';
-                    const filename = `card-duelista-${cleanName}.png`;
-                    const url = window.location.href;
-                    const text = `Confira o Card Oficial e as estatísticas de {{ dados.duelista.nome }} na Liga YGO Marabá!`;
-
-                    const canvas = await html2canvas(cardEl, { scale: 2, useCORS: true, backgroundColor: null });
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    if (!blob) throw new Error('Não foi possível gerar a imagem.');
-
-                    const file = new File([blob], filename, { type: 'image/png' });
-                    const fullText = `${text}\n${url}`;
-
-                    // 1. Tenta compartilhar via Web Share API com anexo de arquivo
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                title: 'Card de Duelista - {{ dados.duelista.nome }}',
-                                text: fullText,
-                                files: [file]
-                            });
-                            return;
-                        } catch (shareErr) {
-                            if (shareErr.name === 'AbortError') return;
-                            console.warn('Web Share com arquivos falhou:', shareErr);
-                        }
-                    }
-
-                    // 2. Se não puder compartilhar arquivos, mas suportar Web Share de texto/link
-                    if (navigator.share) {
-                        try {
-                            const link = document.createElement('a');
-                            link.download = filename;
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-
-                            await navigator.share({
-                                title: 'Card de Duelista - {{ dados.duelista.nome }}',
-                                text: `${fullText}\n(A imagem do card foi salva em seus downloads!)`,
-                                url: url
-                            });
-                            return;
-                        } catch (shareErr) {
-                            if (shareErr.name === 'AbortError') return;
-                        }
-                    }
-
-                    // 3. Fallback para navegador sem Web Share (ex: desktop sem suporte)
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-
-                    if (navigator.clipboard && window.ClipboardItem) {
-                        try {
-                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                        } catch (e) {}
-                    }
-
-                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`, '_blank');
-                } catch (err) {
-                    console.error('Erro ao compartilhar:', err);
-                    alert('Não foi possível gerar a imagem para compartilhamento.');
-                } finally {
-                    btnShareAction.disabled = false;
-                    btnShareAction.innerHTML = originalHtml;
-                }
+            btnShareAction.addEventListener('click', function() {
+                YGOUtils.compartilharElementoComoImagem({
+                    cardEl: 'duelista-share-card',
+                    filename: cardFilename,
+                    title: 'Card de Duelista - {{ dados.duelista.nome }}',
+                    text: 'Confira o Card Oficial e as estatísticas de {{ dados.duelista.nome }} na Liga YGO Marabá!',
+                    url: window.location.href,
+                    modalId: 'modalShareDuelista',
+                    triggerBtn: this
+                });
             });
         }
     }

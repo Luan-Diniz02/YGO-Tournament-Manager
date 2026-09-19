@@ -173,17 +173,6 @@ class Conexao:
         finally:
             conexao.close()
 
-    def encontrar_duelista(self, nome):
-        conexao = self.conectar_bd()
-        try:
-            cursor = conexao.cursor()
-            sql = "SELECT * FROM duelistas WHERE nome = %s"
-            cursor.execute(sql, (nome,))
-            duelista = cursor.fetchone()
-            return duelista
-        finally:
-            conexao.close()
-
     def listar_duelistas(self, incluir_inativos=False):
         def executar_consulta():
             conexao = self.conectar_bd()
@@ -277,43 +266,6 @@ class Conexao:
                 cursor.close()
             if 'conexao' in locals() and conexao.is_connected():
                 conexao.close()
-
-    def atualizar_bd(self, lista_duelistas):
-        if not lista_duelistas:
-            return
-
-        conexao = self.conectar_bd()
-        try:
-            cursor = conexao.cursor()
-
-            # Prepara os dados para inserção em lote
-            valores = [
-                (d.nome, d.vitorias, d.derrotas, d.empates, d.participacao, d.pontos)
-                for d in lista_duelistas
-            ]
-
-            # O MySQL suporta o comando 'ON DUPLICATE KEY UPDATE'. Se o nome existir (presumindo que seja UNIQUE PRIMARY KEY),
-            # ele apenas atualiza; se não existir, ele insere o novo. Isso resolve dezenas de instâncias com apenas 1 query.
-            sql = """
-                INSERT INTO duelistas (nome, vitorias, derrotas, empates, participacao, pontos)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE
-                    vitorias = VALUES(vitorias),
-                    derrotas = VALUES(derrotas),
-                    empates = VALUES(empates),
-                    participacao = VALUES(participacao),
-                    pontos = VALUES(pontos)
-            """
-            
-            cursor.executemany(sql, valores)
-            conexao.commit()
-            
-        except Exception as e:
-            conexao.rollback()
-            print(f"Erro ao atualizar BD: {e}")
-            raise e
-        finally:
-            conexao.close()
 
     def listar_torneios(self, temporada_id=None):
         """
@@ -484,6 +436,25 @@ class Conexao:
             raise
             
     def adicionar_participante_torneio(self, torneio_id, nome, vitorias, derrotas, empates, topou_torneio=False, colocacao_top=None):
+        """
+        Registra ou atualiza a participação e desempenho de um duelista em um torneio específico.
+
+        Arquitetura de Dados e Cálculo de Pontos:
+        - Granularidade Primária (`torneio_participantes`): Cada registro nesta tabela representa
+          o histórico detalhado do duelista em um evento específico, com a pontuação calculada por:
+              pontos_torneio = (vitorias * 3) + empates + 1
+          onde cada vitória concede 3 pontos, empates concedem 1 ponto e +1 ponto representa
+          o incentivo de participação no torneio.
+        - Snapshot Agregado (`duelistas`): A tabela `duelistas` atua como uma visão materializada
+          consolidada com o somatório de vitórias, derrotas, empates, participações e pontos totais:
+              pontos = (vitorias * 3) + empates + participacao
+        - Sincronização Incremental:
+          * Novo participante no torneio: insere em `torneio_participantes` e incrementa
+            os totais na tabela `duelistas` (+vitorias, +derrotas, +empates, +1 participacao, +pontos_torneio).
+          * Atualização/Edição de participante existente: atualiza `torneio_participantes` e reflete
+            apenas o delta/diferença na tabela `duelistas`, preservando a consistência dos dados
+            sem necessidade de recálculo em massa de todo o histórico.
+        """
         def executar_operacao():
             conexao = self.conectar_bd()
             try:
@@ -580,6 +551,24 @@ class Conexao:
             raise
 
     def obter_estatisticas_dashboard(self, incluir_inativos=False, temporada_id=None, data_inicio=None, data_fim=None):
+        """
+        Retorna estatísticas consolidadas e o ranking para exibição no dashboard principal.
+
+        Arquitetura de Dados e Cálculo de Pontos:
+        - Visão Geral (`is_geral`):
+          Utiliza a tabela `duelistas` como snapshot agregado pré-calculado
+          (pontos = (vitorias * 3) + empates + participacao), otimizando a performance
+          de consultas globais sem a necessidade de agregação dinâmica de todos os eventos.
+        - Visão Filtrada (por Temporada ou Intervalo de Datas):
+          Recorre à granularidade primária `torneio_participantes`, agrupando os torneios
+          do filtro correspondente. Os pontos são calculados dinamicamente via
+          `COALESCE(SUM(tp_f.pontos_obtidos), 0) AS pontos`, onde cada evento segue rigorosamente
+          a fórmula oficial `pontos_torneio = (vitorias * 3) + empates + 1`.
+        - Critérios de Desempate no Ranking:
+          1º Pontos (decrescente)
+          2º Derrotas (crescente)
+          3º Nome (alfabético/case-insensitive)
+        """
         def percentual(numerador, denominador):
             if not denominador:
                 return 0.0
@@ -768,6 +757,25 @@ class Conexao:
             raise
 
     def obter_estatisticas_duelista(self, nome_duelista, temporada_id=None, data_inicio=None, data_fim=None):
+        """
+        Retorna as métricas detalhadas, ranking relativo e histórico cronológico de um duelista.
+
+        Arquitetura de Dados e Cálculo de Pontos:
+        - Granularidade Primária e Histórico:
+          O histórico detalhado de participações é recuperado a partir de `torneio_participantes`,
+          onde cada evento reflete o desempenho e a pontuação obtida:
+              pontos_torneio = (vitorias * 3) + empates + 1
+        - Métricas Globais vs Filtradas:
+          * No modo geral (`is_geral`), as estatísticas consolidadas e a pontuação do duelista
+            provêm do snapshot agregado da tabela `duelistas` (pontos = vitorias * 3 + empates + participacao).
+          * No modo filtrado (por temporada ou período), os dados são totalizados via
+            `COALESCE(SUM(tp_f.pontos_obtidos), 0) AS pontos` sobre os eventos pertinentes.
+        - Posição no Ranking da Liga:
+          A colocação do duelista é determinada ordenando os concorrentes sob as mesmas regras:
+          1º Pontos (decrescente)
+          2º Derrotas (crescente)
+          3º Nome (alfabético/case-insensitive)
+        """
         def percentual(numerador, denominador):
             if not denominador:
                 return 0.0

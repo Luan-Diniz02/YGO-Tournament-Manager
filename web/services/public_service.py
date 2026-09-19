@@ -20,10 +20,6 @@ class PublicService:
             if conexao_bd:
                 conexao_bd.close()
 
-    def carregar_ranking(self):
-        duelistas = self.conexao.carregar_duelistas()
-        return self.ordenar_duelistas_para_rank(duelistas)
-
     def dashboard_default(self):
         return {
             'resumo': {

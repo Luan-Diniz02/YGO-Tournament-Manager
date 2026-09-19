@@ -157,25 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Dynamic table sorting (if needed)
-    function sortTable(table, column, ascending = true) {
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        
-        rows.sort((a, b) => {
-            const aVal = a.cells[column].textContent.trim();
-            const bVal = b.cells[column].textContent.trim();
-            
-            if (!isNaN(aVal) && !isNaN(bVal)) {
-                return ascending ? aVal - bVal : bVal - aVal;
-            }
-            
-            return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        });
-        
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
     // Toast notification system
     function showToast(message, type = 'info') {
         const toastContainer = getToastContainer();
@@ -310,27 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Print functionality
-    window.printRanking = function() {
-        window.print();
-    };
-
-    // Add print button if on ranking page
-    if (window.location.pathname.includes('ranking')) {
-        const cardFooter = document.querySelector('.card-footer .btn-group');
-        if (cardFooter) {
-            const printBtn = document.createElement('button');
-            printBtn.type = 'button';
-            printBtn.className = 'btn btn-outline-success';
-            printBtn.innerHTML = '<i class="fas fa-print"></i> Imprimir';
-            printBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.printRanking();
-            });
-            cardFooter.appendChild(printBtn);
-        }
-    }
-
     // Initialize tooltips and popovers
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -343,12 +303,217 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Expose useful functions globally
-    window.YGOUtils = {
-        showToast: showToast,
-        validateInput: validateInput,
-        sortTable: sortTable
-    };
+    window.YGOUtils = window.YGOUtils || {};
+    window.YGOUtils.showToast = showToast;
+    window.YGOUtils.validateInput = validateInput;
 });
+
+/**
+ * Utilitários de captura e exportação de imagem para Liga YGO Marabá
+ */
+async function baixarElementoComoImagem({
+    cardEl,
+    filename = 'imagem.png',
+    modalId = null,
+    triggerBtn = null,
+    backgroundColor = null,
+    loadingText = 'Gerando imagem...'
+} = {}) {
+    const targetEl = typeof cardEl === 'string' ? document.getElementById(cardEl) : cardEl;
+    if (!targetEl) {
+        console.error('Elemento não encontrado para baixar imagem:', cardEl);
+        return;
+    }
+
+    const btnEl = typeof triggerBtn === 'string' ? document.getElementById(triggerBtn) : triggerBtn;
+    let originalHtml = '';
+    if (btnEl) {
+        originalHtml = btnEl.innerHTML;
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> ${loadingText}`;
+    }
+
+    try {
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas não está carregado.');
+        }
+
+        const html2canvasOptions = {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: backgroundColor !== undefined ? backgroundColor : null,
+            scrollY: 0,
+            scrollX: 0
+        };
+
+        if (targetEl.scrollWidth && targetEl.scrollHeight) {
+            html2canvasOptions.windowWidth = targetEl.scrollWidth;
+            html2canvasOptions.windowHeight = targetEl.scrollHeight;
+        }
+
+        const cleanModalId = typeof modalId === 'string' ? modalId.replace(/^#/, '') : (modalId && modalId.id ? modalId.id : null);
+        if (cleanModalId) {
+            html2canvasOptions.onclone = (clonedDoc) => {
+                const modalEl = clonedDoc.getElementById(cleanModalId);
+                if (modalEl) {
+                    modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
+                        el.style.maxHeight = 'none';
+                        el.style.overflow = 'visible';
+                        el.style.height = 'auto';
+                    });
+                }
+            };
+        }
+
+        const canvas = await html2canvas(targetEl, html2canvasOptions);
+        const link = document.createElement('a');
+        link.download = filename || 'imagem.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (err) {
+        console.error('Erro ao gerar/baixar imagem:', err);
+        alert('Não foi possível gerar a imagem.');
+    } finally {
+        if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.innerHTML = originalHtml;
+        }
+    }
+}
+
+async function compartilharElementoComoImagem({
+    cardEl,
+    filename = 'compartilhamento.png',
+    title = 'Liga YGO Marabá',
+    text = '',
+    url = window.location.href,
+    modalId = null,
+    triggerBtn = null,
+    backgroundColor = null,
+    loadingText = 'Preparando imagem...'
+} = {}) {
+    const targetEl = typeof cardEl === 'string' ? document.getElementById(cardEl) : cardEl;
+    if (!targetEl) {
+        console.error('Elemento não encontrado para compartilhar:', cardEl);
+        return;
+    }
+
+    const btnEl = typeof triggerBtn === 'string' ? document.getElementById(triggerBtn) : triggerBtn;
+    let originalHtml = '';
+    if (btnEl) {
+        originalHtml = btnEl.innerHTML;
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> ${loadingText}`;
+    }
+
+    try {
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas não está carregado.');
+        }
+
+        const shareUrl = url || window.location.href;
+        let fullText = text || '';
+        if (shareUrl && !fullText.includes(shareUrl)) {
+            fullText = fullText ? `${fullText}\n${shareUrl}` : shareUrl;
+        }
+
+        const html2canvasOptions = {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: backgroundColor !== undefined ? backgroundColor : null,
+            scrollY: 0,
+            scrollX: 0
+        };
+
+        if (targetEl.scrollWidth && targetEl.scrollHeight) {
+            html2canvasOptions.windowWidth = targetEl.scrollWidth;
+            html2canvasOptions.windowHeight = targetEl.scrollHeight;
+        }
+
+        const cleanModalId = typeof modalId === 'string' ? modalId.replace(/^#/, '') : (modalId && modalId.id ? modalId.id : null);
+        if (cleanModalId) {
+            html2canvasOptions.onclone = (clonedDoc) => {
+                const modalEl = clonedDoc.getElementById(cleanModalId);
+                if (modalEl) {
+                    modalEl.querySelectorAll('.modal-dialog, .modal-content, .modal-body').forEach(el => {
+                        el.style.maxHeight = 'none';
+                        el.style.overflow = 'visible';
+                        el.style.height = 'auto';
+                    });
+                }
+            };
+        }
+
+        const canvas = await html2canvas(targetEl, html2canvasOptions);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Não foi possível gerar a imagem.');
+
+        const saveFilename = filename || 'compartilhamento.png';
+        const file = new File([blob], saveFilename, { type: 'image/png' });
+
+        // 1. Tenta compartilhar via Web Share API com anexo de arquivo
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: fullText,
+                    files: [file]
+                });
+                return;
+            } catch (shareErr) {
+                if (shareErr.name === 'AbortError') return;
+                console.warn('Web Share com arquivos falhou:', shareErr);
+            }
+        }
+
+        // 2. Se não puder compartilhar arquivos, mas suportar Web Share de texto/link
+        if (navigator.share) {
+            try {
+                const link = document.createElement('a');
+                link.download = saveFilename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                await navigator.share({
+                    title: title,
+                    text: `${fullText}\n(A imagem foi salva em seus downloads!)`,
+                    url: shareUrl
+                });
+                return;
+            } catch (shareErr) {
+                if (shareErr.name === 'AbortError') return;
+            }
+        }
+
+        // 3. Fallback para desktop sem suporte a Web Share (download + cópia para Clipboard + WhatsApp)
+        const link = document.createElement('a');
+        link.download = saveFilename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        if (navigator.clipboard && window.ClipboardItem) {
+            try {
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            } catch (e) {
+                // ClipboardItem pode não ser suportado ou rejeitado por permissão
+            }
+        }
+
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`, '_blank');
+    } catch (err) {
+        console.error('Erro ao compartilhar:', err);
+        alert('Não foi possível gerar a imagem para compartilhamento.');
+    } finally {
+        if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.innerHTML = originalHtml;
+        }
+    }
+}
+
+window.YGOUtils = window.YGOUtils || {};
+window.YGOUtils.baixarElementoComoImagem = baixarElementoComoImagem;
+window.YGOUtils.compartilharElementoComoImagem = compartilharElementoComoImagem;
 
 // Additional utilities
 function formatNumber(num) {

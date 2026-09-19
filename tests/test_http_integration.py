@@ -699,11 +699,17 @@ def test_dashboard_compartilhar_ranking(client, monkeypatch):
     assert 'id="btn-share-ranking-action"' in html
     assert 'Compartilhar Imagem' in html
 
-    # 5. Dependência html2canvas e lógica de download/share
+    # 5. Dependência html2canvas e lógica de download/share via YGOUtils
     assert 'html2canvas@1.4.1/dist/html2canvas.min.js' in html
     assert 'ranking-liga-ygo.png' in html
-    assert 'navigator.share' in html
-    assert 'api.whatsapp.com/send?text=' in html
+    assert 'YGOUtils.baixarElementoComoImagem' in html
+    assert 'YGOUtils.compartilharElementoComoImagem' in html
+
+    js_resp = client.get('/static/js/script.js')
+    assert js_resp.status_code == 200
+    js = js_resp.get_data(as_text=True)
+    assert 'navigator.share' in js
+    assert 'api.whatsapp.com/send?text=' in js
 
 
 def test_dashboard_compartilhar_ranking_com_mais_de_dez_duelistas(client, monkeypatch):
@@ -836,3 +842,79 @@ def test_modais_confirmacao_admin(client, monkeypatch):
     html_d = resp_d.get_data(as_text=True)
     assert 'id="confirmarExcluirDuelistaModal"' in html_d
     assert 'btn-excluir-duelista' in html_d
+
+
+def test_extrair_filtros_temporada():
+    from web.blueprints.public import _extrair_filtros_temporada
+
+    temporadas = [
+        {'id': 1, 'nome': 'Temporada 1'},
+        {'id': 2, 'nome': 'Temporada 2'},
+    ]
+
+    # Caso 1: Sem temporada passada, usa temp_ativa
+    tid, di, df, nome = _extrair_filtros_temporada({}, {'id': 1, 'nome': 'Temporada 1'}, temporadas)
+    assert tid == 1
+    assert di == ''
+    assert df == ''
+    assert nome == 'Temporada 1'
+
+    # Caso 2: Sem temporada e sem temp_ativa -> geral
+    tid, di, df, nome = _extrair_filtros_temporada({}, None, temporadas)
+    assert tid == 'geral'
+    assert nome == 'Geral (All-time)'
+
+    # Caso 3: Temporada especifica via args com datas
+    args = {'temporada': '2', 'data_inicio': '2026-01-01', 'data_fim': '2026-06-30'}
+    tid, di, df, nome = _extrair_filtros_temporada(args, {'id': 1}, temporadas)
+    assert tid == 2
+    assert di == '2026-01-01'
+    assert df == '2026-06-30'
+    assert nome == 'Temporada 2'
+
+    # Caso 4: 'geral' explicito
+    args = {'temporada': 'geral'}
+    tid, di, df, nome = _extrair_filtros_temporada(args, {'id': 1}, temporadas)
+    assert tid == 'geral'
+    assert nome == 'Geral (All-time)'
+
+    # Caso 5: Temporada invalida (string nao numerica) -> cai em geral
+    args = {'temporada': 'invalida'}
+    tid, di, df, nome = _extrair_filtros_temporada(args, {'id': 1}, temporadas)
+    assert tid == 'geral'
+    assert nome == 'Geral (All-time)'
+
+
+def test_dashboard_duelista_renderiza_nome_temporada_atual(client, monkeypatch):
+    mock_duelista = {
+        'duelista': {'nome': 'Yugi Muto', 'ativo': 1, 'pontos': 30, 'vitorias': 10, 'derrotas': 2, 'empates': 0, 'participacao': 5},
+        'resumo': {
+            'posicao_ranking': 1,
+            'pontos': 30,
+            'vitorias': 10,
+            'derrotas': 2,
+            'empates': 0,
+            'win_rate_geral': 83.33,
+            'participacao': 5,
+            'partidas_total': 12,
+            'tops': 4,
+            'campeonatos': 2,
+            'taxa_conversao_top_titulo': 50.0,
+            'qtd_torneios_historico': 5,
+        },
+        'conquistas': [],
+        'historico': [],
+    }
+    temporadas = [{'id': 1, 'nome': 'Temporada 2026', 'ativa': 1}]
+
+    monkeypatch.setattr(PublicService, 'carregar_dashboard_duelista', lambda self, *args, **kwargs: mock_duelista)
+    monkeypatch.setattr(PublicService, 'listar_temporadas', lambda self: temporadas)
+    monkeypatch.setattr(PublicService, 'obter_temporada_ativa', lambda self: temporadas[0])
+
+    resp = client.get('/dashboard/duelista/Yugi Muto?temporada=1')
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    assert 'id="duelista-share-card"' in html
+    assert 'Temporada 2026 &bull; Duelist Card' in html
+

@@ -174,3 +174,19 @@ def test_atualizar_duelista_sem_empates_moderno():
     assert duelista.derrotas == 2
     assert duelista.empates == 0
 
+
+def test_obter_duelista_por_nome_inclui_inativos():
+    service = AdminService(ConexaoFakeAdmin(), ordenar_duelistas)
+    yugi = service.obter_duelista_por_nome('Yugi')
+    assert yugi is not None
+    assert yugi.nome == 'Yugi'
+
+    kaiba = service.obter_duelista_por_nome('Kaiba')
+    assert kaiba is not None
+    assert kaiba.nome == 'Kaiba'
+    assert kaiba.ativo == 0
+
+    inexistente = service.obter_duelista_por_nome('Inexistente')
+    assert inexistente is None
+
+

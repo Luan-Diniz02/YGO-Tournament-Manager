@@ -2,6 +2,37 @@ from flask import Blueprint, flash, jsonify, redirect, render_template, url_for,
 from web.services.public_service import PublicService
 
 
+def _extrair_filtros_temporada(request_args, temp_ativa, temporadas):
+    """Extrai temporada_id, data_inicio, data_fim e nome_temporada_atual dos argumentos da requisicao."""
+    temporada_id = request_args.get('temporada')
+    if temporada_id is None:
+        if temp_ativa:
+            temporada_id = str(temp_ativa['id'] if isinstance(temp_ativa, dict) else getattr(temp_ativa, 'id', 'geral'))
+        else:
+            temporada_id = 'geral'
+
+    # Converte para int quando for numerico (garante branch correto no banco)
+    if temporada_id and temporada_id != 'geral':
+        try:
+            temporada_id = int(temporada_id)
+        except (ValueError, TypeError):
+            temporada_id = 'geral'
+
+    data_inicio = request_args.get('data_inicio') or ''
+    data_fim = request_args.get('data_fim') or ''
+
+    nome_temporada_atual = 'Geral (All-time)'
+    if temporada_id != 'geral':
+        str_temp_id = str(temporada_id)
+        for temp in (temporadas or []):
+            temp_id = temp['id'] if isinstance(temp, dict) else getattr(temp, 'id', None)
+            if str(temp_id) == str_temp_id:
+                nome_temporada_atual = temp['nome'] if isinstance(temp, dict) else getattr(temp, 'nome', 'Geral (All-time)')
+                break
+
+    return temporada_id, data_inicio, data_fim, nome_temporada_atual
+
+
 def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     public_bp = Blueprint('public', __name__)
     public_service = PublicService(conexao, ordenar_duelistas_para_rank)
@@ -28,21 +59,10 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     def dashboard_estatisticas():
         temporadas = public_service.listar_temporadas()
         temp_ativa = public_service.obter_temporada_ativa()
-        
-        # Padrão: temporada ativa
-        temporada_id = request.args.get('temporada')
-        if temporada_id is None:
-            temporada_id = str(temp_ativa['id']) if temp_ativa else 'geral'
 
-        # Converte para int quando for numérico (garante branch correto no banco)
-        if temporada_id and temporada_id != 'geral':
-            try:
-                temporada_id = int(temporada_id)
-            except (ValueError, TypeError):
-                temporada_id = 'geral'
-
-        data_inicio = request.args.get('data_inicio') or ''
-        data_fim = request.args.get('data_fim') or ''
+        temporada_id, data_inicio, data_fim, nome_temporada_atual = _extrair_filtros_temporada(
+            request.args, temp_ativa, temporadas
+        )
 
         dados_dashboard = public_service.dashboard_default()
         try:
@@ -60,6 +80,7 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
             dashboard=dados_dashboard,
             temporadas=temporadas,
             temporada_atual=str(temporada_id),
+            nome_temporada_atual=nome_temporada_atual,
             data_inicio=data_inicio,
             data_fim=data_fim
         )
@@ -68,20 +89,10 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     def dashboard_duelista(nome):
         temporadas = public_service.listar_temporadas()
         temp_ativa = public_service.obter_temporada_ativa()
-        
-        temporada_id = request.args.get('temporada')
-        if temporada_id is None:
-            temporada_id = str(temp_ativa['id']) if temp_ativa else 'geral'
 
-        # Converte para int quando for numérico (garante branch correto no banco)
-        if temporada_id and temporada_id != 'geral':
-            try:
-                temporada_id = int(temporada_id)
-            except (ValueError, TypeError):
-                temporada_id = 'geral'
-
-        data_inicio = request.args.get('data_inicio') or ''
-        data_fim = request.args.get('data_fim') or ''
+        temporada_id, data_inicio, data_fim, nome_temporada_atual = _extrair_filtros_temporada(
+            request.args, temp_ativa, temporadas
+        )
 
         try:
             dados_duelista = public_service.carregar_dashboard_duelista(
@@ -101,6 +112,7 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
             dados=dados_duelista,
             temporadas=temporadas,
             temporada_atual=str(temporada_id),
+            nome_temporada_atual=nome_temporada_atual,
             data_inicio=data_inicio,
             data_fim=data_fim
         )

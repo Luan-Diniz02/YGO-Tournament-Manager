@@ -71,7 +71,7 @@ class AdminService:
         }
 
     def obter_duelista_por_nome(self, nome):
-        lista_duelistas = self.conexao.carregar_duelistas()
+        lista_duelistas = self.conexao.carregar_duelistas(incluir_inativos=True)
         for duelista in lista_duelistas:
             if duelista.nome.casefold() == nome.casefold():
                 return duelista
