@@ -1,25 +1,44 @@
 # Liga YGO Marabá — Tournament Manager
 
-Aplicação web em Flask para gerenciamento de torneios de Yu-Gi-Oh!, com ranking unificado,
-perfis individuais de duelistas, painel por etapa, temporadas e área administrativa protegida.
+Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de torneios competitivos de Yu-Gi-Oh!, incluindo ranking unificado com pódio, métricas avançadas de desempenho, perfis individuais de duelistas, histórico detalhado de etapas, sistema de temporadas e painel administrativo protegido.
 
 ## Demo
 
-- Produção (Render): https://ygo-tournament-manager.onrender.com
-- Healthcheck: https://ygo-tournament-manager.onrender.com/health
+- **Produção (Render):** https://ygo-tournament-manager.onrender.com
+- **Healthcheck:** https://ygo-tournament-manager.onrender.com/health
 
 ---
 
 ## Principais Recursos
 
-- Cadastro e gerenciamento de etapas de torneio (com edição de nome, rodadas e data)
-- **Temporadas**: agrupamento de torneios em períodos competitivos com nome e datas
-- **Ranking unificado** com pontos, Win Rate, Top Cut, Títulos e conversão Top/Título
-- **Filtro de ranking por temporada**: cada temporada exibe apenas as estatísticas dos torneios que a compõem
-- **Perfil individual** por duelista: histórico por etapa, conquistas contextuais e métricas
-- Controle de Top Cut e colocação final por participante
-- Área administrativa com sessão, proteção CSRF e restrição por IP
-- Layout responsivo (desktop/mobile) com sistema de cards adaptativo
+### 🏆 Experiência Competitiva & Métricas
+- **Ranking Unificado:** Classificação atualizada por pontos, Vitórias/Derrotas, Win Rate, participações em Top Cut e número de títulos.
+- **Pódio Visual Interativo:** Destaque para o Top 3 com avatares estilizados, pilares comemorativos e insígnias metálicas (🥇 1º Ouro, 🥈 2º Prata e 🥉 3º Bronze).
+- **Indicadores Visuais de Desempenho:** Mini barras horizontais de progresso integradas para **Win Rate** e **Taxa de Conversão Top Cut → Título**.
+- **Perfil Individual do Duelista:**
+  - Histórico completo etapa a etapa (placar, rodadas, colocação no torneio e indicador de Top Cut).
+  - Gráfico em rosca de distribuição de partidas (Vitórias vs Derrotas).
+  - Gráfico de linha interativo da evolução cronológica de pontos por etapa, com datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
+  - Conquistas automáticas contextuais (*Líder do Ranking*, *Rei do Top Cut*, *Maior Campeão*, *Elite Win Rate*).
+- **Card Oficial do Duelista (Duelist Identity Card):** Cartão de identidade compartilhável com dados da temporada, métricas principais e insígnias, com exportação em imagem PNG em alta resolução (`html2canvas`) e botão direto para compartilhamento via WhatsApp.
+
+### 📅 Temporadas & Torneios
+- **Gerenciamento de Temporadas:** Agrupamento de torneios em períodos competitivos com data de início e fim.
+- **Filtro de Ranking por Temporada:** Subqueries otimizadas que omitem duelistas sem participações no período selecionado, exibindo apenas dados válidos para a temporada ativa ou All-Time.
+- **Vínculo Híbrido:** Torneios vinculados à temporada ativa por padrão, com flexibilidade para ajustes retroativos no painel administrativo.
+- **Exclusão Segura:** Desvinculação com chave estrangeira `ON DELETE SET NULL`, preservando o histórico geral dos torneios.
+
+### 🎨 Design System & Mobile First
+- **Suporte Nativo a Temas (Dark Mode & Light Mode):** Alternância instantânea com detecção automática da preferência do sistema operacional (`prefers-color-scheme`) e persistência em `localStorage`.
+- **Navegação Otimizada para Mobile:** Barra de navegação inferior (*bottom navigation bar*) com acesso rápido a Início, Ranking, Torneios, Menu Admin e Alternador de Tema.
+- **Admin Action Sheet (Offcanvas):** Menu flutuante moderno para administradores em smartphones, centralizando cadastros e gestão do sistema.
+- **Modais Harmonizados:** Janelas de criação e edição totalmente adaptadas aos temas claro e escuro, sem quebra de contraste ou estilos padrão de navegador.
+
+### 🔒 Segurança & Administração
+- Autenticação administrativa com sessão protegida e timeout.
+- Proteção contra ataques CSRF em todos os formulários e rotas com mutação de estado.
+- Restrição opcional de acesso por IP (`ADMIN_ALLOWED_IPS`).
+- Inicialização segura de banco de dados com migração de tabelas sob demanda.
 
 ---
 
@@ -27,54 +46,58 @@ perfis individuais de duelistas, painel por etapa, temporadas e área administra
 
 ```text
 ygo-tournament-manager/
-+-- core/
-|   +-- database_conexao.py   # Acesso a dados (MySQL) e lógica de query
-|   +-- models.py             # Dataclasses (Duelistas, etc.)
-+-- web/
-|   +-- app.py                # Entry point Flask
-|   +-- routes.py             # Registro de blueprints
-|   +-- auth.py               # Guard de autenticação admin
-|   +-- security.py           # CSRF, secret key, redirect seguro
-|   +-- blueprints/
-|   |   +-- admin.py          # Rotas administrativas (protegidas)
-|   |   +-- public.py         # Rotas públicas
-|   +-- services/
-|   |   +-- admin_service.py  # Regras de negócio admin
-|   |   +-- public_service.py # Regras de negócio públicas
-|   +-- templates/            # Jinja2 (ver docs/CONTEXT.md para mapa completo)
-|   +-- static/
-|       +-- css/style.css     # CSS global do projeto
-|       +-- js/script.js      # JS global (validações, confirmações, etc.)
-+-- docs/
-|   +-- CONTEXT.md            # Regras de UI/UX, arquitetura e decisões do projeto
-+-- scripts/
-|   +-- run.bat               # Inicialização Windows (CMD)
-|   +-- run.ps1               # Inicialização Windows (PowerShell)
-+-- tests/                    # Testes unitários e de integração HTTP
-+-- schema.sql                # DDL para criação manual das tabelas
-+-- requirements.txt
-+-- requirements-dev.txt
-+-- render.yaml               # Deploy no Render (Blueprint)
-+-- Procfile
+├── core/
+│   ├── database_conexao.py   # Camada de persistência (MySQL) e queries agregadas
+│   └── models.py             # Modelos de dados e dataclasses
+├── web/
+│   ├── app.py                # Ponto de entrada e configuração do Flask
+│   ├── routes.py             # Registro e inicialização de blueprints
+│   ├── auth.py               # Middleware e guards de autenticação admin
+│   ├── security.py           # Gestão de CSRF, secret keys e sanitização de redirects
+│   ├── blueprints/
+│   │   ├── admin.py          # Rotas administrativas (painel protegido)
+│   │   └── public.py         # Rotas públicas (landing, ranking, perfis, torneios)
+│   ├── services/
+│   │   ├── admin_service.py  # Regras de negócio da administração
+│   │   └── public_service.py # Regras de negócio da consulta pública
+│   ├── templates/            # Templates Jinja2 organizados por responsabilidade
+│   └── static/
+│       ├── css/style.css     # Design System global (tokens CSS, dark/light themes)
+│       └── js/script.js      # Scripts cliente (validações, modais, tema)
+├── docs/
+│   └── CONTEXT.md            # Documentação de decisões arquiteturais e regras visuais
+├── scripts/
+│   ├── run.bat               # Script de execução rápida Windows (CMD)
+│   └── run.ps1               # Script de execução rápida Windows (PowerShell)
+├── tests/                    # Suíte de testes unitários e de integração HTTP
+├── schema.sql                # DDL do esquema de banco de dados
+├── requirements.txt          # Dependências de produção
+├── requirements-dev.txt      # Dependências de desenvolvimento e testes
+├── render.yaml               # Configuração de deploy no Render (Blueprint)
+└── Procfile                  # Processo web para servidores WSGI
 ```
 
-> Consulte [`docs/CONTEXT.md`](docs/CONTEXT.md) para o mapa completo de rotas,
-> padrões visuais e regras de negócio consolidadas.
+> Para detalhes das decisões técnicas, regras de cálculo e convenções de rotas, consulte [`docs/CONTEXT.md`](docs/CONTEXT.md).
 
 ---
 
 ## Requisitos
 
 - Python 3.10+
-- MySQL (ou TiDB compatível com MySQL)
+- MySQL 8.0+ ou TiDB (compatível com MySQL)
 
 ## Instalação
 
+Clone o repositório e configure seu ambiente virtual:
+
 ```bash
+python -m venv .venv
+source .venv/bin/activate  # No Linux/macOS
+# ou no Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Para desenvolvimento e testes:
+Para instalar as dependências de desenvolvimento e testes:
 
 ```bash
 pip install -r requirements-dev.txt
@@ -82,87 +105,70 @@ pip install -r requirements-dev.txt
 
 ## Configuração de Ambiente
 
-Copie `.env.example` para `.env` e preencha as variáveis:
+Crie o arquivo `.env` com base no `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Parâmetros de configuração:
 
 | Variável | Descrição |
 |---|---|
-| `FLASK_SECRET_KEY` | **Obrigatória.** Chave da sessão Flask |
-| `AUTO_INIT_DB` | `1` para criar tabelas automaticamente no boot |
-| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conexão MySQL |
-| `DB_SSL_DISABLED`, `DB_SSL_CA`, `DB_SSL_VERIFY_CERT`, `DB_SSL_VERIFY_IDENTITY` | TLS/SSL |
-| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Credenciais do painel admin |
-| `ADMIN_ALLOWED_IPS` | IPs permitidos para o admin (opcional) |
+| `FLASK_SECRET_KEY` | **Obrigatória.** Chave para assinatura da sessão Flask. |
+| `AUTO_INIT_DB` | `1` para criar/atualizar a estrutura de tabelas automaticamente no boot. |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Credenciais da conexão MySQL/TiDB. |
+| `DB_SSL_DISABLED`, `DB_SSL_CA`, `DB_SSL_VERIFY_CERT`, `DB_SSL_VERIFY_IDENTITY` | Opções de criptografia TLS/SSL da base de dados. |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Credenciais para acesso à área administrativa. |
+| `ADMIN_ALLOWED_IPS` | Lista de IPs permitidos para a área admin (opcional, separados por vírgula). |
 
 ## Como Executar
 
-### Windows (recomendado)
+### Windows
 
 ```bat
 scripts\run.bat
 ```
-
-ou
-
+ou via PowerShell:
 ```powershell
 .\scripts\run.ps1
 ```
 
-### Geral
+### Geral (Linux / macOS / Manual)
 
 ```bash
 python -m web.app
 ```
 
-A aplicação sobe em `http://localhost:5000`.
+A aplicação estará disponível em `http://localhost:5000`.
 
 ---
 
-## Testes
+## Testes Automatizados
+
+A suíte de testes cobre regras de negócio, serviços, integridade HTTP e segurança:
 
 ```bash
-# Executar suíte completa
+# Executar suíte completa de testes
 pytest -q
 
-# Com cobertura
+# Executar com relatório de cobertura
 pytest --cov=web --cov-report=term-missing -q
 ```
-
-Cobertura inclui:
-- Testes unitários de services (`tests/test_admin_service.py`, `test_public_service.py`)
-- Testes de integração HTTP (`tests/test_http_integration.py`)
-- Testes de segurança (`tests/test_security.py`)
 
 ---
 
 ## Deploy (Render + TiDB)
 
-1. Crie banco MySQL/TiDB e obtenha credenciais
-2. Suba o serviço via `render.yaml` (Blueprint do Render)
-3. Configure variáveis de ambiente (`DB_*`, `FLASK_SECRET_KEY`, etc.)
-4. No primeiro deploy, use `AUTO_INIT_DB=1`
-5. Valide `GET /health` e os fluxos principais
+A aplicação está configurada para deploy contínuo no Render utilizando o `render.yaml`:
 
-Comandos de deploy esperados:
-- **Build:** `pip install -r requirements.txt`
-- **Start:** `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `gunicorn web.app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
 
----
-
-## Troubleshooting
-
-**`ModuleNotFoundError` ao iniciar**
-- Use `python -m web.app` (não `python web/app.py`)
-
-**Erro de conexão com banco**
-- Verifique variáveis `DB_*` e configurações SSL do provedor
-
-**Porta 5000 em uso**
-```powershell
-$env:PORT=8080; python -m web.app
-```
+No primeiro deploy em uma nova base de dados, garanta `AUTO_INIT_DB=1` nas variáveis de ambiente do serviço para criação automática das tabelas.
 
 ---
 
 ## Licença
 
-MIT
+Este projeto está licenciado sob os termos da licença [MIT](LICENSE).
