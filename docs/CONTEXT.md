@@ -198,6 +198,7 @@ com os gradientes já definidos no CSS.
 
 ### Grid e Centralização Mobile
 
+- Cards mobile de ranking (`dashboard_estatisticas.html`) centralizam harmoniosamente todos os dados e métricas das 3 colunas (`V / D`, `Win Rate`, `Partic.`, `Top Cut`, `Títulos`, `Conv. Top`) através de `.mobile-stat-item.text-center` com `align-items: center; text-align: center;`.
 - Cards mobile de torneios utilizam `.mobile-stats-grid.mobile-stats-grid-2` (duas colunas simétricas) com itens centralizados (`align-items: center; text-align: center;`) para **Vitórias** e **Derrotas**.
 - No perfil individual do duelista (`dashboard_duelista.html`), o histórico mobile centraliza harmonicamente as métricas de **Placar**, **Rodadas** e **Posição** (`.mobile-stat-item.text-center`).
 - A tela de busca/gerenciamento de duelistas no mobile utiliza o mesmo grid de 2 colunas (`.mobile-stats-grid-2`), distribuindo em 2x2 com conteúdo centralizado:
