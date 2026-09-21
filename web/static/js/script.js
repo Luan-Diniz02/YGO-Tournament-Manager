@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (value.length > 0) {
                 this.style.borderColor = '#28a745';
             } else {
-                this.style.borderColor = '#ced4da';
+                this.style.borderColor = '';
             }
         });
     });

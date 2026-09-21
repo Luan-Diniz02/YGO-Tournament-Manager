@@ -145,7 +145,23 @@
 }
 
 [data-bs-theme="dark"] .table-hover tbody tr:hover td {
-    background-color: rgba(255, 255, 255, 0.04);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .border,
+[data-bs-theme="dark"] .border-top,
+[data-bs-theme="dark"] .border-bottom,
+[data-bs-theme="dark"] .border-start,
+[data-bs-theme="dark"] .border-end {
+    border-color: var(--ygo-border) !important;
+}
+
+[data-bs-theme="dark"] .table-danger,
+[data-bs-theme="dark"] .table-danger td,
+[data-bs-theme="dark"] .table-danger th {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+    border-bottom-color: rgba(239, 68, 68, 0.25) !important;
 }
 
 [data-bs-theme="dark"] .mobile-card {
@@ -222,7 +238,7 @@
 /* Dark Mode Contrast Fixes */
 .season-highlight-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid var(--ygo-border);
+    border: 1px solid var(--ygo-border) !important;
 }
 
 [data-bs-theme="dark"] .season-highlight-card {
@@ -320,13 +336,43 @@
     color: #cbd5e1;
 }
 
-[data-bs-theme="dark"] .bg-success-subtle {
-    background-color: rgba(16, 185, 129, 0.15) !important;
-    border-color: rgba(16, 185, 129, 0.35) !important;
+/* Utilitários Sutis e Acessibilidade de Texto — Modo Escuro */
+[data-bs-theme="dark"] .bg-primary-subtle { background-color: rgba(37, 99, 235, 0.2) !important; }
+[data-bs-theme="dark"] .bg-success-subtle { background-color: rgba(16, 185, 129, 0.2) !important; }
+[data-bs-theme="dark"] .bg-warning-subtle { background-color: rgba(245, 158, 11, 0.2) !important; }
+[data-bs-theme="dark"] .bg-danger-subtle { background-color: rgba(239, 68, 68, 0.2) !important; }
+[data-bs-theme="dark"] .bg-info-subtle { background-color: rgba(6, 182, 212, 0.2) !important; }
+[data-bs-theme="dark"] .bg-secondary-subtle { background-color: rgba(148, 163, 184, 0.18) !important; }
+
+[data-bs-theme="dark"] .border-primary-subtle { border-color: rgba(37, 99, 235, 0.45) !important; }
+[data-bs-theme="dark"] .border-success-subtle { border-color: rgba(16, 185, 129, 0.45) !important; }
+[data-bs-theme="dark"] .border-warning-subtle { border-color: rgba(245, 158, 11, 0.45) !important; }
+[data-bs-theme="dark"] .border-danger-subtle { border-color: rgba(239, 68, 68, 0.45) !important; }
+[data-bs-theme="dark"] .border-info-subtle { border-color: rgba(6, 182, 212, 0.45) !important; }
+[data-bs-theme="dark"] .border-secondary-subtle { border-color: rgba(148, 163, 184, 0.35) !important; }
+
+[data-bs-theme="dark"] .text-warning-emphasis { color: #fde047 !important; }
+[data-bs-theme="dark"] .text-primary-emphasis { color: #93c5fd !important; }
+[data-bs-theme="dark"] .text-success-emphasis { color: #6ee7b7 !important; }
+[data-bs-theme="dark"] .text-danger-emphasis { color: #fca5a5 !important; }
+[data-bs-theme="dark"] .text-info-emphasis { color: #67e8f9 !important; }
+
+[data-bs-theme="dark"] .text-warning {
+    color: #fbbf24 !important;
+}
+
+[data-bs-theme="dark"] .text-info {
+    color: #38bdf8 !important;
 }
 
 [data-bs-theme="dark"] .text-success {
     color: #34d399 !important;
+}
+
+[data-bs-theme="dark"] .badge.bg-secondary {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #334155 !important;
 }
 
 [data-bs-theme="dark"] a.text-dark {
@@ -847,7 +893,7 @@ body {
 .card-header h3 i.text-warning,
 .card-header h4 i.text-warning,
 .card-header h5 i.text-warning {
-    color: #d97706 !important;
+    color: #f59e0b !important;
 }
 
 .card-header h3 i.text-success,
@@ -1022,6 +1068,31 @@ body {
     color: #ffffff;
 }
 
+.btn-info {
+    background-color: #0891b2;
+    border-color: #0891b2;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);
+}
+
+.btn-info:hover, .btn-info:focus {
+    background-color: #0e7490;
+    border-color: #0e7490;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-info {
+    background-color: #0e7490;
+    border-color: #0891b2;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-info:hover {
+    background-color: #0891b2;
+    border-color: #06b6d4;
+    color: #ffffff !important;
+}
+
 .btn-dark {
     background-color: var(--ygo-dark);
     border-color: var(--ygo-dark);
@@ -1105,6 +1176,62 @@ body {
 .badge-record {
     box-shadow: 0 0 0 2px #f59e0b, 0 2px 6px rgba(245, 158, 11, 0.3);
     position: relative;
+}
+
+/* Utilitários Sutis e Cores de Ênfase — Modo Claro (Bootstrap 5.3 Polyfill) */
+.bg-primary-subtle { background-color: var(--ygo-primary-subtle) !important; }
+.bg-success-subtle { background-color: var(--ygo-emerald-subtle) !important; }
+.bg-warning-subtle { background-color: var(--ygo-gold-subtle) !important; }
+.bg-danger-subtle { background-color: var(--ygo-rose-subtle) !important; }
+.bg-info-subtle { background-color: var(--ygo-cyan-subtle) !important; }
+.bg-secondary-subtle { background-color: #f1f5f9 !important; }
+
+.border-primary-subtle { border-color: var(--ygo-primary-border) !important; }
+.border-success-subtle { border-color: var(--ygo-emerald-border) !important; }
+.border-warning-subtle { border-color: var(--ygo-gold-border) !important; }
+.border-danger-subtle { border-color: var(--ygo-rose-border) !important; }
+.border-info-subtle { border-color: var(--ygo-cyan-border) !important; }
+.border-secondary-subtle { border-color: #cbd5e1 !important; }
+
+.text-warning-emphasis { color: #d97706 !important; }
+.text-primary-emphasis { color: #1d4ed8 !important; }
+.text-success-emphasis { color: #047857 !important; }
+.text-danger-emphasis { color: #b91c1c !important; }
+.text-info-emphasis { color: #0e7490 !important; }
+
+/* Contraste Acessível WCAG — Modo Claro */
+.text-warning { color: #d97706 !important; }
+.text-info { color: #0369a1 !important; }
+.text-success { color: #047857 !important; }
+
+/* Dourado Autêntico para Ícones (garante tom ouro em vez de bronze) */
+i.text-warning,
+.fas.text-warning,
+.far.text-warning {
+    color: #f59e0b !important;
+}
+
+.hero-section i.text-warning,
+.hero-section .text-warning {
+    color: #fbbf24 !important;
+}
+
+.badge.bg-warning {
+    color: #1a1a1a !important;
+}
+
+.badge.bg-secondary {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+a.text-dark {
+    transition: color 0.15s ease;
+}
+
+a.text-dark:hover {
+    color: var(--ygo-primary) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1229,6 +1356,31 @@ body {
     font-size: 1.1rem;
 }
 
+.podium-slot-1 .podium-rank-badge {
+    color: #d97706 !important;
+}
+
+.podium-slot-2 .podium-rank-badge {
+    color: #334155 !important;
+}
+
+.podium-slot-3 .podium-rank-badge {
+    color: #9a3412 !important;
+}
+
+[data-bs-theme="dark"] .podium-slot-1 .podium-rank-badge {
+    color: #fbbf24 !important;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+[data-bs-theme="dark"] .podium-slot-2 .podium-rank-badge {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .podium-slot-3 .podium-rank-badge {
+    color: #fdba74 !important;
+}
+
 @media (max-width: 575.98px) {
     .podium-container {
         gap: 0.4rem;
@@ -1274,7 +1426,7 @@ body {
 }
 
 .table-hover tbody tr:hover td {
-    background-color: #f8fafc;
+    background-color: #f1f5f9;
 }
 
 /* Mini Barra Visual de Win Rate */
@@ -1741,7 +1893,7 @@ body {
 
 #modalShareRanking .modal-body {
     scrollbar-width: thin;
-    scrollbar-color: rgba(245, 158, 11, 0.4) rgba(15, 23, 42, 0.6);
+    scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
 #modalShareRanking .modal-body::-webkit-scrollbar {
@@ -1749,16 +1901,32 @@ body {
 }
 
 #modalShareRanking .modal-body::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.4);
+    background: #f1f5f9;
     border-radius: 4px;
 }
 
 #modalShareRanking .modal-body::-webkit-scrollbar-thumb {
-    background: rgba(245, 158, 11, 0.4);
+    background: #cbd5e1;
     border-radius: 4px;
 }
 
 #modalShareRanking .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+[data-bs-theme="dark"] #modalShareRanking .modal-body {
+    scrollbar-color: rgba(245, 158, 11, 0.4) rgba(15, 23, 42, 0.6);
+}
+
+[data-bs-theme="dark"] #modalShareRanking .modal-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4);
+}
+
+[data-bs-theme="dark"] #modalShareRanking .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.4);
+}
+
+[data-bs-theme="dark"] #modalShareRanking .modal-body::-webkit-scrollbar-thumb:hover {
     background: rgba(245, 158, 11, 0.7);
 }
 

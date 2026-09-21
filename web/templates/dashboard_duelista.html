@@ -352,6 +352,13 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const isThemeDark = () => document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const getChartTextColor = () => isThemeDark() ? '#cbd5e1' : '#475569';
+    const getChartGridColor = () => isThemeDark() ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+
+    let chartWinLoss = null;
+    let chartPontos = null;
+
     // 1. Chart: Distribuição de Partidas (Doughnut)
     const ctxDoughnut = document.getElementById('chart-win-loss');
     if (ctxDoughnut) {
@@ -376,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartData = empates > 0 ? [vitorias, derrotas, empates] : [vitorias, derrotas];
         const chartColors = empates > 0 ? ['#10b981', '#ef4444', '#64748b'] : ['#10b981', '#ef4444'];
 
-        new Chart(ctxDoughnut, {
+        chartWinLoss = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
                 labels: chartLabels,
@@ -395,6 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         position: 'bottom',
                         labels: {
                             boxWidth: 12,
+                            color: getChartTextColor(),
                             font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }
                         }
                     },
@@ -454,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const initialSlice = getSliceData(currentMode);
 
-            const chartPontos = new Chart(ctxLine, {
+            chartPontos = new Chart(ctxLine, {
                 type: 'line',
                 data: {
                     labels: initialSlice.labels,
@@ -498,10 +506,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 3,
-                                precision: 0
+                                precision: 0,
+                                color: getChartTextColor()
+                            },
+                            grid: {
+                                color: getChartGridColor()
                             }
                         },
                         x: {
+                            ticks: {
+                                color: getChartTextColor()
+                            },
                             grid: { display: false }
                         }
                     }
@@ -541,6 +556,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    // Listener para atualizar cores dos gráficos dinamicamente na troca de tema
+    window.addEventListener('themeChanged', function() {
+        const newTextColor = getChartTextColor();
+        const newGridColor = getChartGridColor();
+        if (chartWinLoss && chartWinLoss.options && chartWinLoss.options.plugins && chartWinLoss.options.plugins.legend) {
+            chartWinLoss.options.plugins.legend.labels.color = newTextColor;
+            chartWinLoss.update();
+        }
+        if (chartPontos && chartPontos.options && chartPontos.options.scales) {
+            if (chartPontos.options.scales.y) {
+                chartPontos.options.scales.y.ticks.color = newTextColor;
+                chartPontos.options.scales.y.grid.color = newGridColor;
+            }
+            if (chartPontos.options.scales.x) {
+                chartPontos.options.scales.x.ticks.color = newTextColor;
+            }
+            chartPontos.update();
+        }
+    });
 
     // 3. Modal e Compartilhamento de Card
     const btnShare = document.getElementById('btn-share-duelista');

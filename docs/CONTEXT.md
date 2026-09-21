@@ -161,11 +161,21 @@ Todos os botões têm `border-radius: 25px` via regra global no `style.css`.
 Use as classes Bootstrap padrão (`btn-primary`, `btn-outline-secondary`, etc.)
 com os gradientes já definidos no CSS.
 
-### Suporte a Tema Escuro (Dark Mode)
+### Suporte a Temas (Dark Mode & Light Mode)
 
-- Alternância dinâmica entre temas Claro e Escuro através do atributo `data-bs-theme="dark|light"` no elemento `<html>`.
-- Persistência das preferências do usuário no `localStorage` sob a chave `'ygo-theme'`, com fallback para `prefers-color-scheme`.
-- O Dark Mode preserva as identidades visuais de marca e as regras de contraste (ex: `.card-header.bg-dark.text-white`).
+- **Alternância Dinâmica**: Alternância instantânea entre temas Claro e Escuro através do atributo `data-bs-theme="dark|light"` no elemento `<html>`.
+- **Persistência**: Armazenamento no `localStorage` sob a chave `'ygo-theme'`, com fallback inteligente para a preferência do sistema operacional (`prefers-color-scheme`).
+- **Polyfill Bootstrap 5.3**: Como a aplicação utiliza Bootstrap 5.1.3 via CDN, o `style.css` implementa polyfill completo para os utilitários semânticos contextuais (`.bg-*-subtle`, `.border-*-subtle`, `.text-*-emphasis`), garantindo retrocompatibilidade total e fundos/bordas consistentes em ambos os temas sem elementos transparentes.
+- **Harmonia Dourada e Acessibilidade WCAG AA**:
+  - **Ícones Ouro**: Ícones comemorativos de troféu e medalhas (`i.text-warning`, `.fa-trophy`, `.fa-medal`, `.ranking-position-1 i`) mantêm dourado puro vibrante (`#f59e0b` / `--ygo-gold`, e `#fbbf24` em headers escuros), eliminando a aparência bronze/amarronzada em qualquer tema.
+  - **Textos de Aviso**: `.text-warning` textual no tema claro utiliza dourado âmbar de alta legibilidade (`#d97706` / `--ygo-gold-dark`), atingindo contraste WCAG AA sobre branco sem descaracterizar a identidade de ouro.
+  - **Informações e Sucesso**: `.text-info` no modo claro utiliza `#0369a1` (azul ciano profundo) e `.text-success` utiliza `#047857` (verde esmeralda profundo). Botões `.btn-info` contam com tipografia em alto contraste com o fundo esportivo.
+- **Refinamento Dark Mode**:
+  - Bordas estruturais padrão (`.border`, `.border-top`, `.border-bottom`, `.border-start`, `.border-end`) utilizam a variável temática `var(--ygo-border)`, eliminando vazamentos de bordas cinza-claras do Bootstrap.
+  - Linhas de tabela de duelistas inativos (`.table-danger`) utilizam fundo vermelho escuro translúcido (`rgba(239, 68, 68, 0.15)`) com texto atenuado, evitando estouros de contraste com o rosa claro legado do Bootstrap.
+  - A limpeza dos campos de busca (`script.js`) reseta `borderColor = ''`, respeitando a estilização do tema ativo em vez de fixar valores hexadecimais legados.
+- **Gráficos Reativos (Chart.js)**:
+  - Os gráficos de Rosca e Linha no perfil individual (`dashboard_duelista.html`) detectam o tema inicial para definir paletas de grade, legendas e eixos, além de escutarem o evento global `themeChanged` para atualizar as cores instantaneamente na troca de tema sem necessidade de recarregar a página.
 
 ### Alertas e Mensagens de Confirmação
 
