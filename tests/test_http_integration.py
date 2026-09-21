@@ -54,6 +54,13 @@ def test_home_deve_retornar_200(client):
     assert resp.status_code == 200
 
 
+def test_favicon_deve_retornar_200(client):
+    resp = client.get('/favicon.ico')
+
+    assert resp.status_code == 200
+    assert 'image/svg+xml' in resp.content_type
+
+
 def test_rota_admin_sem_login_redireciona_para_login(client):
     resp = client.get('/cadastrar_torneio', follow_redirects=False)
 

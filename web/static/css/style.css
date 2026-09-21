@@ -125,13 +125,15 @@
     background-color: var(--ygo-surface-card) !important;
 }
 
-[data-bs-theme="dark"] .text-dark:not(.badge-warning):not(.bg-warning):not(.badge-podium-1) {
+[data-bs-theme="dark"] .text-dark:not(.badge-warning):not(.bg-warning):not(.badge-podium-1):not(.btn-warning) {
     color: #f1f5f9 !important;
 }
 
 [data-bs-theme="dark"] .bg-warning.text-dark,
 [data-bs-theme="dark"] .badge.bg-warning,
-[data-bs-theme="dark"] .badge-podium-1 {
+[data-bs-theme="dark"] .badge-podium-1,
+[data-bs-theme="dark"] .btn-warning,
+[data-bs-theme="dark"] .btn-warning.text-dark {
     color: #1a1a1a !important;
 }
 
@@ -1668,8 +1670,10 @@ a.text-dark:hover {
 .mobile-stat-value.value-primary { color: var(--ygo-primary); }
 
 .btn-mobile-action {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -2281,5 +2285,18 @@ footer p {
     background: rgba(37, 99, 235, 0.2);
     border-color: rgba(96, 165, 250, 0.35);
     color: #93c5fd;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Touch Targets & Ergonomics (WCAG 2.5.5 / 2.5.8)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .mobile-card .btn-sm {
+        min-height: 42px;
+        padding: 0.5rem 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 

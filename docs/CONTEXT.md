@@ -286,6 +286,16 @@ Campos disponíveis por evento no histórico:
 
 ---
 
+## Padrões de UI/UX e Acessibilidade
+
+- **Favicon & PWA**: Links para `icon.svg` e `icon-192.png` declarados no `<head>` de `base.html` e rota `/favicon.ico` ativa no blueprint público.
+- **Contraste WCAG (Dark Mode)**: Elementos com fundo amarelo/ouro (`.btn-warning`, `.badge-podium-1`, `.badge.bg-warning`) mantêm texto `#1a1a1a` no tema escuro, garantindo contraste superior a 10:1 (WCAG AAA).
+- **Ergonomia Mobile (WCAG 2.5.5 / 2.5.8)**: Botões de ação em cards mobile (`.btn-mobile-action`) possuem tamanho mínimo de 44x44px. Botões `.btn-sm` em cards mobile possuem altura mínima de 42px.
+- **Formulários Acessíveis**: Inputs de autenticação incluem atributos `autocomplete` padronizados (`autocomplete="username"`, `autocomplete="current-password"`).
+- **Consistência de Ações Mobile**: Cards mobile usam o título do duelista como link para o perfil (`/dashboard/duelista/<nome>`); a barra de ações do card é reservada para ações contextuais (Editar, Reativar, Excluir).
+
+---
+
 ## Convenções de Commit
 
 Seguir Conventional Commits:

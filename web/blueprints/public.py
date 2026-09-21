@@ -58,6 +58,14 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
         response.headers['Service-Worker-Allowed'] = '/'
         return response
 
+    @public_bp.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(
+            current_app.static_folder,
+            'icons/icon.svg',
+            mimetype='image/svg+xml'
+        )
+
     @public_bp.route('/ranking')
     def ranking():
         return redirect(url_for('public.dashboard_estatisticas'))
