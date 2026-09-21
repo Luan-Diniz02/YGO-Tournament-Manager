@@ -62,8 +62,8 @@ def create_public_blueprint(conexao, ordenar_duelistas_para_rank):
     def favicon():
         return send_from_directory(
             current_app.static_folder,
-            'icons/icon.svg',
-            mimetype='image/svg+xml'
+            'icons/favicon.ico',
+            mimetype='image/x-icon'
         )
 
     @public_bp.route('/ranking')

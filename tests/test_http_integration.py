@@ -58,7 +58,7 @@ def test_favicon_deve_retornar_200(client):
     resp = client.get('/favicon.ico')
 
     assert resp.status_code == 200
-    assert 'image/svg+xml' in resp.content_type
+    assert any(mime in resp.content_type for mime in ('image/x-icon', 'image/vnd.microsoft.icon', 'image/ico'))
 
 
 def test_rota_admin_sem_login_redireciona_para_login(client):
