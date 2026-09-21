@@ -13,7 +13,7 @@
     --ygo-primary-border: #bfdbfe;
 
     --ygo-gold: #f59e0b;
-    --ygo-gold-dark: #d97706;
+    --ygo-gold-dark: #b45309;
     --ygo-gold-subtle: #fef3c7;
     --ygo-gold-border: #fde68a;
 
@@ -93,6 +93,7 @@
 
     --ygo-primary-subtle: rgba(37, 99, 235, 0.2);
     --ygo-primary-border: rgba(37, 99, 235, 0.4);
+    --ygo-gold-dark: #fbbf24;
     --ygo-gold-subtle: rgba(245, 158, 11, 0.18);
     --ygo-gold-border: rgba(245, 158, 11, 0.35);
     --ygo-emerald-subtle: rgba(16, 185, 129, 0.18);
@@ -135,6 +136,19 @@
 [data-bs-theme="dark"] .btn-warning,
 [data-bs-theme="dark"] .btn-warning.text-dark {
     color: #1a1a1a !important;
+}
+
+/* --------------------------------------------------------------------------
+   Light Mode Warning & Accent Text Contrast (WCAG AA - 5.7:1)
+   -------------------------------------------------------------------------- */
+[data-bs-theme="light"] .text-warning,
+:root:not([data-bs-theme="dark"]) .text-warning {
+    color: #b45309 !important;
+}
+
+[data-bs-theme="light"] .text-warning-emphasis,
+:root:not([data-bs-theme="dark"]) .text-warning-emphasis {
+    color: #92400e !important;
 }
 
 [data-bs-theme="dark"] .table {
