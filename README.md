@@ -58,6 +58,12 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
     <img src="docs/images/torneios.png" alt="Listagem e Visualização de Torneios" width="90%">
   </p>
 
+- **Painel e Resultados do Torneio:** Gestão individual de cada evento com formulário ágil para computar placares, classificação consolidada da etapa, rodadas no formato Suíço e badges de colocação no Top Cut.
+
+  <p align="center">
+    <img src="docs/images/visualizar-torneio.png" alt="Painel e Resultados do Torneio" width="90%">
+  </p>
+
 - **Exclusão Segura:** Desvinculação com chave estrangeira `ON DELETE SET NULL`, preservando o histórico geral dos torneios.
 
 ### 🎨 Design System & Mobile First
@@ -70,7 +76,7 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 - **Navegação Otimizada para Mobile:** Barra de navegação inferior (*bottom navigation bar*) com acesso rápido a Início, Ranking, Torneios, Menu Admin e Alternador de Tema, garantindo usabilidade rápida em qualquer dispositivo móvel.
 
   <p align="center">
-    <img src="docs/images/admin-mobile.png" alt="Experiência Mobile First e Bottom Navigation Bar" width="320">
+    <img src="docs/images/ranking-mobile.png" alt="Experiência Mobile First e Bottom Navigation Bar" width="320">
   </p>
 
 - **Grids e Centralização Simétrica Mobile:** Visualização mobile de torneios, perfil de duelista (placar, rodadas, posição) e busca de duelistas em grades balanceadas com estatísticas perfeitamente centralizadas.
