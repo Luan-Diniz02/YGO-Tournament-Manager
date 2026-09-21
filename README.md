@@ -7,12 +7,21 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
 - **Produção (Render):** https://ygo-tournament-manager.onrender.com
 - **Healthcheck:** https://ygo-tournament-manager.onrender.com/health
 
+<p align="center">
+  <img src="docs/images/ranking-podio.png" alt="Ranking Unificado e Pódio Top 3 da Liga YGO Marabá" width="100%">
+</p>
+
 ---
 
 ## Principais Recursos
 
 ### 🏆 Experiência Competitiva & Métricas
 - **Hub Vivo da Liga na Tela Inicial:** Tela inicial dinâmica e sem redundâncias, com contadores em tempo real (Torneios, Duelistas, Partidas), cards de destaque com o Líder Atual da Liga e o Último Torneio realizado (com campeão consagrado e link direto).
+
+  <p align="center">
+    <img src="docs/images/hub-home.png" alt="Hub Vivo da Liga - Tela Inicial" width="100%">
+  </p>
+
 - **Ranking Unificado:** Classificação atualizada por pontos, Vitórias/Derrotas, Win Rate, participações em Top Cut e número de títulos.
 - **Pódio Visual Interativo:** Destaque para o Top 3 com avatares estilizados, pilares comemorativos e insígnias metálicas (🥇 1º Ouro, 🥈 2º Prata e 🥉 3º Bronze).
 - **Indicadores Visuais de Desempenho:** Mini barras horizontais de progresso integradas para **Win Rate** e **Taxa de Conversão Top Cut → Título** (com exibição limpa em travessão `—` para duelistas sem participações em Top Cut).
@@ -22,18 +31,48 @@ Aplicação web em Flask desenvolvida para o gerenciamento completo e moderno de
   - Gráfico em rosca de distribuição de partidas (Vitórias vs Derrotas) com porcentagens dinâmicas na legenda e nos tooltips, mantendo o centro limpo para evitar redundâncias com o KPI card superior.
   - Gráfico de linha interativo da evolução cronológica de pontos por torneio com intervalos de 3 pontos no eixo Y, datas formatadas no eixo X (`dd/mm/aa`), tooltip detalhado e filtro de amostragem ("Últimos 4" torneios ou "Todos").
   - Conquistas automáticas contextuais (*Líder do Ranking*, *Rei do Top Cut*, *Maior Campeão*, *Elite Win Rate*).
+
+  <p align="center">
+    <img src="docs/images/perfil-duelista.png" alt="Perfil Individual do Duelista e Gráficos de Desempenho" width="100%">
+  </p>
+
 - **Card Oficial do Duelista (Duelist Identity Card):** Cartão de identidade compartilhável com dados da temporada, métricas principais e insígnias, com exportação em imagem PNG em alta resolução (`html2canvas`) e compartilhamento genérico nativo via Web Share API com anexo direto da imagem e fallback inteligente.
+
+  <p align="center">
+    <img src="docs/images/card-duelista.png" alt="Card Oficial do Duelista e Compartilhamento" width="100%">
+  </p>
+
 - **Card de Compartilhamento do Ranking da Liga:** Modal exclusivo para exportação da classificação completa da temporada ou All-Time em imagem PNG de alta resolução (`html2canvas`) e compartilhamento nativo via Web Share API anexando a imagem gerada e link direto.
 
 ### 📅 Temporadas & Torneios
-- **Gerenciamento de Temporadas:** Agrupamento de torneios em períodos competitivos com data de início e fim.
+- **Gerenciamento de Temporadas:** Agrupamento de torneios em períodos competitivos com data de início e fim, status ativo/inativo e ativação com um clique.
+
+  <p align="center">
+    <img src="docs/images/temporadas.png" alt="Gerenciamento de Temporadas da Liga" width="90%">
+  </p>
+
 - **Filtro de Ranking por Temporada:** Subqueries otimizadas que omitem duelistas sem participações no período selecionado, exibindo apenas dados válidos para a temporada ativa ou All-Time.
-- **Vínculo Híbrido:** Torneios vinculados à temporada ativa por padrão, com flexibilidade para ajustes retroativos no painel administrativo.
+- **Vínculo Híbrido & Visualização de Torneios:** Torneios vinculados à temporada ativa por padrão, com visualização unificada de eventos, contagem de participantes, rodadas e badges de temporada.
+
+  <p align="center">
+    <img src="docs/images/torneios.png" alt="Listagem e Visualização de Torneios" width="90%">
+  </p>
+
 - **Exclusão Segura:** Desvinculação com chave estrangeira `ON DELETE SET NULL`, preservando o histórico geral dos torneios.
 
 ### 🎨 Design System & Mobile First
 - **Suporte Nativo a Temas (Dark Mode & Light Mode):** Alternância instantânea com detecção automática da preferência do sistema operacional (`prefers-color-scheme`), contraste elevado no modo claro e persistência em `localStorage`.
-- **Navegação Otimizada para Mobile:** Barra de navegação inferior (*bottom navigation bar*) com acesso rápido a Início, Ranking, Torneios, Menu Admin e Alternador de Tema.
+
+  <p align="center">
+    <img src="docs/images/hub-home-modoclaro.png" alt="Interface no Modo Claro (Light Mode)" width="100%">
+  </p>
+
+- **Navegação Otimizada para Mobile:** Barra de navegação inferior (*bottom navigation bar*) com acesso rápido a Início, Ranking, Torneios, Menu Admin e Alternador de Tema, garantindo usabilidade rápida em qualquer dispositivo móvel.
+
+  <p align="center">
+    <img src="docs/images/admin-mobile.png" alt="Experiência Mobile First e Bottom Navigation Bar" width="320">
+  </p>
+
 - **Grids e Centralização Simétrica Mobile:** Visualização mobile de torneios, perfil de duelista (placar, rodadas, posição) e busca de duelistas em grades balanceadas com estatísticas perfeitamente centralizadas.
 - **Admin Action Sheet (Offcanvas):** Menu flutuante moderno para administradores em smartphones, centralizando cadastros e gestão do sistema.
 - **Modais Harmonizados:** Janelas de criação, edição e compartilhamento com suporte a rolagem interna (`modal-dialog-scrollable`) e botões de ação fixos no rodapé, totalmente adaptadas aos temas claro e escuro, sem quebra de contraste ou estilos padrão de navegador.
